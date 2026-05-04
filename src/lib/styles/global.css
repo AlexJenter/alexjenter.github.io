@@ -1,0 +1,51 @@
+@import '@fontsource-variable/fraunces';
+@import './tokens.css';
+
+*, *::before, *::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	font-size: 16px;
+	-webkit-font-smoothing: antialiased;
+}
+
+body {
+	font-family: var(--font-serif);
+	font-size: var(--text-base);
+	font-variation-settings: 'opsz' var(--font-opsz-body);
+	line-height: var(--leading-normal);
+	color: var(--color-text);
+	background-color: var(--color-bg);
+}
+
+a {
+	color: inherit;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+a:hover {
+	color: var(--color-accent-warm);
+}
+
+code, pre {
+	font-family: var(--font-mono);
+	font-size: var(--text-sm);
+}
+
+pre {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	padding: var(--space-4);
+	overflow-x: auto;
+}
+
+h1, h2, h3, h4 {
+	line-height: var(--leading-tight);
+	font-weight: 300;
+	font-variation-settings: 'opsz' var(--font-opsz-display);
+}
