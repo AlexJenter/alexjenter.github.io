@@ -1,9 +1,9 @@
 <script lang="ts">
     const links = [
-        "upset.ch",
-        "zurichaestheticslab.ch",
-        "kiff.ch",
-        "versive.cc",
+        "https://upset.ch",
+        "https://zurichaestheticslab.ch",
+        "https://kiff.ch",
+        "https://versive.cc",
     ];
 </script>
 
