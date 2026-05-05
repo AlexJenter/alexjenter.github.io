@@ -11,8 +11,8 @@
     <h2>Work</h2>
     <p>Selected projects.</p>
     <ul>
-        {#each links as link}
-            <li><a href={link} target="_blank" rel="noopener">{link}</a></li>
+        {#each links as { url, label }}
+            <li><a href={url} target="_blank" rel="noopener">{label}</a></li>
         {/each}
     </ul>
 </section>

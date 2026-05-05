@@ -4,7 +4,7 @@
     --color-surface: #eceae4;
     --color-border: #d4d0c8;
     --color-text: #1a1916;
-    --color-text-muted: #6b6860;
+    --color-text-muted: #5c5a56;
     --color-accent: #2a2a2a;
     --color-accent-warm: #c8622a;
 
@@ -63,7 +63,7 @@
         --color-surface: #1a1916;
         --color-border: #2e2c28;
         --color-text: #e8e6e0;
-        --color-text-muted: #8a8880;
+        --color-text-muted: #9e9c98;
         --color-accent: #e0deda;
         --color-accent-warm: #e07840;
     }

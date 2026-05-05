@@ -16,13 +16,13 @@
                             {#if post.cover.svg}
                                 <img
                                     src={post.cover.src}
-                                    alt=""
+                                    alt={post.title}
                                     class="teaser"
                                 />
                             {:else}
                                 <enhanced:img
                                     src={post.cover.src}
-                                    alt=""
+                                    alt={post.title}
                                     class="teaser"
                                     sizes="(min-width: 1200px) 160px, 120px"
                                 />
@@ -30,7 +30,7 @@
                         {/if}
                         <div class="meta">
                             <span class="title">{post.title}</span>
-                            <span class="date">{post.date}</span>
+                            <time class="date" datetime={post.date}>{post.date}</time>
                             {#if post.description}
                                 <p class="description">{post.description}</p>
                             {/if}
@@ -94,7 +94,7 @@
         transition: color var(--duration-fast) var(--ease-out);
     }
 
-    .date {
+    time.date {
         font-size: var(--text-sm);
         color: var(--color-text-muted);
         font-variation-settings: "opsz" var(--font-opsz-body);

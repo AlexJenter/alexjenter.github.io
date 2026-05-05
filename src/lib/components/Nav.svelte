@@ -7,12 +7,16 @@
     ];
 </script>
 
-<nav>
-    <a href="/" class="wordmark">A</a>
+<nav aria-label="Site navigation">
+    <a href="/" class="wordmark" aria-label="Home">A</a>
     <ul>
         {#each links as { href, label }}
             <li>
-                <a {href} class:active={$page.url.pathname === href}>{label}</a>
+                <a
+                    {href}
+                    class:active={$page.url.pathname === href}
+                    aria-current={$page.url.pathname === href ? 'page' : undefined}
+                >{label}</a>
             </li>
         {/each}
     </ul>

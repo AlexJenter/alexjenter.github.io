@@ -64,7 +64,9 @@
 </script>
 
 <figure>
-    <svg viewBox="-1.1 -1.1 2.2 2.2">
+    <svg viewBox="-1.1 -1.1 2.2 2.2" role="img" aria-labelledby="gasket-title" aria-describedby="gasket-desc">
+        <title id="gasket-title">Apollonian gasket</title>
+        <desc id="gasket-desc">An interactive diagram showing the recursive circle-packing construction of an Apollonian gasket. Circles highlighted in orange are newly added at the current generation.</desc>
         {#each visible as ci (ci.id)}
             {@const [x, y, r] = xyr(ci)}
             <circle
@@ -81,10 +83,9 @@
     </svg>
 
     <div class="controls">
-        <button onclick={() => depth--} disabled={depth === 0}>←</button>
-        <span>Generation {depth} of {MAX_DEPTH} · {innerCount} circles</span>
-        <button onclick={() => depth++} disabled={depth === MAX_DEPTH}>→</button
-        >
+        <button onclick={() => depth--} disabled={depth === 0} aria-label="Previous generation">←</button>
+        <span aria-live="polite" aria-atomic="true">Generation {depth} of {MAX_DEPTH} · {innerCount} circles</span>
+        <button onclick={() => depth++} disabled={depth === MAX_DEPTH} aria-label="Next generation">→</button>
     </div>
 </figure>
 

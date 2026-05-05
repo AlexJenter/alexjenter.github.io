@@ -26,7 +26,8 @@
                                 href={entry.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="company">{entry.company}</a
+                                class="company"
+                                aria-label="{entry.company} (opens in new tab)">{entry.company}</a
                             >
                         {:else}
                             <span class="company">{entry.company}</span>
@@ -56,7 +57,8 @@
                                 href={entry.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="company">{entry.institution}</a
+                                class="company"
+                                aria-label="{entry.institution} (opens in new tab)">{entry.institution}</a
                             >
                         {:else}
                             <span class="company">{entry.institution}</span>

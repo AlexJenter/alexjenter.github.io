@@ -93,6 +93,9 @@
 <canvas
 	bind:this={canvas}
 	style:background
+	role={update ? 'img' : 'application'}
+	aria-label={update ? 'Animated canvas' : 'Drawing canvas — use mouse or touch to draw'}
+	tabindex="0"
 	onmousedown={onDrawStart}
 	onmouseup={onDrawEnd}
 	onmouseleave={onDrawEnd}

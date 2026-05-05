@@ -13,7 +13,7 @@
 </script>
 
 {#if formatted}
-    <time>{formatted}</time>
+    <time datetime={date}>{formatted}</time>
 {/if}
 
 <style>
