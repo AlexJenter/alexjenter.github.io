@@ -10,12 +10,22 @@ export const load = () => {
       import: "default",
     },
   );
+  const svgs = import.meta.glob("/src/routes/blog/**/*.svg", {
+    eager: true,
+    import: "default",
+  });
 
   const posts = Object.entries(modules)
     .map(([path, mod]: [string, any]) => {
       const postDir = path.replace("/+page.md", "");
       const coverFile = mod.metadata.cover?.replace("./", "");
-      const cover = coverFile ? images[`${postDir}/${coverFile}`] : undefined;
+      const fullPath = coverFile ? `${postDir}/${coverFile}` : undefined;
+
+      const cover = fullPath
+        ? coverFile.endsWith(".svg")
+          ? { svg: true, src: svgs[fullPath] as string }
+          : { svg: false, src: images[fullPath] }
+        : undefined;
 
       return {
         slug: path.split("/").at(-2)!,

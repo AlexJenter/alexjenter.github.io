@@ -2,7 +2,7 @@
 title: My Post
 date: 2026-05-10
 description: Kindling globular beings paroxysm fugue heavy science number wormholes thousands coveralls stage intelligent.
-cover: ./rene-bohmer-YeUVDKZWSZ4-unsplash.jpg
+cover: ./cover.svg
 ---
 
 <script>

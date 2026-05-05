@@ -13,7 +13,11 @@
 				<li>
 					<a href="/blog/{post.slug}" class="post-link">
 						{#if post.cover}
-							<enhanced:img src={post.cover} alt="" class="teaser" sizes="(min-width: 1200px) 160px, 120px" />
+							{#if post.cover.svg}
+								<img src={post.cover.src} alt="" class="teaser" />
+							{:else}
+								<enhanced:img src={post.cover.src} alt="" class="teaser" sizes="(min-width: 1200px) 160px, 120px" />
+							{/if}
 						{/if}
 						<div class="meta">
 							<span class="title">{post.title}</span>
