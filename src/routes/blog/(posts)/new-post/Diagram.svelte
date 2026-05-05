@@ -18,7 +18,9 @@
 <button onclick={reset}> &CircleTimes; </button>
 
 <div>
+    <hr />
     {#each arr as i}
         {i} hello<br />
     {/each}
+    <hr />
 </div>

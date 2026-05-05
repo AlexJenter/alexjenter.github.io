@@ -12,13 +12,13 @@
             <h1>Alex Jenter</h1>
             <p class="tagline">Web developer with a background in design</p>
         </div>
-        <enhanced:img
+        <!-- <enhanced:img
             class="photo"
             width="256px"
             height="256px"
             src="./foto-av.jpg"
             alt="photo of alex jenter"
-        />
+        /> -->
     </header>
 
     <section>
