@@ -5,12 +5,13 @@ date: 2026-05-10
 
 <script>
   import Diagram from './Diagram.svelte';
-  import screenshot from "./screenshot.png";
-  
 </script>
 
-# My Post
+# New test Post
 
-<img src={screenshot} alt="..." />
+<enhanced:img src="./rene-bohmer-YeUVDKZWSZ4-unsplash.jpg"
+sizes="min(1280px, 100vw)" alt="Screenshot" />
 
 <Diagram />
+
+<enhanced:img src="./screenshot.png" alt="Screenshot" sizes="min(1280px, 100vw)" />
