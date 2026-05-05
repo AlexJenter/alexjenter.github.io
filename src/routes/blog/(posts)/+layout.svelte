@@ -1,5 +1,12 @@
 <script lang="ts">
-    let { children, data } = $props();
+    import type { Snippet } from "svelte";
+
+    interface Props {
+        children: Snippet;
+        data: { title?: string; date?: string; description?: string };
+    }
+
+    let { children, data }: Props = $props();
 </script>
 
 <article class="post">
@@ -15,7 +22,9 @@
             >
         {/if}
     </header>
-    {@render children()}
+    <main>
+        {@render children()}
+    </main>
 </article>
 
 <style>
