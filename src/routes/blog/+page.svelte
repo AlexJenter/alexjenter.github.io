@@ -1,4 +1,5 @@
 <script lang="ts">
+    import Date from "$lib/components/Date.svelte";
     let { data } = $props();
 </script>
 
@@ -30,7 +31,7 @@
                         {/if}
                         <div class="meta">
                             <span class="title">{post.title}</span>
-                            <time class="date" datetime={post.date}>{post.date}</time>
+                            <Date date={post.date} />
                             {#if post.description}
                                 <p class="description">{post.description}</p>
                             {/if}
