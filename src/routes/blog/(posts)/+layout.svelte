@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
+    import Date from "$lib/components/Date.svelte";
 
     interface Props {
         children: Snippet;
@@ -12,15 +13,7 @@
 <article class="post">
     <header>
         <h1>{data.title}</h1>
-        {#if data.date}
-            <time
-                >{new Date(data.date).toLocaleDateString("en-GB", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                })}</time
-            >
-        {/if}
+        <Date date={data.date} />
     </header>
     <main>
         {@render children()}
@@ -30,13 +23,6 @@
 <style>
     header {
         margin-bottom: var(--space-12);
-    }
-
-    time {
-        display: block;
-        font-size: var(--text-sm);
-        color: var(--color-text-muted);
-        margin-top: var(--space-2);
     }
 
     .post {
