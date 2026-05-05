@@ -1,5 +1,5 @@
 export const load = () => {
-	const modules = import.meta.glob('/src/routes/blog/(posts)/*/+page.md', { eager: true });
+	const modules = import.meta.glob('/src/routes/blog/**/+page.md', { eager: true });
 
 	const posts = Object.entries(modules)
 		.map(([path, mod]: [string, any]) => ({
