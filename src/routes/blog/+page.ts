@@ -15,9 +15,7 @@ export const load = () => {
     .map(([path, mod]: [string, any]) => {
       const postDir = path.replace("/+page.md", "");
       const coverFile = mod.metadata.cover?.replace("./", "");
-      const cover = coverFile
-        ? images[`${postDir}/${coverFile}`]
-        : undefined;
+      const cover = coverFile ? images[`${postDir}/${coverFile}`] : undefined;
 
       return {
         slug: path.split("/").at(-2)!,
@@ -27,7 +25,11 @@ export const load = () => {
         cover,
       };
     })
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .map((p) => ({
+      ...p,
+      date: new Date(p.date).toLocaleDateString(),
+    }));
 
   return { posts };
 };
