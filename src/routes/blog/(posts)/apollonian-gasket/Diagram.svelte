@@ -1,20 +1,23 @@
-<script>
-    // Complex numbers as [re, im] tuples
-    const cadd = (a, b) => [a[0] + b[0], a[1] + b[1]];
-    const csub = (a, b) => [a[0] - b[0], a[1] - b[1]];
-    const cscale = (a, s) => [a[0] * s, a[1] * s];
+<script lang="ts">
+    type Vec2 = [number, number];
+    type Circle = { k: number; kz: Vec2; depth: number; id?: number };
+    type QueueEntry = [Circle, Circle, Circle, Circle, number];
 
-    function makeCircle(k, x, y, depth) {
+    const cadd = (a: Vec2, b: Vec2): Vec2 => [a[0] + b[0], a[1] + b[1]];
+    const csub = (a: Vec2, b: Vec2): Vec2 => [a[0] - b[0], a[1] - b[1]];
+    const cscale = (a: Vec2, s: number): Vec2 => [a[0] * s, a[1] * s];
+
+    function makeCircle(k: number, x: number, y: number, depth: number): Circle {
         return { k, kz: [k * x, k * y], depth };
     }
 
-    function xyr({ k, kz }) {
+    function xyr({ k, kz }: Circle): [number, number, number] {
         return [kz[0] / k, kz[1] / k, Math.abs(1 / k)];
     }
 
     // Linear Descartes: given 3 tangent circles and the excluded 4th,
     // find the circle on the opposite side.
-    function nextCircle(a, b, c, excl, depth) {
+    function nextCircle(a: Circle, b: Circle, c: Circle, excl: Circle, depth: number): Circle {
         const k = 2 * (a.k + b.k + c.k) - excl.k;
         const kz = csub(cscale(cadd(cadd(a.kz, b.kz), c.kz), 2), excl.kz);
         return { k, kz, depth };
@@ -29,9 +32,9 @@
     const c2 = makeCircle(2, 0.5, 0, 0); // right
     const c3 = makeCircle(3, 0, -2 / 3, 0); // bottom
 
-    function buildGasket() {
-        const all = [c0, c1, c2, c3];
-        const queue = [
+    function buildGasket(): Circle[] {
+        const all: Circle[] = [c0, c1, c2, c3];
+        const queue: QueueEntry[] = [
             [c1, c2, c3, c0, 1],
             [c0, c2, c3, c1, 1],
             [c0, c1, c3, c2, 1],

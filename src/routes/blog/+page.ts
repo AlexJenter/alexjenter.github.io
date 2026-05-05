@@ -9,11 +9,11 @@ export const load = () => {
       query: { enhanced: true },
       import: "default",
     },
-  );
+  ) as Record<string, any>;
   const svgs = import.meta.glob("/src/routes/blog/**/*.svg", {
     eager: true,
     import: "default",
-  });
+  }) as Record<string, string>;
 
   const posts = Object.entries(modules)
     .map(([path, mod]: [string, any]) => {

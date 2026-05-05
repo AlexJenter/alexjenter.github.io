@@ -12,13 +12,6 @@
             <h1>Alex Jenter</h1>
             <p class="tagline">Web developer with a background in design</p>
         </div>
-        <!-- <enhanced:img
-            class="photo"
-            width="256px"
-            height="256px"
-            src="./foto-av.jpg"
-            alt="photo of alex jenter"
-        /> -->
     </header>
 
     <section>
@@ -115,9 +108,6 @@
             font-weight: 400;
             letter-spacing: -0.02em;
             margin-bottom: var(--space-2);
-        }
-        .photo {
-            width: 256px;
         }
     }
 

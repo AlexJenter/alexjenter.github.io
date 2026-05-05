@@ -6,7 +6,13 @@
     <header>
         <h1>{data.title}</h1>
         {#if data.date}
-            <time>{new Date(data.date).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
+            <time
+                >{new Date(data.date).toLocaleDateString("en-GB", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                })}</time
+            >
         {/if}
     </header>
     {@render children()}
