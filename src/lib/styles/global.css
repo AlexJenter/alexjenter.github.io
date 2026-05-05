@@ -1,4 +1,4 @@
-@import "@fontsource-variable/fraunces";
+@import "@fontsource-variable/fraunces/full.css";
 @import "./tokens.css";
 
 *,
@@ -10,14 +10,16 @@
 }
 
 html {
-    font-size: 16px;
     -webkit-font-smoothing: antialiased;
 }
 
 body {
     font-family: var(--font-serif);
     font-size: var(--text-base);
-    font-variation-settings: "opsz" var(--font-opsz-body);
+    font-variation-settings:
+        "opsz" var(--font-opsz-body),
+        "WONK" 1,
+        "SOFT" 100;
     line-height: var(--leading-normal);
     color: var(--color-text);
     background-color: var(--color-bg);
@@ -53,7 +55,10 @@ h3,
 h4 {
     line-height: var(--leading-tight);
     font-weight: 300;
-    font-variation-settings: "opsz" var(--font-opsz-display);
+    font-variation-settings:
+        "opsz" 72,
+        "WONK" 1,
+        "SOFT" 100;
 }
 img {
     object-fit: contain;

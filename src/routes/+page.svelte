@@ -1,10 +1,5 @@
 <script lang="ts">
-    const links = [
-        "https://upset.ch",
-        "https://zurichaestheticslab.ch",
-        "https://kiff.ch",
-        "https://versive.cc",
-    ];
+    import { links } from "$lib/data/work";
 </script>
 
 <section class="hero">
@@ -17,7 +12,7 @@
     <p>Selected projects.</p>
     <ul>
         {#each links as link}
-            <li><a href={link}>{link}</a></li>
+            <li><a href={link} target="_blank" rel="noopener">{link}</a></li>
         {/each}
     </ul>
 </section>
