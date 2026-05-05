@@ -1,11 +1,13 @@
 ---
-title: Stipple
+status: draft
+title: Weighted Voronoi Stippeling
 date: 2026-05-04
-description: First post. Testing mdsvex.
 cover: ./cover.svg
+description: The traditional artistic technique of stippling places small dots of ink onto paper such that their density give the impression of tone.
 ---
 
-# Hello World
+
+<https://www.cs.ubc.ca/labs/imager/tr/pdf/secord.2002b.pdf>
 
 This is a markdown post rendered via **mdsvex**. You can use Svelte components here too.
 

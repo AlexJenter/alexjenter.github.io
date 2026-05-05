@@ -9,8 +9,6 @@ description: The construction of the Apollonian gasket starts with three circles
   import Diagram from './Diagram.svelte';
 </script>
 
-# Apollonian gasket
-
 Start with three mutually tangent circles. In every gap between them, pack the largest circle that fits. Then repeat — forever. The result is an Apollonian gasket: a fractal built entirely from circles, where every circle is tangent to its neighbours and no space is wasted.
 
 ## Descartes' theorem
