@@ -1,4 +1,6 @@
 @import "@fontsource-variable/fraunces/full.css";
+@import "katex/dist/katex.min.css";
+@import "./reset.css";
 @import "./tokens.css";
 
 *,
@@ -23,6 +25,10 @@ body {
     line-height: var(--leading-normal);
     color: var(--color-text);
     background-color: var(--color-bg);
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }
 
 a {
