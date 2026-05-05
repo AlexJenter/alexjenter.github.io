@@ -11,13 +11,18 @@
 		<ol class="post-list">
 			{#each data.posts as post}
 				<li>
-					<a href="/blog/{post.slug}">
-						<span class="title">{post.title}</span>
-						<span class="date">{post.date}</span>
+					<a href="/blog/{post.slug}" class="post-link">
+						{#if post.cover}
+							<enhanced:img src={post.cover} alt="" class="teaser" sizes="(min-width: 1200px) 160px, 120px" />
+						{/if}
+						<div class="meta">
+							<span class="title">{post.title}</span>
+							<span class="date">{post.date}</span>
+							{#if post.description}
+								<p class="description">{post.description}</p>
+							{/if}
+						</div>
 					</a>
-					{#if post.description}
-						<p class="description">{post.description}</p>
-					{/if}
 				</li>
 			{/each}
 		</ol>
@@ -42,19 +47,32 @@
 		list-style: none;
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-8);
+		gap: var(--space-6);
 	}
 
-	li a {
+	.post-link {
 		display: flex;
-		justify-content: space-between;
-		align-items: baseline;
 		gap: var(--space-4);
+		align-items: flex-start;
 		text-decoration: none;
 	}
 
-	li a:hover .title {
+	.post-link:hover .title {
 		color: var(--color-accent-warm);
+	}
+
+	.teaser {
+		width: 120px;
+		height: 80px;
+		object-fit: cover;
+		border-radius: var(--radius-md);
+		flex-shrink: 0;
+	}
+
+	.meta {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-1);
 	}
 
 	.title {
@@ -66,12 +84,10 @@
 	.date {
 		font-size: var(--text-sm);
 		color: var(--color-text-muted);
-		white-space: nowrap;
 		font-variation-settings: 'opsz' var(--font-opsz-body);
 	}
 
 	.description {
-		margin-top: var(--space-1);
 		font-size: var(--text-sm);
 		color: var(--color-text-muted);
 	}
