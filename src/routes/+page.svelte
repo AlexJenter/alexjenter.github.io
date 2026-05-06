@@ -42,7 +42,20 @@
         color: var(--color-text-muted);
     }
 
-    ul {
-        list-style: none;
+    .work {
+        ul {
+            list-style: none;
+        }
+        /*ul:hover li {
+            letter-spacing: 2px;
+            opacity: 0.5;
+            transition:
+                letter-spacing 300ms ease-out,
+                opacity 300ms ease-out;
+            &:hover {
+                opacity: 1;
+                letter-spacing: initial;
+            }
+        }*/
     }
 </style>

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { work, education, languages, skills } from "$lib/data/resume";
+    import EntryHeader from "./EntryHeader.svelte";
 </script>
 
 <svelte:head>
@@ -19,20 +20,11 @@
         <ol class="entries">
             {#each work as entry}
                 <li class="entry">
-                    <div class="entry-header">
-                        <span class="period">{entry.period}</span>
-                        {#if entry.url}
-                            <a
-                                href={entry.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="company"
-                                aria-label="{entry.company} (opens in new tab)">{entry.company}</a
-                            >
-                        {:else}
-                            <span class="company">{entry.company}</span>
-                        {/if}
-                    </div>
+                    <EntryHeader
+                        period={entry.period}
+                        url={entry.url}
+                        company={entry.company}
+                    />
                     <p class="title">{entry.title}</p>
                     <p class="description">{entry.description}</p>
                     <ul class="highlights">
@@ -50,20 +42,11 @@
         <ol class="entries">
             {#each education as entry}
                 <li class="entry">
-                    <div class="entry-header">
-                        <span class="period">{entry.period}</span>
-                        {#if entry.url}
-                            <a
-                                href={entry.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="company"
-                                aria-label="{entry.institution} (opens in new tab)">{entry.institution}</a
-                            >
-                        {:else}
-                            <span class="company">{entry.institution}</span>
-                        {/if}
-                    </div>
+                    <EntryHeader
+                        period={entry.period}
+                        url={entry.url}
+                        company={entry.institution}
+                    />
                     <p class="description">{entry.credential}</p>
                 </li>
             {/each}
@@ -155,6 +138,7 @@
         font-size: var(--text-base);
         font-weight: 500;
         text-decoration: none;
+        text-transform: uppercase;
     }
 
     a.company:hover {
