@@ -120,31 +120,6 @@
         gap: var(--space-8);
     }
 
-    .entry-header {
-        display: flex;
-        align-items: baseline;
-        gap: var(--space-3);
-        margin-bottom: var(--space-1);
-    }
-
-    .period {
-        font-size: var(--text-sm);
-        color: var(--color-text-muted);
-        white-space: nowrap;
-        font-variation-settings: "opsz" var(--font-opsz-body);
-    }
-
-    .company {
-        font-size: var(--text-base);
-        font-weight: 500;
-        text-decoration: none;
-        text-transform: uppercase;
-    }
-
-    a.company:hover {
-        color: var(--color-accent-warm);
-    }
-
     .title {
         font-size: var(--text-sm);
         color: var(--color-text-muted);
@@ -218,11 +193,6 @@
 
         .entries {
             gap: var(--space-6);
-        }
-
-        a.company {
-            color: inherit;
-            text-decoration: none;
         }
     }
 </style>

@@ -1,1 +1,6 @@
-// place files you want to import through the `$lib` alias in this folder.
+export type PostFrontmatter = {
+	title: string;
+	date: string;
+	cover?: string;
+	description?: string;
+};

@@ -1,3 +1,5 @@
+import type { PostFrontmatter } from '$lib';
+
 export const load = () => {
   const modules = import.meta.glob("/src/routes/blog/**/+page.md", {
     eager: true,
@@ -17,21 +19,22 @@ export const load = () => {
 
   const posts = Object.entries(modules)
     .map(([path, mod]: [string, any]) => {
+      const meta = mod.metadata as PostFrontmatter;
       const postDir = path.replace("/+page.md", "");
-      const coverFile = mod.metadata.cover?.replace("./", "");
+      const coverFile = meta.cover?.replace("./", "");
       const fullPath = coverFile ? `${postDir}/${coverFile}` : undefined;
 
       const cover = fullPath
-        ? coverFile.endsWith(".svg")
+        ? coverFile!.endsWith(".svg")
           ? { svg: true, src: svgs[fullPath] as string }
           : { svg: false, src: images[fullPath] }
         : undefined;
 
       return {
         slug: path.split("/").at(-2)!,
-        title: mod.metadata.title as string,
-        date: mod.metadata.date as string,
-        description: mod.metadata.description as string | undefined,
+        title: meta.title,
+        date: meta.date,
+        description: meta.description,
         cover,
       };
     })
