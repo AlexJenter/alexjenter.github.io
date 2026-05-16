@@ -3,7 +3,7 @@
     import { Delaunay } from "d3-delaunay";
     import { onMount } from "svelte";
     import Canvas from "$lib/components/Canvas.svelte";
-    import { Pane, Slider } from "svelte-tweakpane-ui";
+    import { Image as ImageControl, Pane, Slider } from "svelte-tweakpane-ui";
     import imgSrc from "./img0.jpg";
 
     const MAX_ITER = 10000;
@@ -17,6 +17,8 @@
     let dotRadius = $state(5);
     let pendingPointCount = $state(5000);
     let pointCount = $state(5000);
+    let uploadedImage = $state<string | undefined>(undefined);
+    let imageKey = $state(0);
 
     $effect(() => {
         const n = pendingPointCount;
@@ -26,6 +28,20 @@
             pointCount = n;
         }, 400);
         return () => clearTimeout(timer);
+    });
+
+    $effect(() => {
+        const src = uploadedImage;
+        if (!src) return;
+        const image = new Image();
+        image.src = src;
+        image.onload = () => {
+            lum = null;
+            iterCount = 0;
+            img = image;
+            ar = image.naturalWidth / image.naturalHeight;
+            imageKey++;
+        };
     });
 
     onMount(() => {
@@ -109,7 +125,7 @@
 
 {#if ar !== null}
     <div class="hero" style="--ar: {ar}">
-        {#key pointCount}
+        {#key `${pointCount}-${imageKey}`}
             <Canvas {setup} {update} />
         {/key}
     </div>
@@ -122,6 +138,7 @@
             step={100}
             label="Points"
         />
+        <ImageControl bind:value={uploadedImage} fit="contain" label="Image" />
     </Pane>
 {/if}
 
