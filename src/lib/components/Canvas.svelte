@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 
 	type SetupFn = (ctx: CanvasRenderingContext2D, width: number, height: number) => void | Promise<void>;
-	type UpdateFn = (ctx: CanvasRenderingContext2D, width: number, height: number, dt: number) => void;
+	type UpdateFn = (ctx: CanvasRenderingContext2D, width: number, height: number, dt: number) => boolean | void;
 
 	interface Props {
 		setup?: SetupFn;
@@ -39,8 +39,8 @@
 		const loop = (now: number) => {
 			const dt = now - last;
 			last = now;
-			update?.(ctx, pw, ph, dt);
-			rafId = requestAnimationFrame(loop);
+			const cont = update?.(ctx, pw, ph, dt);
+			if (cont !== false) rafId = requestAnimationFrame(loop);
 		};
 		rafId = requestAnimationFrame(loop);
 

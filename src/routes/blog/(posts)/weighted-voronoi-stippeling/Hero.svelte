@@ -43,8 +43,8 @@
         const delaunay = new Delaunay(Float64Array.from(pts.flat()));
 
         let nearest = 0;
-        for (let y = 0; y < h; y++) {
-            for (let x = 0; x < w; x++) {
+        for (let y = 0; y < h; y += 2) {
+            for (let x = 0; x < w; x += 2) {
                 const weight = lum![y * w + x];
                 if (weight === 0) continue;
                 nearest = delaunay.find(x, y, nearest);
@@ -81,6 +81,8 @@
             ctx.arc(x, y, 2, 0, Math.PI * 2);
             ctx.fill();
         }
+
+        if (iterCount >= MAX_ITER) return false;
     };
 </script>
 
@@ -90,7 +92,11 @@
 
 <style>
     .hero {
-        width: 100%;
-        height: 100%;
+        width: 100vw;
+        height: 100svh;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-top: calc(-1 * var(--space-16));
     }
 </style>
