@@ -1,10 +1,11 @@
 <script lang="ts">
+    // @ts-ignore
     import { Delaunay } from "d3-delaunay";
     import Canvas from "$lib/components/Canvas.svelte";
     import imgSrc from "./img0.jpg";
 
     const N = 1500;
-    const MAX_ITER = 50;
+    const MAX_ITER = 150;
 
     let pts: [number, number][] = [];
     let lum: Uint8ClampedArray | null = null;

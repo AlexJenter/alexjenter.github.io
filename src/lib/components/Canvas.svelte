@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	type SetupFn = (ctx: CanvasRenderingContext2D, width: number, height: number) => void;
+	type SetupFn = (ctx: CanvasRenderingContext2D, width: number, height: number) => void | Promise<void>;
 	type UpdateFn = (ctx: CanvasRenderingContext2D, width: number, height: number, dt: number) => void;
 
 	interface Props {
@@ -19,7 +19,7 @@
 		const ctx = canvas!.getContext('2d')!;
 
 		let ready = false;
-		const ro = new ResizeObserver(([entry]) => {
+		const ro = new ResizeObserver(async ([entry]) => {
 			const dpr = window.devicePixelRatio;
 			const { width: w, height: h } = entry.contentRect;
 			pw = Math.round(w * dpr);
@@ -28,7 +28,7 @@
 			canvas!.height = ph;
 			if (!ready) {
 				ready = true;
-				setup?.(ctx, pw, ph);
+				await setup?.(ctx, pw, ph);
 			}
 		});
 
