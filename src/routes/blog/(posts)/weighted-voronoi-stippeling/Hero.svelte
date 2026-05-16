@@ -3,7 +3,7 @@
     import { Delaunay } from "d3-delaunay";
     import { onMount } from "svelte";
     import Canvas from "$lib/components/Canvas.svelte";
-    import { Image as ImageControl, Pane, Slider } from "svelte-tweakpane-ui";
+    import { Button, Image as ImageControl, Pane, Slider } from "svelte-tweakpane-ui";
     import imgSrc from "./img0.jpg";
 
     const MAX_ITER = 10000;
@@ -13,6 +13,8 @@
     let iterCount = 0;
     let ar = $state<number | null>(null);
     let img: HTMLImageElement | null = null;
+    let canvasW = 0;
+    let canvasH = 0;
 
     let dotRadius = $state(5);
     let pendingPointCount = $state(5000);
@@ -54,6 +56,8 @@
     });
 
     const setup = (_ctx: CanvasRenderingContext2D, w: number, h: number) => {
+        canvasW = w;
+        canvasH = h;
         pts = Array.from(
             { length: pointCount },
             () => [Math.random() * w, Math.random() * h] as [number, number],
@@ -99,6 +103,29 @@
         }
     }
 
+    function downloadSVG() {
+        const nw = img!.naturalWidth;
+        const nh = img!.naturalHeight;
+        const scaleX = nw / canvasW;
+        const scaleY = nh / canvasH;
+        const r = (dotRadius * scaleX).toFixed(2);
+
+        const circles = pts
+            .map(
+                ([x, y]) =>
+                    `<circle cx="${(x * scaleX).toFixed(2)}" cy="${(y * scaleY).toFixed(2)}" r="${r}"/>`,
+            )
+            .join("");
+
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${nw} ${nh}" width="${nw}" height="${nh}"><g fill="currentColor">${circles}</g></svg>`;
+
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
+        a.download = "stipple.svg";
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+
     const update = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
         if (!lum) return;
 
@@ -139,6 +166,7 @@
             label="Points"
         />
         <ImageControl bind:value={uploadedImage} fit="contain" label="Image" />
+        <Button on:click={downloadSVG} title="Download SVG" label="" />
     </Pane>
 {/if}
 
