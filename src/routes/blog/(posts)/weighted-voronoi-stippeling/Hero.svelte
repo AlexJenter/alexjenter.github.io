@@ -1,38 +1,59 @@
 <script lang="ts">
     // @ts-ignore
     import { Delaunay } from "d3-delaunay";
+    import { onMount } from "svelte";
     import Canvas from "$lib/components/Canvas.svelte";
+    import { Pane, Slider } from "svelte-tweakpane-ui";
     import imgSrc from "./img0.jpg";
 
-    const N = 1500;
-    const MAX_ITER = 150;
+    const MAX_ITER = 10000;
 
     let pts: [number, number][] = [];
     let lum: Uint8ClampedArray | null = null;
     let iterCount = 0;
+    let ar = $state<number | null>(null);
+    let img: HTMLImageElement | null = null;
+
+    let dotRadius = $state(5);
+    let pendingPointCount = $state(5000);
+    let pointCount = $state(5000);
+
+    $effect(() => {
+        const n = pendingPointCount;
+        const timer = setTimeout(() => {
+            lum = null;
+            iterCount = 0;
+            pointCount = n;
+        }, 400);
+        return () => clearTimeout(timer);
+    });
+
+    onMount(() => {
+        const image = new Image();
+        image.src = imgSrc;
+        image.onload = () => {
+            img = image;
+            ar = image.naturalWidth / image.naturalHeight;
+        };
+    });
 
     const setup = (_ctx: CanvasRenderingContext2D, w: number, h: number) => {
         pts = Array.from(
-            { length: N },
+            { length: pointCount },
             () => [Math.random() * w, Math.random() * h] as [number, number],
         );
+        iterCount = 0;
 
-        const img = new Image();
-        img.src = imgSrc;
-        img.onload = () => {
-            const offscreen = new OffscreenCanvas(w, h);
-            const offCtx = offscreen.getContext("2d")!;
-            offCtx.drawImage(img, 0, 0, w, h);
-            const { data } = offCtx.getImageData(0, 0, w, h);
-            const buf = new Uint8ClampedArray(w * h);
-            for (let i = 0, j = 0; i < data.length; i += 4, j++) {
-                buf[j] =
-                    0.2126 * data[i] +
-                    0.7152 * data[i + 1] +
-                    0.0722 * data[i + 2];
-            }
-            lum = buf;
-        };
+        const offscreen = new OffscreenCanvas(w, h);
+        const offCtx = offscreen.getContext("2d")!;
+        offCtx.drawImage(img!, 0, 0, w, h);
+        const { data } = offCtx.getImageData(0, 0, w, h);
+        const buf = new Uint8ClampedArray(w * h);
+        for (let i = 0, j = 0; i < data.length; i += 4, j++) {
+            buf[j] =
+                0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
+        }
+        lum = buf;
     };
 
     function applyWeightedCentroid(w: number, h: number) {
@@ -78,7 +99,7 @@
 
         for (const [x, y] of pts) {
             ctx.beginPath();
-            ctx.arc(x, y, 2, 0, Math.PI * 2);
+            ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
             ctx.fill();
         }
 
@@ -86,14 +107,30 @@
     };
 </script>
 
-<div class="hero">
-    <Canvas {setup} {update} />
-</div>
+{#if ar !== null}
+    <div class="hero" style="--ar: {ar}">
+        {#key pointCount}
+            <Canvas {setup} {update} />
+        {/key}
+    </div>
+    <Pane position="draggable" title="Stipple">
+        <Slider bind:value={dotRadius} min={1} max={20} label="Dot radius" />
+        <Slider
+            bind:value={pendingPointCount}
+            min={100}
+            max={10000}
+            step={100}
+            label="Points"
+        />
+    </Pane>
+{/if}
 
 <style>
     .hero {
-        width: 100vw;
-        height: 100svh;
+        width: calc(100svh * var(--ar));
+        max-width: 100vw;
+        height: auto;
+        aspect-ratio: var(--ar);
         position: relative;
         left: 50%;
         transform: translateX(-50%);
