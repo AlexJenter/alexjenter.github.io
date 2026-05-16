@@ -29,6 +29,7 @@
 	},
 	"dependencies": {
 		"@fontsource-variable/fraunces": "^5.2.9",
+		"d3-delaunay": "^6.0.4",
 		"katex": "^0.16.45",
 		"rehype-katex": "^4.0.0",
 		"remark-math": "^3.0.1"
