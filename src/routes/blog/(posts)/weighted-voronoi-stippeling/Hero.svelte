@@ -29,6 +29,7 @@
     $effect(() => {
         const n = pendingPointCount;
         const timer = setTimeout(() => {
+            if (n === pointCount) return;
             lum = null;
             iterCount = 0;
             pointCount = n;
