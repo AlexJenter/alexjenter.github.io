@@ -7,9 +7,10 @@
 	interface Props {
 		setup?: SetupFn;
 		update?: UpdateFn;
+		label?: string;
 	}
 
-	let { setup, update }: Props = $props();
+	let { setup, update, label }: Props = $props();
 
 	let canvas = $state<HTMLCanvasElement | null>(null);
 	let pw = $state(0);
@@ -51,7 +52,7 @@
 	});
 </script>
 
-<canvas bind:this={canvas}></canvas>
+<canvas bind:this={canvas} role={label ? 'img' : undefined} aria-label={label}></canvas>
 
 <style>
 	canvas {

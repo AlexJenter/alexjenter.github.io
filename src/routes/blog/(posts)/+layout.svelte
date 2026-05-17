@@ -2,33 +2,52 @@
     import type { Snippet } from "svelte";
     import Date from "$lib/components/Date.svelte";
 
+    import type { Component } from "svelte";
+
+    const heroModules = import.meta.glob('/src/routes/blog/**/Hero.svelte');
+
     interface Props {
         children: Snippet;
-        data: { title?: string; date?: string; description?: string };
+        data: { title?: string; date?: string; description?: string; slug?: string; hasHero?: boolean };
     }
 
     let { children, data }: Props = $props();
+
+    let Hero = $state<Component | null>(null);
+
+    $effect(() => {
+        if (!data.hasHero) { Hero = null; return; }
+        const key = Object.keys(heroModules).find((k) => k.includes(`/${data.slug}/Hero.svelte`));
+        if (key) heroModules[key]().then((m: any) => { Hero = m.default; });
+    });
 </script>
 
 <article class="post">
+    {#if Hero}<Hero />{/if}
     <header>
         <h1>{data.title}</h1>
         <Date date={data.date} />
     </header>
-    <main>
+    <div class="post-body">
         {@render children()}
-    </main>
+    </div>
 </article>
 
 <style>
     header {
         margin-bottom: var(--space-12);
+        padding: 0 var(--space-8);
     }
 
     .post {
-        padding: var(--space-16) var(--space-8);
+        padding-top: var(--space-16);
+        padding-bottom: var(--space-16);
         max-width: var(--max-w-content);
         margin: 0 auto;
+    }
+
+    .post-body {
+        padding: 0 var(--space-8);
     }
 
     .post :global(h1) {

@@ -108,7 +108,7 @@
 {#if ar !== null}
     <div class="hero" style="--ar: {ar}">
         {#key `${pointCount}-${imageKey}`}
-            <Canvas {setup} {update} />
+            <Canvas {setup} {update} label="Weighted Voronoi stipple animation" />
         {/key}
     </div>
     <Pane position="draggable" title="Stipple">

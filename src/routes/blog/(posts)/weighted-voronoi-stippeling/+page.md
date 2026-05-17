@@ -6,14 +6,6 @@ cover: ./cover.svg
 description: The traditional artistic technique of stippling places small dots of ink onto paper such that their density give the impression of tone.
 ---
 
-<script>
-import Hero from "./Hero.svelte"
-</script>
-
-<Hero />
-
-
-
 ## Links
 
 - [Coding Challenge 181: Weighted Voronoi Stippling](https://www.youtube.com/watch?v=Bxdt6T_1qgc)
