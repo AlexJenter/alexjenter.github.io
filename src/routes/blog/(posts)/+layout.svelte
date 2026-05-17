@@ -4,11 +4,17 @@
 
     import type { Component } from "svelte";
 
-    const heroModules = import.meta.glob('/src/routes/blog/**/Hero.svelte');
+    const heroModules = import.meta.glob("/src/routes/blog/**/Hero.svelte");
 
     interface Props {
         children: Snippet;
-        data: { title?: string; date?: string; description?: string; slug?: string; hasHero?: boolean };
+        data: {
+            title?: string;
+            date?: string;
+            description?: string;
+            slug?: string;
+            hasHero?: boolean;
+        };
     }
 
     let { children, data }: Props = $props();
@@ -16,9 +22,17 @@
     let Hero = $state<Component | null>(null);
 
     $effect(() => {
-        if (!data.hasHero) { Hero = null; return; }
-        const key = Object.keys(heroModules).find((k) => k.includes(`/${data.slug}/Hero.svelte`));
-        if (key) heroModules[key]().then((m: any) => { Hero = m.default; });
+        if (!data.hasHero) {
+            Hero = null;
+            return;
+        }
+        const key = Object.keys(heroModules).find((k) =>
+            k.includes(`/${data.slug}/Hero.svelte`),
+        );
+        if (key)
+            heroModules[key]().then((m: any) => {
+                Hero = m.default;
+            });
     });
 </script>
 
@@ -95,11 +109,5 @@
     .post :global(img) {
         max-width: 100%;
         border-radius: var(--radius-md);
-    }
-
-    .post :global(blockquote) {
-        font-size: var(--text-xl);
-        padding-inline-start: 15px;
-        border-inline-start: 5px solid whitesmoke;
     }
 </style>
