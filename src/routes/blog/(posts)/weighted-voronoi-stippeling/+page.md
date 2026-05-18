@@ -1,7 +1,7 @@
 ---
 status: draft
 title: Weighted Voronoi Stippeling
-date: 2026-05-04
+date: "2026-05-04"
 cover: ./cover.svg
 description: The traditional artistic technique of stippling places small dots of ink onto paper such that their density give the impression of tone.
 ---

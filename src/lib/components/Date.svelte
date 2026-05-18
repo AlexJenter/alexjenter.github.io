@@ -3,7 +3,9 @@
 
     const formatted = $derived(
         date
-            ? new Date(date).toLocaleDateString("en-GB", {
+            ? new Date(
+                  date.includes("T") ? date : date + "T00:00:00",
+              ).toLocaleDateString("de-CH", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",

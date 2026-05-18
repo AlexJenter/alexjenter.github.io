@@ -38,11 +38,7 @@ export const load = () => {
         cover,
       };
     })
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .map((p) => ({
-      ...p,
-      date: new Date(p.date).toLocaleDateString(),
-    }));
+    .sort((a, b) => new Date(String(b.date)).getTime() - new Date(String(a.date)).getTime());
 
   return { posts };
 };
