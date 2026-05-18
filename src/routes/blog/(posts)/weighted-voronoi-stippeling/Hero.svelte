@@ -20,7 +20,7 @@
     let canvasW = 0;
     let canvasH = 0;
 
-    let dotRadius = $state(5);
+    let dotRadius = $state(2);
     let pendingPointCount = $state(5000);
     let pointCount = $state(5000);
     let uploadedImage = $state<string | undefined>(undefined);
@@ -108,7 +108,11 @@
 {#if ar !== null}
     <div class="hero" style="--ar: {ar}">
         {#key `${pointCount}-${imageKey}`}
-            <Canvas {setup} {update} label="Weighted Voronoi stipple animation" />
+            <Canvas
+                {setup}
+                {update}
+                label="Weighted Voronoi stipple animation"
+            />
         {/key}
     </div>
     <Pane position="draggable" title="Stipple">
@@ -139,5 +143,6 @@
         left: 50%;
         transform: translateX(-50%);
         margin-top: calc(-1 * var(--space-16));
+        margin-block-end: 7rem;
     }
 </style>
