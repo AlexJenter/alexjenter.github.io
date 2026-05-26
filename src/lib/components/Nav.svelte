@@ -9,7 +9,6 @@
 
 <nav aria-label="Site navigation">
     <a href="/" class="wordmark" aria-label="Home">A</a>
-    {$page.data.title}
     <ul>
         {#each links as { href, label }}
             <li>
@@ -32,9 +31,11 @@
         justify-content: space-between;
         padding: var(--space-4) var(--space-8);
         border-bottom: 1px solid var(--color-border);
-        position: sticky;
+        position: absolute;
+        width: 100%;
         top: 0;
-        background: var(--color-bg);
+        background: rgb(from var(--color-bg) r b g / 0.1);
+
         z-index: 10;
     }
 

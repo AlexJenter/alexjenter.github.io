@@ -36,8 +36,8 @@
     });
 </script>
 
+{#if Hero}<Hero />{/if}
 <article class="post">
-    {#if Hero}<Hero />{/if}
     <header>
         <h1>{data.title}</h1>
         <Date date={data.date} />

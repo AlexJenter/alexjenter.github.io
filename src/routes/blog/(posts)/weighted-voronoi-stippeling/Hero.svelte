@@ -8,7 +8,11 @@
         Slider,
     } from "svelte-tweakpane-ui";
     import { applyWeightedCentroid, downloadSVG } from "./utils";
+    import { usePaneFade } from "./usePaneFade.svelte";
     import imgSrc from "./img0.jpg";
+
+    const paneFadeZone = 200;
+    usePaneFade({ fadeZone: paneFadeZone, ready: () => ar !== null });
 
     const MAX_ITER = 10000;
 
@@ -105,44 +109,59 @@
     };
 </script>
 
-{#if ar !== null}
-    <div class="hero" style="--ar: {ar}">
-        {#key `${pointCount}-${imageKey}`}
-            <Canvas
-                {setup}
-                {update}
-                label="Weighted Voronoi stipple animation"
+<div class="hero">
+    {#if ar !== null}
+        <div class="inner" style="--ar: {ar}">
+            {#key `${pointCount}-${imageKey}`}
+                <Canvas
+                    {setup}
+                    {update}
+                    label="Weighted Voronoi stipple animation"
+                />
+            {/key}
+        </div>
+        <Pane position="draggable" title="Stipple">
+            <Slider
+                bind:value={dotRadius}
+                min={1}
+                max={20}
+                label="Dot radius"
             />
-        {/key}
-    </div>
-    <Pane position="draggable" title="Stipple">
-        <Slider bind:value={dotRadius} min={1} max={20} label="Dot radius" />
-        <Slider
-            bind:value={pendingPointCount}
-            min={100}
-            max={10000}
-            step={100}
-            label="Points"
-        />
-        <ImageControl bind:value={uploadedImage} fit="contain" label="Image" />
-        <Button
-            on:click={() => downloadSVG(pts, img!, canvasW, canvasH, dotRadius)}
-            title="Download SVG"
-            label=""
-        />
-    </Pane>
-{/if}
+            <Slider
+                bind:value={pendingPointCount}
+                min={100}
+                max={10000}
+                step={100}
+                label="Points"
+            />
+            <ImageControl
+                bind:value={uploadedImage}
+                fit="contain"
+                label="Image"
+            />
+            <Button
+                on:click={() =>
+                    downloadSVG(pts, img!, canvasW, canvasH, dotRadius)}
+                title="Download SVG"
+                label=""
+            />
+        </Pane>
+    {/if}
+</div>
 
 <style>
     .hero {
-        width: calc(100svh * var(--ar));
-        max-width: 100vw;
-        height: auto;
-        aspect-ratio: var(--ar);
-        position: relative;
-        left: 50%;
-        transform: translateX(-50%);
-        margin-top: calc(-1 * var(--space-16));
+        width: 100vw;
+        height: 100svh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         margin-block-end: 7rem;
+
+        > .inner {
+            aspect-ratio: var(--ar);
+            height: 100%;
+            width: calc(100svh * var(--ar));
+        }
     }
 </style>
