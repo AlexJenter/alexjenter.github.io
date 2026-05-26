@@ -53,7 +53,18 @@ export function downloadSVG(
     )
     .join("");
 
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${nw} ${nh}" width="${nw}" height="${nh}"><g fill="currentColor">${circles}</g></svg>`;
+  const fg = window
+    .getComputedStyle(document.body)
+    .getPropertyValue("--color-text");
+  const bg = window
+    .getComputedStyle(document.body)
+    .getPropertyValue("--color-bg");
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${nw} ${nh}" width="${nw}" height="${nh}">
+    <style>:root{--fg:${fg};--bg:${bg}}</style>
+    <rect width="100%" height="100%" fill="var(--bg)"/>
+    <g fill="var(--fg)">${circles}</g>
+  </svg>`;
 
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
