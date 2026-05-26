@@ -6,7 +6,16 @@ cover: ./cover.svg
 description: The traditional artistic technique of stippling places small dots of ink onto paper such that their density give the impression of tone.
 ---
 
+<script>
+import DiagramVoronoi from "./Diagram-Voronoi.svelte";
+</script>
+
 After watching Dan Shiffmans Youtube video on the topic i had to try it out for myself!
+
+## Lloyd's Relaxations
+
+<DiagramVoronoi/>
+
 Very much to my surprise the first try with ai was dropping frames, so i tried to it the way Dan Schiffman was.
 Using d3-Dlauney made all the difference.
 
