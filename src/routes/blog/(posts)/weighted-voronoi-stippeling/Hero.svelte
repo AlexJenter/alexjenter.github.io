@@ -9,6 +9,7 @@
     } from "svelte-tweakpane-ui";
     import { applyWeightedCentroid, downloadSVG } from "./utils";
     import { usePaneFade } from "./usePaneFade.svelte";
+
     import imgSrc from "./img0.jpg";
 
     const paneFadeZone = 200;
@@ -29,6 +30,7 @@
     let pointCount = $state(1000);
     let uploadedImage = $state<string | undefined>(undefined);
     let imageKey = $state(0);
+    let resetKey = $state(0);
 
     $effect(() => {
         const n = pendingPointCount;
@@ -37,6 +39,7 @@
             lum = null;
             iterCount = 0;
             pointCount = n;
+            resetKey++;
         }, 400);
         return () => clearTimeout(timer);
     });
@@ -61,6 +64,7 @@
         image.onload = () => {
             img = image;
             ar = image.naturalWidth / image.naturalHeight;
+            resetKey++;
         };
     });
 
@@ -112,7 +116,7 @@
 <div class="hero">
     {#if ar !== null}
         <div class="inner" style="--ar: {ar}">
-            {#key `${pointCount}-${imageKey}`}
+            {#key `${resetKey}`}
                 <Canvas
                     {setup}
                     {update}
@@ -145,6 +149,7 @@
                 title="Download SVG"
                 label=""
             />
+            <Button on:click={() => resetKey++} title="Reset" label="" />
         </Pane>
     {/if}
 </div>

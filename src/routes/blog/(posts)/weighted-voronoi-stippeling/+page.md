@@ -19,6 +19,9 @@ After watching Dan Shiffmans Youtube video on the topic i had to try it out for 
 Very much to my surprise the first try with ai was dropping frames, so i tried to it the way Dan Schiffman was.
 Using d3-Dlauney made all the difference.
 
+## paul burkes centroid algorythm
+<https://paulbourke.net/geometry/polygonmesh/#:~:text=Centroid,-The>
+
 
 ## Links
 
