@@ -24,9 +24,9 @@
     let canvasW = 0;
     let canvasH = 0;
 
-    let dotRadius = $state(2);
-    let pendingPointCount = $state(5000);
-    let pointCount = $state(5000);
+    let dotRadius = $state(10);
+    let pendingPointCount = $state(1000);
+    let pointCount = $state(1000);
     let uploadedImage = $state<string | undefined>(undefined);
     let imageKey = $state(0);
 

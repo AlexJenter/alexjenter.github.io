@@ -36,7 +36,9 @@
     });
 </script>
 
-{#if Hero}<Hero />{/if}
+{#if data.hasHero}
+    {#if Hero}<Hero />{:else}<div class="hero-placeholder"></div>{/if}
+{/if}
 <article class="post">
     <header>
         <h1>{data.title}</h1>
@@ -48,6 +50,12 @@
 </article>
 
 <style>
+    .hero-placeholder {
+        width: 100vw;
+        height: 100svh;
+        margin-block-end: 7rem;
+    }
+
     header {
         margin-bottom: var(--space-12);
         padding: 0 var(--space-8);
