@@ -36,14 +36,16 @@ Just one change to the loop above: instead of moving each point to the geometric
 For each pixel (or subsample):
 
 1. Find its containing cell
-2. Add its brightness weight to that cell's running total
+2. For each pixel of the cell
+    1. Take its weight (brightness)
+    2. Multiply pixel position by weight
+    3. Add that to a running total
+2. That sum is the weighted centroid
 3. Move the point to the weighted centroid
 
 Think of it as every pixel pulling the point toward itself with a force proportional to its weight — the weighted centroid is just where those forces reach equilibrium.
 
 <DiagramWeightedCentroid/>
-
-
 
 ## Links
 

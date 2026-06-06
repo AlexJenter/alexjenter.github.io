@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onDestroy } from "svelte";
+    import { polygonCentroid } from "d3";
 
     const W = 480;
     const H = 320;
@@ -24,7 +25,7 @@
 
     const BLOB_X = 155;
     const BLOB_Y = 110;
-    const GENERATOR_START: Pt = [330, 228];
+    const GENERATOR_START: Pt = polygonCentroid(CELL);
 
     function imgLum(x: number, y: number): number {
         const d2 = (x - BLOB_X) ** 2 + (y - BLOB_Y) ** 2;
@@ -198,8 +199,7 @@
                 >
                     <path
                         d="M0,0.5 L4.5,2.5 L0,4.5 Z"
-                        fill="var(--color-accent-warm)"
-                        opacity="0.8"
+                        fill="var(--color-text-muted)"
                     />
                 </marker>
             </defs>
@@ -214,10 +214,47 @@
                 fill="url(#wc2-blob)"
                 clip-path="url(#wc2-clip)"
             />
-            <polygon points={CELL_POINTS} class="cell-edge" />
+
+            <!-- Pull lines: every revealed sample → current centroid -->
+            {#if phase === "counting" && centroid}
+                {#each SAMPLES.slice(0, currentIdx) as { x, y, w }}
+                    {@const t = w / MAX_W}
+                    {@const dx = centroid[0] - x}
+                    {@const dy = centroid[1] - y}
+                    {@const dist = Math.hypot(dx, dy)}
+                    {#if dist > 10}
+                        {@const ux = dx / dist}
+                        {@const uy = dy / dist}
+                        <line
+                            x1={x}
+                            y1={y}
+                            x2={centroid[0] - ux * 8}
+                            y2={centroid[1] - uy * 8}
+                            stroke="var(--color-text-muted)"
+                            stroke-width={0.3 + t * 1.2}
+                            opacity="1"
+                            marker-end="url(#wc2-arr)"
+                        />
+                    {/if}
+                {/each}
+            {/if}
 
             <!-- Revealed pixel samples, sized by weight -->
             <g transform="translate(-15, -15)">
+                {#each SAMPLES.slice(currentIdx, N) as { x, y, w }, i}
+                    {@const t = w / MAX_W}
+                    {@const isLatest = i === currentIdx - 1}
+                    <rect
+                        {x}
+                        {y}
+                        width="30"
+                        height="30"
+                        stroke="#666666"
+                        stroke-width="1"
+                        fill="transparent"
+                        opacity={isLatest ? 1 : 0.7}
+                    />
+                {/each}
                 {#each SAMPLES.slice(0, currentIdx) as { x, y, w }, i}
                     {@const t = w / MAX_W}
                     {@const isLatest = i === currentIdx - 1}
@@ -226,28 +263,15 @@
                         {y}
                         width="30"
                         height="30"
-                        stroke="white"
+                        stroke={i > currentIdx ? "#666666" : "#ffffff"}
                         stroke-width={isLatest ? 2 : 1}
                         fill={isLatest
                             ? "var(--color-accent-warm)"
-                            : "var(--color-text)"}
-                        opacity={isLatest ? 1 : 0.15 + t * 0.7}
+                            : `rgb(from var(--color-text) r g b / ${t})`}
+                        opacity={isLatest ? 1 : 0.7}
                     />
                 {/each}
             </g>
-
-            <!-- Pull line: latest sample → current centroid -->
-            {#if phase === "counting" && currentIdx > 0 && centroid}
-                {@const latest = SAMPLES[currentIdx - 1]}
-                <line
-                    x1={latest.x}
-                    y1={latest.y}
-                    x2={centroid[0]}
-                    y2={centroid[1]}
-                    class="pull-line"
-                    marker-end="url(#wc2-arr)"
-                />
-            {/if}
 
             <!-- Running weighted centroid (×) -->
             {#if centroid}
@@ -266,6 +290,7 @@
                 class="seed"
                 class:animate
             />
+            <polygon points={CELL_POINTS} class="cell-edge" />
         </svg>
 
         <div class="badge" class:badge--done={phase === "paused"}>
@@ -390,13 +415,6 @@
         fill: none;
         stroke: var(--color-text);
         stroke-width: 1;
-    }
-
-    .pull-line {
-        stroke: var(--color-accent-warm);
-        stroke-width: 1;
-        stroke-dasharray: 3 2;
-        opacity: 0.7;
     }
 
     .centroid-mark line {
