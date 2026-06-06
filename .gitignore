@@ -1,4 +1,5 @@
 node_modules
+codebook.toml
 
 # Output
 .output

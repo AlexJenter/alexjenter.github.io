@@ -2,10 +2,11 @@
     import { onDestroy } from "svelte";
     // @ts-ignore
     import { Delaunay } from "d3-delaunay";
+    import { polygonCentroid } from "d3";
 
     const W = 480;
-    const H = 340;
-    const N = 100;
+    const H = 320;
+    const N = 21;
     const PAD = 20;
 
     type Pt = [number, number];
@@ -21,27 +22,14 @@
         );
     }
 
-    function polyCentroid(poly: Pt[]): Pt {
-        let A = 0,
-            cx = 0,
-            cy = 0;
-        for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-            const c = poly[j][0] * poly[i][1] - poly[i][0] * poly[j][1];
-            A += c;
-            cx += (poly[j][0] + poly[i][0]) * c;
-            cy += (poly[j][1] + poly[i][1]) * c;
-        }
-        A /= 2;
-        return [cx / (6 * A), cy / (6 * A)];
-    }
-
     function buildCells(pts: Pt[]) {
         const del = Delaunay.from(pts);
         const vor = del.voronoi([0, 0, W, H]);
         return pts.map((_, i) => {
             const poly = vor.cellPolygon(i) as Pt[] | null;
             if (!poly) return { points: "", cx: pts[i][0], cy: pts[i][1] };
-            const [cx, cy] = polyCentroid(poly);
+            const [cx, cy] = polygonCentroid(poly);
+
             return {
                 points: poly
                     .map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`)
@@ -57,7 +45,7 @@
         const vor = del.voronoi([0, 0, W, H]);
         return pts.map((s, i) => {
             const poly = vor.cellPolygon(i) as Pt[] | null;
-            return poly ? polyCentroid(poly) : s;
+            return poly ? polygonCentroid(poly) : s;
         });
     }
 
