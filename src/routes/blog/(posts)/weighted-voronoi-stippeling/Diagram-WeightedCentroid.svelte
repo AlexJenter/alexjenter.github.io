@@ -217,19 +217,24 @@
             <polygon points={CELL_POINTS} class="cell-edge" />
 
             <!-- Revealed pixel samples, sized by weight -->
-            {#each SAMPLES.slice(0, currentIdx) as { x, y, w }, i}
-                {@const t = w / MAX_W}
-                {@const isLatest = i === currentIdx - 1}
-                <circle
-                    cx={x}
-                    cy={y}
-                    r={isLatest ? 2 + t * 5 : 1 + t * 4}
-                    fill={isLatest
-                        ? "var(--color-accent-warm)"
-                        : "var(--color-text)"}
-                    opacity={isLatest ? 1 : 0.15 + t * 0.7}
-                />
-            {/each}
+            <g transform="translate(-15, -15)">
+                {#each SAMPLES.slice(0, currentIdx) as { x, y, w }, i}
+                    {@const t = w / MAX_W}
+                    {@const isLatest = i === currentIdx - 1}
+                    <rect
+                        {x}
+                        {y}
+                        width="30"
+                        height="30"
+                        stroke="white"
+                        stroke-width={isLatest ? 2 : 1}
+                        fill={isLatest
+                            ? "var(--color-accent-warm)"
+                            : "var(--color-text)"}
+                        opacity={isLatest ? 1 : 0.15 + t * 0.7}
+                    />
+                {/each}
+            </g>
 
             <!-- Pull line: latest sample → current centroid -->
             {#if phase === "counting" && currentIdx > 0 && centroid}
