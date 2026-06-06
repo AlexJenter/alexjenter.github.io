@@ -10,8 +10,7 @@ description: The traditional artistic technique of stippling places small dots o
 import DiagramVoronoi from "./Diagram-Voronoi.svelte";
 </script>
 
-After watching Dan Shiffman's YouTube video on the topic I had to try it out for myself.
-Somehow the way he presents a topic really clicks with my thinking.
+After watching Dan Shiffman's YouTube video on the topic, I had to try it for myself.
 
 
 ## Lloyd's Relaxations
@@ -21,31 +20,23 @@ The goal of Lloyd's Relaxation is to spread a point set so that all points even 
 Each iteration goes something like this:
 
 1. Generate N random points
-2. Calculate the Voronoi Diagram of your points
-3. Find the centroid of each cell
-4. Move the corresponding point to that centroid
+2. Calculate the Voronoi diagram of those points
+3. Find the centroid of each cell (d3's `polygonCentroid` works well here)
+4. Move each point to its cell's centroid
 
 Maybe just me, but I find it highly satisfying when it converges.
 
 <DiagramVoronoi/>
 
-
-### Finding the Centroids
-
-Dan Shiffman uses the centroid algorithm described [here](https://paulbourke.net/geometry/polygonmesh/#:~:text=Centroid,-The) by Paul Bourke, but I found that d3 also provides a polygonCentroid function.
-
 ## Weighted Relaxations
 
-This is the main difference to Lloyd's Relaxation and basically the last step.
-
-Instead of finding the centroids themselves now we are trying to find a centroid that is slightly leaning towards the lighter pixels.
-Or darker, depending on the look you're going for.
+Just one change to the loop above: instead of moving each point to the geometric centroid of its cell, move it to the *weighted* centroid — pulled toward the darker pixels so dots cluster where the image is darkest.
 
 For each pixel (or subsample):
 
-1. Find containing cell
-2. sum up all the pixels per cell according to their weights
-3. move the point to that weighted centroid
+1. Find its containing cell
+2. Add its brightness weight to that cell's running total
+3. Move the point to the weighted centroid
 
 
 
