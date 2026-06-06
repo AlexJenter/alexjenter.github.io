@@ -1,23 +1,23 @@
 ---
 status: draft
-title: Weighted Voronoi Stippeling
+title: Weighted Voronoi Stippling
 date: "2026-05-04"
 cover: ./cover.svg
-description: The traditional artistic technique of stippling places small dots of ink onto paper such that their density give the impression of tone.
+description: The traditional artistic technique of stippling places small dots of ink onto paper such that their density gives the impression of tone.
 ---
 
 <script>
 import DiagramVoronoi from "./Diagram-Voronoi.svelte";
 </script>
 
-After watching Dan Shiffmans YouTube video on the topic i had to try it out for myself.
+After watching Dan Shiffman's YouTube video on the topic I had to try it out for myself.
 Somehow the way he presents a topic really clicks with my thinking.
 
 
 ## Lloyd's Relaxations
 
-The algorithm builds on Lloyd's Relaxations, witch use properties voronoi diagrams in a clever way.
-The goal of lloyd's relaxation is to relax a point set so that all points to average out there distance to there direct neighbours.
+The algorithm builds on Lloyd's Relaxation, which uses properties of Voronoi diagrams in a clever way.
+The goal of Lloyd's Relaxation is to spread a point set so that all points even out their distance to their direct neighbours.
 Each iteration goes something like this:
 
 1. Generate N random points
@@ -25,27 +25,27 @@ Each iteration goes something like this:
 3. Find the centroid of each cell
 4. Move the corresponding point to that centroid
 
-maybe just me, but i find it highly satisfying when it converges.
+Maybe just me, but I find it highly satisfying when it converges.
 
 <DiagramVoronoi/>
 
 
 ### Finding the Centroids
 
-Dan Shiffman uses the centroid algorithm described [here](https://paulbourke.net/geometry/polygonmesh/#:~:text=Centroid,-The) by Paul Bourke, but i found that d3 also provides a polygonCentroid function
+Dan Shiffman uses the centroid algorithm described [here](https://paulbourke.net/geometry/polygonmesh/#:~:text=Centroid,-The) by Paul Bourke, but I found that d3 also provides a polygonCentroid function.
 
 ## Weighted Relaxations
 
-This step is already the main difference to Lloiy's relaxations and basically the last step.
+This is the main difference to Lloyd's Relaxation and basically the last step.
 
 Instead of finding the centroids themselves now we are trying to find a centroid that is slightly leaning towards the lighter pixels.
-Or darker, depending on the look your going for.
+Or darker, depending on the look you're going for.
 
 For each pixel (or subsample):
 
 1. Find containing cell
 2. sum up all the pixels per cell according to their weights
-3. move the point to that wheighted centroid
+3. move the point to that weighted centroid
 
 
 
