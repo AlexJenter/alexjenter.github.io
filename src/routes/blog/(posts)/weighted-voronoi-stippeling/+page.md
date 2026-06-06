@@ -8,6 +8,7 @@ description: The traditional artistic technique of stippling places small dots o
 
 <script>
 import DiagramVoronoi from "./Diagram-Voronoi.svelte";
+import DiagramWeightedCentroid from "./Diagram-WeightedCentroid.svelte";
 </script>
 
 After watching Dan Shiffman's YouTube video on the topic, I had to try it for myself.
@@ -37,6 +38,10 @@ For each pixel (or subsample):
 1. Find its containing cell
 2. Add its brightness weight to that cell's running total
 3. Move the point to the weighted centroid
+
+Think of it as every pixel pulling the point toward itself with a force proportional to its weight — the weighted centroid is just where those forces reach equilibrium.
+
+<DiagramWeightedCentroid/>
 
 
 
