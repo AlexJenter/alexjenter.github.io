@@ -6,6 +6,7 @@ export function applyWeightedCentroid(
   lum: Uint8ClampedArray,
   w: number,
   h: number,
+  invert = false,
 ): void {
   const n = pts.length;
   const sumX = new Float32Array(n);
@@ -16,8 +17,9 @@ export function applyWeightedCentroid(
   let nearest = 0;
   for (let y = 0; y < h; y += 2) {
     for (let x = 0; x < w; x += 2) {
-      const weight = lum[y * w + x];
-      if (weight === 0) continue;
+      const raw = invert ? 255 - lum[y * w + x] : lum[y * w + x];
+      if (raw === 0) continue;
+      const weight = (raw * raw) / 255;
       nearest = delaunay.find(x, y, nearest);
       sumX[nearest] += x * weight;
       sumY[nearest] += y * weight;

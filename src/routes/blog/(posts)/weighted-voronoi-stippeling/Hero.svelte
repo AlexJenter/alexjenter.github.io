@@ -25,6 +25,7 @@
     let canvasW = 0;
     let canvasH = 0;
 
+    let isDark = $state(false);
     let dotRadius = $state(10);
     let pendingPointCount = $state(1000);
     let pointCount = $state(1000);
@@ -59,6 +60,16 @@
     });
 
     onMount(() => {
+        const mq = window.matchMedia("(prefers-color-scheme: dark)");
+        isDark = mq.matches;
+        const onSchemeChange = (e: MediaQueryListEvent) => {
+            isDark = e.matches;
+            lum = null;
+            iterCount = 0;
+            resetKey++;
+        };
+        mq.addEventListener("change", onSchemeChange);
+
         const image = new Image();
         image.src = imgSrc;
         image.onload = () => {
@@ -66,6 +77,8 @@
             ar = image.naturalWidth / image.naturalHeight;
             resetKey++;
         };
+
+        return () => mq.removeEventListener("change", onSchemeChange);
     });
 
     const setup = (_ctx: CanvasRenderingContext2D, w: number, h: number) => {
@@ -93,7 +106,7 @@
         if (!lum) return;
 
         if (iterCount < MAX_ITER) {
-            applyWeightedCentroid(pts, lum!, w, h);
+            applyWeightedCentroid(pts, lum!, w, h, !isDark);
             iterCount++;
         }
 
