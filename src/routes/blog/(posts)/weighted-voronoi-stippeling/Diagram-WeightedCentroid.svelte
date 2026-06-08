@@ -27,6 +27,10 @@
     const BLOB_Y = 110;
     const GENERATOR_START: Pt = polygonCentroid(CELL);
 
+    const CELL_NEIGHBOR_BORDERS = CELL.map(([x, y]) => [x, y])
+        .map(([x, y]) => `M${x},${y} ${2 * (x - 120)},${2 * (y - 80)}`)
+        .join(" ");
+
     function imgLum(x: number, y: number): number {
         const d2 = (x - BLOB_X) ** 2 + (y - BLOB_Y) ** 2;
         return Math.max(0, Math.min(255, 220 - 185 * Math.exp(-d2 / 7000)));
@@ -105,7 +109,6 @@
         generatorPos = [...FINAL_CENTROID];
         timerId = setTimeout(() => {
             phase = "paused";
-            timerId = setTimeout(autoRestart, 1500);
         }, 600);
     }
 
@@ -116,15 +119,6 @@
         } else if (playing) {
             timerId = setTimeout(advanceOne, STEP_MS);
         }
-    }
-
-    function autoRestart() {
-        animate = false;
-        generatorPos = [...GENERATOR_START];
-        currentIdx = 0;
-        phase = "counting";
-        playing = true;
-        timerId = setTimeout(advanceOne, 400);
     }
 
     function togglePlay() {
@@ -208,6 +202,11 @@
 
             <!-- Cell filled with synthetic image -->
             <polygon points={CELL_POINTS} class="cell-bg" />
+            <path
+                d={CELL_NEIGHBOR_BORDERS}
+                stroke="var(--color-text-muted)"
+                opacity="0.25"
+            />
             <rect
                 width={W}
                 height={H}
@@ -249,7 +248,7 @@
                         {y}
                         width="30"
                         height="30"
-                        stroke="#666666"
+                        stroke="hsl(from var(--color-text-muted) 0 0 calc(1.9 * l)"
                         stroke-width="1"
                         fill="transparent"
                         opacity={isLatest ? 1 : 0.7}
@@ -258,12 +257,13 @@
                 {#each SAMPLES.slice(0, currentIdx) as { x, y, w }, i}
                     {@const t = w / MAX_W}
                     {@const isLatest = i === currentIdx - 1}
+                    <!-- stroke={i > currentIdx ? "#666666" : "#ffffff"} -->
                     <rect
                         {x}
                         {y}
                         width="30"
                         height="30"
-                        stroke={i > currentIdx ? "#666666" : "#ffffff"}
+                        stroke="hsl(from var(--color-text-muted) 0 0 calc(.9 * l)"
                         stroke-width={isLatest ? 2 : 1}
                         fill={isLatest
                             ? "var(--color-accent-warm)"
