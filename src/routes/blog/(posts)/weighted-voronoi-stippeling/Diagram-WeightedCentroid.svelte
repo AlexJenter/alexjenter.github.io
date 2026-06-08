@@ -4,8 +4,8 @@
 
     const W = 480;
     const H = 320;
-    const STRIDE = 30;
-    const STEP_MS = 55;
+    const STRIDE = 55;
+    const STEP_MS = 110;
     const BATCH = 5;
 
     type Pt = [number, number];
@@ -202,11 +202,7 @@
 
             <!-- Cell filled with synthetic image -->
             <polygon points={CELL_POINTS} class="cell-bg" />
-            <path
-                d={CELL_NEIGHBOR_BORDERS}
-                stroke="var(--color-text-muted)"
-                opacity="0.25"
-            />
+            <path d={CELL_NEIGHBOR_BORDERS} stroke="var(--color-text)" />
             <rect
                 width={W}
                 height={H}
@@ -246,9 +242,9 @@
                     <rect
                         {x}
                         {y}
-                        width="30"
-                        height="30"
-                        stroke="hsl(from var(--color-text-muted) 0 0 calc(1.9 * l)"
+                        width={STRIDE}
+                        height={STRIDE}
+                        stroke="var(--color-text-muted)"
                         stroke-width="1"
                         fill="transparent"
                         opacity={isLatest ? 1 : 0.7}
@@ -261,9 +257,9 @@
                     <rect
                         {x}
                         {y}
-                        width="30"
-                        height="30"
-                        stroke="hsl(from var(--color-text-muted) 0 0 calc(.9 * l)"
+                        width={STRIDE}
+                        height={STRIDE}
+                        stroke="var(--color-text)"
                         stroke-width={isLatest ? 2 : 1}
                         fill={isLatest
                             ? "var(--color-accent-warm)"
