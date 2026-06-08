@@ -11,13 +11,13 @@ import DiagramVoronoi from "./Diagram-Voronoi.svelte";
 import DiagramWeightedCentroid from "./Diagram-WeightedCentroid.svelte";
 </script>
 
-After watching Dan Shiffman's YouTube video [^1] on the paper[^2], I had to try it for myself.Hero image by Alexander Krivitskiy via Unsplash
+After watching Dan Shiffman's YouTube video [^1] on the paper[^2], I had to try it for myself.
 
 
 ## Lloyd's Relaxations
 
-The algorithm builds on Lloyd's Relaxation, which uses properties of Voronoi diagrams in a clever way.
-The goal of Lloyd's Relaxation is to spread a point set so that all points even out their distance to their direct neighbours.
+The algorithm builds on Lloyd's Relaxations, which uses properties of Voronoi diagrams in a clever way.
+The goal of Lloyd's Relaxations is to spread a point set so that all points even out their distance to their direct neighbours.
 Each iteration goes something like this:
 
 1. Generate N random points
@@ -40,14 +40,14 @@ For each pixel (or subsample):
     1. Take its weight (brightness)
     2. Multiply pixel position by weight
     3. Add that to a running total
-2. That sum is the weighted centroid
-3. Move the point to the weighted centroid
+3. That sum is the weighted centroid
+4. Move the point to the weighted centroid
 
 Think of it as every pixel pulling the point toward itself with a force proportional to its weight — the weighted centroid is just where those forces reach equilibrium.
 
 <DiagramWeightedCentroid/>
 
-My implementation is not without its flaws. The effect works best on edges. Areas of uniform value often lack uniform distribution with clusters forming randomly. Probably unavoidable to tweak those weights or add some brightness curves to the tweakpanel
+My implementation is not without its flaws. The effect works best on edges. Areas of uniform value often lack uniform distribution with clusters forming randomly. It's probably unavoidable to tweak those weights or add some brightness curves via the Tweakpane panel.
 
 
 Hero: Based on Photo by <a href="https://unsplash.com/@krivitskiy" target="_blank" rel="noopener noreferrer">Alexander Krivitskiy</a> on <a href="https://unsplash.com/photos/grayscale-photo-of-womans-face-o7wiNx9x9OQ" target="_blank" rel="noopener noreferrer">Unsplash</a>
