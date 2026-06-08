@@ -1,6 +1,14 @@
 // @ts-ignore
 import { Delaunay } from "d3-delaunay";
 
+// Density floor: keeps Lloyd relaxation alive in flat zero-tone regions.
+// Per Secord §2.1, a *uniform* density still reduces the weighted centroid
+// to the plain geometric centroid — but only if density is non-zero. Without
+// a floor, a Voronoi cell sampling only raw=0 pixels (e.g. flat white
+// background) ends up with sumW===0 and its point freezes in place instead
+// of relaxing into an even spacing.
+const MIN_WEIGHT = 1;
+
 export function applyWeightedCentroid(
   pts: [number, number][],
   lum: Uint8ClampedArray,
@@ -18,8 +26,7 @@ export function applyWeightedCentroid(
   for (let y = 0; y < h; y += 2) {
     for (let x = 0; x < w; x += 2) {
       const raw = invert ? 255 - lum[y * w + x] : lum[y * w + x];
-      if (raw === 0) continue;
-      const weight = (raw * raw) / 255;
+      const weight = Math.max((raw * raw) / 255, MIN_WEIGHT);
       nearest = delaunay.find(x, y, nearest);
       sumX[nearest] += x * weight;
       sumY[nearest] += y * weight;
