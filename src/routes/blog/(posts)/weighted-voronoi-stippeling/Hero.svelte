@@ -30,7 +30,6 @@
     let pendingPointCount = $state(1000);
     let pointCount = $state(1000);
     let uploadedImage = $state<string | undefined>(undefined);
-    let imageKey = $state(0);
     let resetKey = $state(0);
 
     $effect(() => {
@@ -55,7 +54,7 @@
             iterCount = 0;
             img = image;
             ar = image.naturalWidth / image.naturalHeight;
-            imageKey++;
+            resetKey++;
         };
     });
 

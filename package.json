@@ -34,6 +34,7 @@
 		"d3-delaunay": "^6.0.4",
 		"katex": "^0.16.45",
 		"rehype-katex": "^4.0.0",
+		"remark-footnotes": "^2.0.0",
 		"remark-math": "^3.0.1",
 		"svelte-tweakpane-ui": "^1.5.16"
 	}

@@ -11,7 +11,7 @@ import DiagramVoronoi from "./Diagram-Voronoi.svelte";
 import DiagramWeightedCentroid from "./Diagram-WeightedCentroid.svelte";
 </script>
 
-After watching Dan Shiffman's YouTube video on the topic, I had to try it for myself.
+After watching Dan Shiffman's YouTube video [^1] on the paper[^2], I had to try it for myself.
 
 
 ## Lloyd's Relaxations
@@ -50,4 +50,7 @@ Think of it as every pixel pulling the point toward itself with a force proporti
 ## Links
 
 - [Coding Challenge 181: Weighted Voronoi Stippling](https://www.youtube.com/watch?v=Bxdt6T_1qgc)
-- <https://www.cs.ubc.ca/labs/imager/tr/pdf/secord.2002b.pdf>
+
+
+[^1]: [Coding Challenge 181: Weighted Voronoi Stippling](https://www.youtube.com/watch?v=Bxdt6T_1qgc)
+[^2]: https://www.cs.ubc.ca/labs/imager/tr/pdf/secord.2002b.pdf
