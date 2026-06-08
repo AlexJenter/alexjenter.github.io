@@ -177,8 +177,8 @@
 
         > .inner {
             aspect-ratio: var(--ar);
-            height: 100%;
-            width: calc(100svh * var(--ar));
+            width: min(100vw, 100svh * var(--ar));
+            height: min(100svh, 100vw / var(--ar));
         }
     }
 </style>

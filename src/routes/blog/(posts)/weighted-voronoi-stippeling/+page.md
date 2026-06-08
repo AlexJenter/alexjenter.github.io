@@ -11,7 +11,7 @@ import DiagramVoronoi from "./Diagram-Voronoi.svelte";
 import DiagramWeightedCentroid from "./Diagram-WeightedCentroid.svelte";
 </script>
 
-After watching Dan Shiffman's YouTube video [^1] on the paper[^2], I had to try it for myself.
+After watching Dan Shiffman's YouTube video [^1] on the paper[^2], I had to try it for myself.Hero image by Alexander Krivitskiy via Unsplash
 
 
 ## Lloyd's Relaxations
@@ -47,10 +47,11 @@ Think of it as every pixel pulling the point toward itself with a force proporti
 
 <DiagramWeightedCentroid/>
 
-## Links
-
-- [Coding Challenge 181: Weighted Voronoi Stippling](https://www.youtube.com/watch?v=Bxdt6T_1qgc)
+My implementation is not without its flaws. The effect works best on edges. Areas of uniform value often lack uniform distribution with clusters forming randomly. Probably unavoidable to tweak those weights or add some brightness curves to the tweakpanel
 
 
+Hero: Based on Photo by <a href="https://unsplash.com/@krivitskiy" target="_blank" rel="noopener noreferrer">Alexander Krivitskiy</a> on <a href="https://unsplash.com/photos/grayscale-photo-of-womans-face-o7wiNx9x9OQ" target="_blank" rel="noopener noreferrer">Unsplash</a>
+      
+ 
 [^1]: [Coding Challenge 181: Weighted Voronoi Stippling](https://www.youtube.com/watch?v=Bxdt6T_1qgc)
 [^2]: https://www.cs.ubc.ca/labs/imager/tr/pdf/secord.2002b.pdf
