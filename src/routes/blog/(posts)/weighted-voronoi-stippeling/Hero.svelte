@@ -15,7 +15,7 @@
     const paneFadeZone = 200;
     usePaneFade({ fadeZone: paneFadeZone, ready: () => ar !== null });
 
-    const MAX_ITER = 10000;
+    const MAX_ITER = 20000;
 
     let pts: [number, number][] = [];
     let lum: Uint8ClampedArray | null = null;
@@ -83,10 +83,13 @@
     const setup = (_ctx: CanvasRenderingContext2D, w: number, h: number) => {
         canvasW = w;
         canvasH = h;
-        pts = Array.from(
-            { length: pointCount },
-            () => [Math.random() * w, Math.random() * h] as [number, number],
-        );
+        if (pts.length !== pointCount) {
+            pts = Array.from(
+                { length: pointCount },
+                () =>
+                    [Math.random() * w, Math.random() * h] as [number, number],
+            );
+        }
         iterCount = 0;
 
         const offscreen = new OffscreenCanvas(w, h);
@@ -146,7 +149,7 @@
             <Slider
                 bind:value={pendingPointCount}
                 min={100}
-                max={10000}
+                max={20000}
                 step={100}
                 label="Points"
             />
@@ -161,7 +164,14 @@
                 title="Download SVG"
                 label=""
             />
-            <Button on:click={() => resetKey++} title="Reset" label="" />
+            <Button
+                on:click={() => {
+                    pts = [];
+                    resetKey++;
+                }}
+                title="Reset"
+                label=""
+            />
         </Pane>
     {/if}
 </div>
