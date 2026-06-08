@@ -1,5 +1,5 @@
 ---
-status: published
+status: public
 title: Weighted Voronoi Stippling
 date: "2026-05-04"
 cover: ./cover.svg

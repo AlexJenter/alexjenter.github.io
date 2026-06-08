@@ -1,6 +1,6 @@
 ---
 title: Its just for Loops
-status: published
+status: public
 date: "2024-04-01"
 cover: ./cover.svg
 description: Carving away that ivory tower thanks to Freya Holmer

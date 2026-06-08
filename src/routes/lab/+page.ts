@@ -21,7 +21,7 @@ export const load = () => {
   const posts = Object.entries(modules)
     .filter(
       ([, mod]: [string, any]) =>
-        (mod.metadata as PostFrontmatter).status === "published",
+        (mod.metadata as PostFrontmatter).status === "public",
     )
     .map(([path, mod]: [string, any]) => {
       const meta = mod.metadata as PostFrontmatter;
