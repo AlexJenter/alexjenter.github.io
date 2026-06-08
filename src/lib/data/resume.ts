@@ -191,6 +191,6 @@ export const languages =
   "Fluent in English and German, conversational in French";
 
 export const skills: Record<string, string[]> = {
-  Code: ["HTML/CSS", "Javascript", "Twig", "PHP", "Bash", "Python"],
-  Design: ["Adobe CC", "Sketch"],
+  Code: ["HTML/CSS", "JavaScript", "React", "Vue/Nuxt", "PHP"],
+  Design: ["Blender", "Three.js", "HTML Canvas"],
 };

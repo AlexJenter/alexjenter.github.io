@@ -67,4 +67,10 @@
     a.active {
         font-weight: 500;
     }
+
+    @media print {
+        nav {
+            display: none;
+        }
+    }
 </style>

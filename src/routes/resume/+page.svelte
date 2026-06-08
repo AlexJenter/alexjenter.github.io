@@ -37,7 +37,7 @@
         </ol>
     </section>
 
-    <section>
+    <section id="education">
         <h2>Education</h2>
         <ol class="entries">
             {#each education as entry}
@@ -181,18 +181,57 @@
     }
 
     /* Print */
+    @page {
+        size: A4 portrait;
+        margin: 20mm 25mm;
+    }
+
     @media print {
+        :global(html) {
+            font-size: 10pt;
+        }
+
+        :global(:root) {
+            --color-bg: white;
+            --color-surface: white;
+            --color-border: #ccc;
+            --color-text: black;
+            --color-text-muted: #444;
+        }
+
         .resume {
             padding: 0;
+            max-width: none;
             gap: var(--space-8);
+            background-color: transparent;
         }
 
         h2 {
+            font-size: 8pt;
             margin-bottom: var(--space-4);
+            break-after: avoid;
         }
 
         .entries {
             gap: var(--space-6);
+        }
+
+        .entry {
+            break-inside: avoid;
+        }
+
+        a[href]::after {
+            content: " (" attr(href) ")";
+            font-size: 0.75em;
+            color: #666;
+        }
+
+        #education {
+            break-before: page;
+        }
+
+        .two-col {
+            grid-template-columns: 1fr;
         }
     }
 </style>
