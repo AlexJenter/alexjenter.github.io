@@ -3,6 +3,7 @@ title: Hello Canvas
 date: "2026-05-04"
 cover: ./cover.svg
 description: test Canvas component
+status: draft
 ---
 
 <script>

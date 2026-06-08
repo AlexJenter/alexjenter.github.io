@@ -1,18 +1,19 @@
-import type { PostFrontmatter } from '$lib';
+import type { PostFrontmatter } from "$lib";
 
 export const load = () => {
-  const modules = import.meta.glob("/src/routes/blog/**/+page.md", {
+  const modules = import.meta.glob("/src/routes/lab/**/+page.md", {
     eager: true,
   });
+
   const images = import.meta.glob(
-    "/src/routes/blog/**/*.{jpg,jpeg,png,webp,avif}",
+    "/src/routes/lab/**/*.{jpg,jpeg,png,webp,avif}",
     {
       eager: true,
       query: { enhanced: true },
       import: "default",
     },
   ) as Record<string, any>;
-  const svgs = import.meta.glob("/src/routes/blog/**/*.svg", {
+  const svgs = import.meta.glob("/src/routes/lab/**/*.svg", {
     eager: true,
     import: "default",
   }) as Record<string, string>;
@@ -38,7 +39,11 @@ export const load = () => {
         cover,
       };
     })
-    .sort((a, b) => new Date(String(b.date)).getTime() - new Date(String(a.date)).getTime());
+
+    .sort(
+      (a, b) =>
+        new Date(String(b.date)).getTime() - new Date(String(a.date)).getTime(),
+    );
 
   return { posts };
 };

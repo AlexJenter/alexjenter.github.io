@@ -5,6 +5,7 @@ date: "2021-09-30"
 cover: ./cover.svg
 description: Carving away that ivory tower thanks to Freya Holmer
 tags: til, math
+status: draft
 ---
 
 <script>

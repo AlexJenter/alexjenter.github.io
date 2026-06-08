@@ -4,7 +4,7 @@
 </script>
 
 <section class="page">
-    <h1>Blog</h1>
+    <h1>Lab</h1>
 
     {#if data.posts.length === 0}
         <p class="empty">No posts yet.</p>
@@ -12,7 +12,7 @@
         <ol class="post-list">
             {#each data.posts as post}
                 <li>
-                    <a href="/blog/{post.slug}" class="post-link">
+                    <a href="/lab/{post.slug}" class="post-link">
                         {#if post.cover}
                             {#if post.cover.svg}
                                 <img
