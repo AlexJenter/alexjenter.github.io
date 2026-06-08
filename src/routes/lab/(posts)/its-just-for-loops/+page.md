@@ -1,7 +1,7 @@
 ---
 title: Its just for Loops
 status: published
-date: "2021-09-30"
+date: "2024-04-01"
 cover: ./cover.svg
 description: Carving away that ivory tower thanks to Freya Holmer
 tags: til, math
