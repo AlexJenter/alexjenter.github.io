@@ -19,6 +19,10 @@ export const load = () => {
   }) as Record<string, string>;
 
   const posts = Object.entries(modules)
+    .filter(
+      ([, mod]: [string, any]) =>
+        (mod.metadata as PostFrontmatter).status === "published",
+    )
     .map(([path, mod]: [string, any]) => {
       const meta = mod.metadata as PostFrontmatter;
       const postDir = path.replace("/+page.md", "");

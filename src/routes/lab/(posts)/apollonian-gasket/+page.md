@@ -1,9 +1,9 @@
 ---
+status: draft
 title: Apollonian gasket
 date: "2026-05-04"
 cover: ./cover.svg
 description: The construction of the Apollonian gasket starts with three circles
-status: draft
 ---
 
 <script>

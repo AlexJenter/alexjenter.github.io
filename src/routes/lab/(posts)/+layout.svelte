@@ -4,7 +4,7 @@
 
     import type { Component } from "svelte";
 
-    const heroModules = import.meta.glob("/src/routes/blog/**/Hero.svelte");
+    const heroModules = import.meta.glob("/src/routes/lab/**/Hero.svelte");
 
     interface Props {
         children: Snippet;

@@ -3,4 +3,5 @@ export type PostFrontmatter = {
 	date: string;
 	cover?: string;
 	description?: string;
+	status?: "draft" | "published";
 };
