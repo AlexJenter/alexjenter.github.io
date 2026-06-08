@@ -1,6 +1,9 @@
+import type { LoadEvent } from "@sveltejs/kit";
 import type { PostFrontmatter } from "$lib";
 
-export const load = () => {
+export const load = ({ url }: LoadEvent) => {
+  const isLocalhost =
+    url.hostname === "localhost" || url.hostname === "127.0.0.1";
   const modules = import.meta.glob("/src/routes/lab/**/+page.md", {
     eager: true,
   });
@@ -19,10 +22,10 @@ export const load = () => {
   }) as Record<string, string>;
 
   const posts = Object.entries(modules)
-    .filter(
-      ([, mod]: [string, any]) =>
-        (mod.metadata as PostFrontmatter).status === "public",
-    )
+    .filter(([, mod]: [string, any]) => {
+      const status = (mod.metadata as PostFrontmatter).status;
+      return status === "public" || (isLocalhost && status === "draft");
+    })
     .map(([path, mod]: [string, any]) => {
       const meta = mod.metadata as PostFrontmatter;
       const postDir = path.replace("/+page.md", "");
@@ -40,6 +43,7 @@ export const load = () => {
         title: meta.title,
         date: meta.date,
         description: meta.description,
+        draft: meta.status === "draft",
         cover,
       };
     })

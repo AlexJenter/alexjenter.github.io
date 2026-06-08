@@ -30,7 +30,7 @@
                             {/if}
                         {/if}
                         <div class="meta">
-                            <span class="title">{post.title}</span>
+                            <span class="title">{post.title}{#if post.draft} <span class="draft-badge">draft</span>{/if}</span>
                             <Date date={post.date} />
                             {#if post.description}
                                 <p class="description">{post.description}</p>
@@ -108,5 +108,16 @@
 
     .empty {
         color: var(--color-text-muted);
+    }
+
+    .draft-badge {
+        font-size: var(--text-xs);
+        font-family: var(--font-mono, monospace);
+        color: var(--color-text-muted);
+        border: 1px solid currentColor;
+        border-radius: var(--radius-sm);
+        padding: 0 0.35em;
+        vertical-align: middle;
+        letter-spacing: 0.05em;
     }
 </style>
