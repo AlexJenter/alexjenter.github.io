@@ -30,9 +30,18 @@
 
         if (fadeZone) {
             window.addEventListener("resize", computeFade, { passive: true });
-            computeFade();
-            return () => window.removeEventListener("resize", computeFade);
+            window.addEventListener("scroll", computeFade, { passive: true });
+            return () => {
+                window.removeEventListener("resize", computeFade);
+                window.removeEventListener("scroll", computeFade);
+            };
         }
+    });
+
+    $effect(() => {
+        if (!fadeZone || !paneEl) return;
+        pos; // re-run after pos changes and DOM has updated
+        computeFade();
     });
 
     function save() {
@@ -43,8 +52,8 @@
     function computeFade() {
         if (!fadeZone || !paneEl) return;
         const rect = paneEl.getBoundingClientRect();
-        const distance = window.innerHeight - rect.top;
-        const opacity = Math.min(1, Math.max(0, distance / fadeZone));
+        const overflow = Math.max(0, rect.bottom - window.innerHeight + window.scrollY);
+        const opacity = Math.min(1, Math.max(0, 1 - overflow / fadeZone));
         paneEl.style.opacity = String(opacity);
         paneEl.style.pointerEvents = opacity < 0.05 ? "none" : "";
     }
