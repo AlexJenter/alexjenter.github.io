@@ -53,5 +53,8 @@ export const load = ({ url }: LoadEvent) => {
         new Date(String(b.date)).getTime() - new Date(String(a.date)).getTime(),
     );
 
-  return { posts };
+  return {
+    publicPosts: posts.filter((p) => !p.draft),
+    draftPosts: posts.filter((p) => p.draft),
+  };
 };

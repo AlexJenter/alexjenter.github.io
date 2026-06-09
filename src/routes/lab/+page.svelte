@@ -6,40 +6,51 @@
 <section class="page">
     <h1>Lab</h1>
 
-    {#if data.posts.length === 0}
+    {#if data.publicPosts.length === 0 && data.draftPosts.length === 0}
         <p class="empty">No posts yet.</p>
     {:else}
-        <ol class="post-list">
-            {#each data.posts as post}
-                <li>
-                    <a href="/lab/{post.slug}" class="post-link">
-                        {#if post.cover}
-                            {#if post.cover.svg}
-                                <img
-                                    src={post.cover.src}
-                                    alt={post.title}
-                                    class="teaser"
-                                />
-                            {:else}
-                                <enhanced:img
-                                    src={post.cover.src}
-                                    alt={post.title}
-                                    class="teaser"
-                                    sizes="(min-width: 1200px) 160px, 120px"
-                                />
+        {#snippet postList(posts: typeof data.publicPosts)}
+            <ol class="post-list">
+                {#each posts as post}
+                    <li>
+                        <a href="/lab/{post.slug}" class="post-link">
+                            {#if post.cover}
+                                {#if post.cover.svg}
+                                    <img
+                                        src={post.cover.src}
+                                        alt={post.title}
+                                        class="teaser"
+                                    />
+                                {:else}
+                                    <enhanced:img
+                                        src={post.cover.src}
+                                        alt={post.title}
+                                        class="teaser"
+                                        sizes="(min-width: 1200px) 160px, 120px"
+                                    />
+                                {/if}
                             {/if}
-                        {/if}
-                        <div class="meta">
-                            <span class="title">{post.title}{#if post.draft} <span class="draft-badge">draft</span>{/if}</span>
-                            <Date date={post.date} />
-                            {#if post.description}
-                                <p class="description">{post.description}</p>
-                            {/if}
-                        </div>
-                    </a>
-                </li>
-            {/each}
-        </ol>
+                            <div class="meta">
+                                <span class="title">{post.title}</span>
+                                <Date date={post.date} />
+                                {#if post.description}
+                                    <p class="description">{post.description}</p>
+                                {/if}
+                            </div>
+                        </a>
+                    </li>
+                {/each}
+            </ol>
+        {/snippet}
+
+        {#if data.publicPosts.length > 0}
+            {@render postList(data.publicPosts)}
+        {/if}
+
+        {#if data.draftPosts.length > 0}
+            <h2 class="section-label">Drafts</h2>
+            {@render postList(data.draftPosts)}
+        {/if}
     {/if}
 </section>
 
@@ -110,14 +121,14 @@
         color: var(--color-text-muted);
     }
 
-    .draft-badge {
+    .section-label {
         font-size: var(--text-xs);
         font-family: var(--font-mono, monospace);
+        font-weight: 400;
         color: var(--color-text-muted);
-        border: 1px solid currentColor;
-        border-radius: var(--radius-sm);
-        padding: 0 0.35em;
-        vertical-align: middle;
         letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-top: var(--space-12);
+        margin-bottom: var(--space-4);
     }
 </style>
