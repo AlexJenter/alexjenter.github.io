@@ -1,19 +1,10 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import Canvas from "$lib/components/Canvas.svelte";
-    import {
-        Button,
-        Image as ImageControl,
-        Pane,
-        Slider,
-    } from "svelte-tweakpane-ui";
+    import { Pane, Slider, FileInput, Button } from "$lib/components/gui";
     import { applyWeightedCentroid, downloadSVG } from "./utils";
-    import { usePaneFade } from "./usePaneFade.svelte";
 
     import imgSrc from "./img0.jpg";
-
-    const paneFadeZone = 200;
-    usePaneFade({ fadeZone: paneFadeZone, ready: () => ar !== null });
 
     const MAX_ITER = 20000;
 
@@ -139,39 +130,12 @@
                 />
             {/key}
         </div>
-        <Pane position="draggable" title="Stipple">
-            <Slider
-                bind:value={dotRadius}
-                min={1}
-                max={20}
-                label="Dot radius"
-            />
-            <Slider
-                bind:value={pendingPointCount}
-                min={100}
-                max={20000}
-                step={100}
-                label="Points"
-            />
-            <ImageControl
-                bind:value={uploadedImage}
-                fit="contain"
-                label="Image"
-            />
-            <Button
-                on:click={() =>
-                    downloadSVG(pts, img!, canvasW, canvasH, dotRadius)}
-                title="Download SVG"
-                label=""
-            />
-            <Button
-                on:click={() => {
-                    pts = [];
-                    resetKey++;
-                }}
-                title="Reset"
-                label=""
-            />
+        <Pane title="Stipple" fadeZone={200}>
+            <Slider bind:value={dotRadius} min={1} max={20} label="Dot radius" />
+            <Slider bind:value={pendingPointCount} min={100} max={20000} step={100} label="Points" />
+            <FileInput bind:value={uploadedImage} label="Image" />
+            <Button onclick={() => downloadSVG(pts, img!, canvasW, canvasH, dotRadius)} label="Download SVG" />
+            <Button onclick={() => { pts = []; resetKey++; }} label="Reset" />
         </Pane>
     {/if}
 </div>
