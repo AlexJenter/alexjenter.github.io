@@ -29,7 +29,10 @@
             this.cell = cell;
             this.cols = Math.max(1, Math.ceil(w / cell));
             this.rows = Math.max(1, Math.ceil(h / cell));
-            this.cells = Array.from({ length: this.cols * this.rows }, () => []);
+            this.cells = Array.from(
+                { length: this.cols * this.rows },
+                () => [],
+            );
         }
 
         resize(w: number, h: number, cell: number) {
@@ -72,14 +75,15 @@
                     gx <= Math.min(this.cols - 1, cx + sr);
                     gx++
                 ) {
-                    for (const id of this.cells[gy * this.cols + gx]) out.push(id);
+                    for (const id of this.cells[gy * this.cols + gx])
+                        out.push(id);
                 }
             }
         }
     }
 
     const NUM_POINTS = 1500;
-    const STICK_ITERATIONS = 5;
+    const STICK_ITERATIONS = 8;
     const ANGLE_STIFFNESS = 0.1;
     const CENTER_PULL = 0.002;
     const INNER_RADIUS = 100;
@@ -96,6 +100,10 @@
     let simW = 0;
     let simH = 0;
     const nearby: number[] = [];
+    let dx: Float64Array = new Float64Array(0);
+    let dy: Float64Array = new Float64Array(0);
+    let snapX: Float64Array = new Float64Array(0);
+    let snapY: Float64Array = new Float64Array(0);
 
     function initSim(w: number, h: number) {
         simW = w;
@@ -120,6 +128,10 @@
         }
 
         grid = new Grid(w, h, repulsionRadius * 2);
+        dx = new Float64Array(NUM_POINTS);
+        dy = new Float64Array(NUM_POINTS);
+        snapX = new Float64Array(NUM_POINTS);
+        snapY = new Float64Array(NUM_POINTS);
     }
 
     function stepSim() {
@@ -146,15 +158,31 @@
         }
 
         for (let iter = 0; iter < STICK_ITERATIONS; iter++) {
-            // Stick length constraints
+            // Stick length constraints — Jacobi style: snapshot, accumulate, apply
+            for (let j = 0; j < n; j++) {
+                snapX[j] = points[j].pos.x;
+                snapY[j] = points[j].pos.y;
+            }
+            dx.fill(0);
+            dy.fill(0);
             for (const s of sticks) {
-                const diff = vsub(s.p2.pos, s.p1.pos);
-                const dist = vlen(diff);
+                const i1 = s.p1.index;
+                const i2 = s.p2.index;
+                const diffX = snapX[i2] - snapX[i1];
+                const diffY = snapY[i2] - snapY[i1];
+                const dist = Math.hypot(diffX, diffY);
                 if (dist === 0) continue;
                 const ratio = (rl - dist) / dist / 2;
-                const offset = vscale(diff, ratio);
-                s.p1.pos = vsub(s.p1.pos, offset);
-                s.p2.pos = vadd(s.p2.pos, offset);
+                const ox = diffX * ratio;
+                const oy = diffY * ratio;
+                dx[i1] -= ox;
+                dy[i1] -= oy;
+                dx[i2] += ox;
+                dy[i2] += oy;
+            }
+            for (let j = 0; j < n; j++) {
+                points[j].pos.x += dx[j];
+                points[j].pos.y += dy[j];
             }
 
             // Boundary reflection
@@ -176,16 +204,28 @@
                 }
             }
 
-            // Angle smoothing
+            // Angle smoothing — Jacobi style: accumulate all deltas first, then apply
+            dx.fill(0);
+            dy.fill(0);
             for (let j = 0; j < n; j++) {
-                const p0 = points[(j + n - 1) % n];
-                const p1 = points[j];
-                const p2 = points[(j + 1) % n];
-                const mid = vscale(vadd(p0.pos, p2.pos), 0.5);
-                const delta = vsub(mid, p1.pos);
-                p0.pos = vsub(p0.pos, vscale(delta, ANGLE_STIFFNESS / 2));
-                p1.pos = vadd(p1.pos, vscale(delta, ANGLE_STIFFNESS));
-                p2.pos = vsub(p2.pos, vscale(delta, ANGLE_STIFFNESS / 2));
+                const j0 = (j + n - 1) % n;
+                const j2 = (j + 1) % n;
+                const dex =
+                    (points[j0].pos.x + points[j2].pos.x) * 0.5 -
+                    points[j].pos.x;
+                const dey =
+                    (points[j0].pos.y + points[j2].pos.y) * 0.5 -
+                    points[j].pos.y;
+                dx[j0] -= dex * (ANGLE_STIFFNESS / 2);
+                dy[j0] -= dey * (ANGLE_STIFFNESS / 2);
+                dx[j] += dex * ANGLE_STIFFNESS;
+                dy[j] += dey * ANGLE_STIFFNESS;
+                dx[j2] -= dex * (ANGLE_STIFFNESS / 2);
+                dy[j2] -= dey * (ANGLE_STIFFNESS / 2);
+            }
+            for (let j = 0; j < n; j++) {
+                points[j].pos.x += dx[j];
+                points[j].pos.y += dy[j];
             }
 
             // Self-repulsion via spatial grid
@@ -246,11 +286,21 @@
 <div class="hero">
     <div class="inner">
         {#key resetKey}
-            <Canvas {setup} {update} label="Differential line growth animation" />
+            <Canvas
+                {setup}
+                {update}
+                label="Differential line growth animation"
+            />
         {/key}
     </div>
     <Pane title="Controls" fadeZone={200}>
-        <Slider bind:value={restLength} min={4} max={30} step={0.5} label="Rest length" />
+        <Slider
+            bind:value={restLength}
+            min={4}
+            max={30}
+            step={0.5}
+            label="Rest length"
+        />
         <Slider
             bind:value={repulsionRadius}
             min={10}
