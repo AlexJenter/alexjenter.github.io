@@ -1,6 +1,8 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import type { Snippet } from "svelte";
+    import { slide } from "svelte/transition";
+    import { cubicOut } from "svelte/easing";
 
     interface Props {
         title: string;
@@ -129,7 +131,10 @@
         </button>
     </div>
     {#if !collapsed}
-        <div class="body">
+        <div
+            class="body"
+            transition:slide={{ duration: 200, easing: cubicOut }}
+        >
             {@render children?.()}
         </div>
     {/if}
@@ -170,7 +175,12 @@
         font-weight: 300;
         color: var(--color-text);
         letter-spacing: 0.02em;
-        padding: var(--space-2) var(--space-3);
+        padding: var(--space-1) var(--space-3);
+        flex-grow: 1;
+
+        &:hover {
+            background: var(--color-hover);
+        }
     }
 
     .chevron-btn {
@@ -186,10 +196,10 @@
         transition: color var(--duration-fast) var(--ease-out);
         height: 2rem;
         width: 2rem;
-    }
-
-    .chevron-btn:hover {
-        color: var(--color-text);
+        &:hover {
+            color: var(--color-text);
+            background: var(--color-hover);
+        }
     }
 
     .chevron {

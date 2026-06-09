@@ -163,7 +163,7 @@
 <style>
     .row {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 2fr;
         align-items: center;
         gap: var(--space-2);
         min-height: 22px;
@@ -180,7 +180,9 @@
     .control {
         display: flex;
         align-items: center;
-        gap: var(--space-1);
+        gap: var(--space-2);
+        font-family: var(--font-mono);
+        font-size: var(--text-xs);
     }
 
     .control.full {
@@ -237,8 +239,6 @@
     }
 
     output {
-        font-family: monospace;
-        font-size: var(--text-xs);
         color: var(--color-text-muted);
         width: 2em;
         display: block;
@@ -250,14 +250,8 @@
 
     .edit-input {
         width: 4ch;
-        font-size: var(--text-xs);
-        font-family: var(--font-serif);
-        font-variation-settings:
-            "opsz" var(--font-opsz-body),
-            "WONK" 0,
-            "SOFT" 0;
-        font-variant-numeric: tabular-nums;
         color: var(--color-text);
+
         background: none;
         border: none;
         border-bottom: 1px solid var(--color-text-muted);

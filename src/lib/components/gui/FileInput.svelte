@@ -5,13 +5,13 @@
         label?: string;
     }
 
-    let { value = $bindable(), accept = 'image/*', label }: Props = $props();
+    let { value = $bindable(), accept = "image/*", label }: Props = $props();
 
     let inputEl: HTMLInputElement;
     let dragging = $state(false);
 
     function processFile(file: File) {
-        if (!file.type.startsWith('image/')) return;
+        if (!file.type.startsWith("image/")) return;
         const reader = new FileReader();
         reader.onload = (ev) => {
             value = ev.target?.result as string;
@@ -42,11 +42,14 @@
         class:has-image={!!value}
         role="button"
         tabindex="0"
-        aria-label={label ?? 'Image input'}
+        aria-label={label ?? "Image input"}
         onclick={() => inputEl.click()}
-        onkeydown={(e) => e.key === 'Enter' && inputEl.click()}
-        ondragover={(e) => { e.preventDefault(); dragging = true; }}
-        ondragleave={() => dragging = false}
+        onkeydown={(e) => e.key === "Enter" && inputEl.click()}
+        ondragover={(e) => {
+            e.preventDefault();
+            dragging = true;
+        }}
+        ondragleave={() => (dragging = false)}
         ondrop={handleDrop}
     >
         {#if value}
@@ -68,7 +71,7 @@
 <style>
     .row {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
         align-items: start;
         gap: var(--space-2);
     }
@@ -93,7 +96,7 @@
     .zone {
         aspect-ratio: 1;
         width: 100%;
-        border: 1px dashed var(--color-border);
+        border: 3px dashed var(--color-border);
         border-radius: var(--radius-sm);
         cursor: pointer;
         display: flex;
