@@ -84,15 +84,16 @@
 
     const NUM_POINTS = 1500;
     const STICK_ITERATIONS = 8;
-    const ANGLE_STIFFNESS = 0.1;
     const CENTER_PULL = 0.002;
     const INNER_RADIUS = 100;
     const INNER_FORCE = -10;
+    let bendStiffness = $state(0.001);
 
     let restLength = $state(10);
     let repulsionRadius = $state(20);
     let repulsionStrength = $state(0.6);
     let resetKey = $state(0);
+    let paused = $state(false);
 
     let points: Point[] = [];
     let sticks: Stick[] = [];
@@ -204,24 +205,35 @@
                 }
             }
 
-            // Angle smoothing — Jacobi style: accumulate all deltas first, then apply
+            // Kirchhoff bending — bilaplacian (5-point stencil), Jacobi style.
+            // Penalises changes in curvature rather than curvature itself,
+            // driving the curve toward constant-curvature arcs between folds.
+            for (let j = 0; j < n; j++) {
+                snapX[j] = points[j].pos.x;
+                snapY[j] = points[j].pos.y;
+            }
             dx.fill(0);
             dy.fill(0);
+            const kb = bendStiffness;
             for (let j = 0; j < n; j++) {
-                const j0 = (j + n - 1) % n;
-                const j2 = (j + 1) % n;
-                const dex =
-                    (points[j0].pos.x + points[j2].pos.x) * 0.5 -
-                    points[j].pos.x;
-                const dey =
-                    (points[j0].pos.y + points[j2].pos.y) * 0.5 -
-                    points[j].pos.y;
-                dx[j0] -= dex * (ANGLE_STIFFNESS / 2);
-                dy[j0] -= dey * (ANGLE_STIFFNESS / 2);
-                dx[j] += dex * ANGLE_STIFFNESS;
-                dy[j] += dey * ANGLE_STIFFNESS;
-                dx[j2] -= dex * (ANGLE_STIFFNESS / 2);
-                dy[j2] -= dey * (ANGLE_STIFFNESS / 2);
+                const jm2 = (j + n - 2) % n;
+                const jm1 = (j + n - 1) % n;
+                const jp1 = (j + 1) % n;
+                const jp2 = (j + 2) % n;
+                const fx =
+                    snapX[jm2] -
+                    4 * snapX[jm1] +
+                    6 * snapX[j] -
+                    4 * snapX[jp1] +
+                    snapX[jp2];
+                const fy =
+                    snapY[jm2] -
+                    4 * snapY[jm1] +
+                    6 * snapY[j] -
+                    4 * snapY[jp1] +
+                    snapY[jp2];
+                dx[j] -= kb * fx;
+                dy[j] -= kb * fy;
             }
             for (let j = 0; j < n; j++) {
                 points[j].pos.x += dx[j];
@@ -265,6 +277,7 @@
 
         const rr = repulsionRadius;
         if (grid.cell !== rr * 2) grid.resize(simW, simH, rr * 2);
+        if (paused) return;
 
         stepSim();
 
@@ -315,6 +328,14 @@
             step={0.01}
             label="Repulsion strength"
         />
+        <Slider
+            bind:value={bendStiffness}
+            min={0}
+            max={0.1}
+            step={0.0001}
+            label="Bend stiffness"
+        />
+        <Button onclick={() => (paused = !paused)} label={paused ? "Play" : "Pause"} />
         <Button onclick={() => resetKey++} label="Reset" />
     </Pane>
 </div>
