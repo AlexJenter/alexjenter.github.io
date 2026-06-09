@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import type { Snippet } from 'svelte';
+    import { onMount } from "svelte";
+    import type { Snippet } from "svelte";
 
     interface Props {
         title: string;
@@ -27,9 +27,9 @@
         }
 
         if (fadeZone) {
-            window.addEventListener('resize', computeFade, { passive: true });
+            window.addEventListener("resize", computeFade, { passive: true });
             computeFade();
-            return () => window.removeEventListener('resize', computeFade);
+            return () => window.removeEventListener("resize", computeFade);
         }
     });
 
@@ -44,7 +44,7 @@
         const distance = window.innerHeight - rect.top;
         const opacity = Math.min(1, Math.max(0, distance / fadeZone));
         paneEl.style.opacity = String(opacity);
-        paneEl.style.pointerEvents = opacity < 0.05 ? 'none' : '';
+        paneEl.style.pointerEvents = opacity < 0.05 ? "none" : "";
     }
 
     let dragging = false;
@@ -87,7 +87,7 @@
     }
 
     const panelStyle = $derived(
-        pos ? `left: ${pos.x}px; top: ${pos.y}px` : 'right: 16px; top: 16px'
+        pos ? `left: ${pos.x}px; top: ${pos.y}px` : "right: 16px; top: 16px",
     );
 </script>
 
@@ -105,7 +105,7 @@
         <button
             class="chevron-btn"
             type="button"
-            aria-label={collapsed ? 'Expand' : 'Collapse'}
+            aria-label={collapsed ? "Expand" : "Collapse"}
             onclick={toggleCollapse}
             onpointerdown={(e) => e.stopPropagation()}
         >
@@ -145,7 +145,10 @@
         border-radius: var(--radius-md);
         box-shadow: 0 2px 12px rgb(0 0 0 / 0.12);
         font-family: var(--font-serif);
-        font-variation-settings: 'opsz' var(--font-opsz-body), 'WONK' 0, 'SOFT' 0;
+        font-variation-settings:
+            "opsz" var(--font-opsz-body),
+            "WONK" 0,
+            "SOFT" 0;
         user-select: none;
         touch-action: none;
     }
@@ -154,7 +157,6 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: var(--space-2) var(--space-3);
         cursor: grab;
         border-bottom: 1px solid var(--color-border);
     }
@@ -168,6 +170,7 @@
         font-weight: 300;
         color: var(--color-text);
         letter-spacing: 0.02em;
+        padding: var(--space-2) var(--space-3);
     }
 
     .chevron-btn {
@@ -178,8 +181,11 @@
         padding: 0;
         display: flex;
         align-items: center;
+        justify-content: center;
         line-height: 0;
         transition: color var(--duration-fast) var(--ease-out);
+        height: 2rem;
+        width: 2rem;
     }
 
     .chevron-btn:hover {
