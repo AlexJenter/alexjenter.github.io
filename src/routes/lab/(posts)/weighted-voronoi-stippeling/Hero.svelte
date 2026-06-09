@@ -130,12 +130,34 @@
                 />
             {/key}
         </div>
-        <Pane title="Stipple" fadeZone={200}>
-            <Slider bind:value={dotRadius} min={1} max={20} label="Dot radius" />
-            <Slider bind:value={pendingPointCount} min={100} max={20000} step={100} label="Points" />
+        <Pane title="Settings" fadeZone={200}>
+            <Slider
+                bind:value={dotRadius}
+                min={1}
+                max={20}
+                step={0.001}
+                label="Dot radius"
+            />
+            <Slider
+                bind:value={pendingPointCount}
+                min={100}
+                max={20000}
+                step={100}
+                label="Points"
+            />
             <FileInput bind:value={uploadedImage} label="Image" />
-            <Button onclick={() => downloadSVG(pts, img!, canvasW, canvasH, dotRadius)} label="Download SVG" />
-            <Button onclick={() => { pts = []; resetKey++; }} label="Reset" />
+            <Button
+                onclick={() =>
+                    downloadSVG(pts, img!, canvasW, canvasH, dotRadius)}
+                label="Download SVG"
+            />
+            <Button
+                onclick={() => {
+                    pts = [];
+                    resetKey++;
+                }}
+                label="Reset"
+            />
         </Pane>
     {/if}
 </div>

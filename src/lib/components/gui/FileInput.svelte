@@ -8,46 +8,73 @@
     let { value = $bindable(), accept = 'image/*', label }: Props = $props();
 
     let inputEl: HTMLInputElement;
-    let filename = $state<string | undefined>();
+    let dragging = $state(false);
 
-    function handleChange(e: Event) {
-        const file = (e.target as HTMLInputElement).files?.[0];
-        if (!file) return;
-        filename = file.name;
+    function processFile(file: File) {
+        if (!file.type.startsWith('image/')) return;
         const reader = new FileReader();
         reader.onload = (ev) => {
             value = ev.target?.result as string;
         };
         reader.readAsDataURL(file);
     }
+
+    function handleChange(e: Event) {
+        const file = (e.target as HTMLInputElement).files?.[0];
+        if (file) processFile(file);
+    }
+
+    function handleDrop(e: DragEvent) {
+        e.preventDefault();
+        dragging = false;
+        const file = e.dataTransfer?.files[0];
+        if (file) processFile(file);
+    }
 </script>
 
-<div class="row">
+<div class="row" class:no-label={!label}>
     {#if label}
         <span class="label" title={label}>{label}</span>
     {/if}
-    <div class="control" class:full={!label}>
-        <input
-            bind:this={inputEl}
-            type="file"
-            {accept}
-            onchange={handleChange}
-            class="hidden"
-            tabindex="-1"
-        />
-        <button type="button" class="pick-btn" onclick={() => inputEl.click()}>
-            {filename ?? 'Choose…'}
-        </button>
+    <div
+        class="zone"
+        class:drag-over={dragging}
+        class:has-image={!!value}
+        role="button"
+        tabindex="0"
+        aria-label={label ?? 'Image input'}
+        onclick={() => inputEl.click()}
+        onkeydown={(e) => e.key === 'Enter' && inputEl.click()}
+        ondragover={(e) => { e.preventDefault(); dragging = true; }}
+        ondragleave={() => dragging = false}
+        ondrop={handleDrop}
+    >
+        {#if value}
+            <img src={value} alt="Preview" />
+        {:else}
+            <span class="hint">Drop or click</span>
+        {/if}
     </div>
+    <input
+        bind:this={inputEl}
+        type="file"
+        {accept}
+        onchange={handleChange}
+        class="hidden"
+        tabindex="-1"
+    />
 </div>
 
 <style>
     .row {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        align-items: center;
+        align-items: start;
         gap: var(--space-2);
-        min-height: 22px;
+    }
+
+    .row.no-label .zone {
+        grid-column: 1 / -1;
     }
 
     .label {
@@ -56,42 +83,58 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-    }
-
-    .control {
-        display: flex;
-    }
-
-    .control.full {
-        grid-column: 1 / -1;
+        padding-top: var(--space-1);
     }
 
     .hidden {
         display: none;
     }
 
-    .pick-btn {
+    .zone {
+        aspect-ratio: 1;
         width: 100%;
-        padding: var(--space-1) var(--space-2);
-        background: var(--color-bg);
-        border: 1px solid var(--color-border);
+        border: 1px dashed var(--color-border);
         border-radius: var(--radius-sm);
-        font-family: inherit;
-        font-size: var(--text-xs);
-        font-variation-settings: inherit;
-        color: var(--color-text);
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        text-align: left;
+        background: var(--color-bg);
         transition:
-            background var(--duration-fast) var(--ease-out),
-            border-color var(--duration-fast) var(--ease-out);
+            border-color var(--duration-fast) var(--ease-out),
+            background var(--duration-fast) var(--ease-out);
     }
 
-    .pick-btn:hover {
-        background: var(--color-border);
+    .zone:hover,
+    .zone.drag-over {
+        border-style: solid;
         border-color: var(--color-text-muted);
+        background: var(--color-surface);
+    }
+
+    .zone.has-image {
+        border-style: solid;
+        border-color: var(--color-border);
+    }
+
+    .zone.has-image:hover,
+    .zone.has-image.drag-over {
+        border-color: var(--color-text-muted);
+    }
+
+    .hint {
+        font-size: var(--text-xs);
+        color: var(--color-text-muted);
+        pointer-events: none;
+        user-select: none;
+    }
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+        pointer-events: none;
     }
 </style>
