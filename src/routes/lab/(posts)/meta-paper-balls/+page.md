@@ -1,12 +1,18 @@
 ---
-status: public
-title: Metaballs
+status: draft
+title: Meta Paper Balls
 date: "2026-06-15"
 cover: ./cover.svg
 description: Organic blobs that merge when they meet — a classic computer graphics trick using bezier curves between circles.
 ---
 
-Around Summer 2015, working [attribute.ch](https://www.attribute.ch/en), i was sitting in a design meeting for [re-fugium.com](https://www.re-fugium.com/). Among many other questions we where looking for a strong visual  
+Around Summer 2015, working [attribute.ch](https://www.attribute.ch/en), i was sitting in a design meeting for [re-fugium.com](https://www.re-fugium.com/). Among many other questions we where looking for a strong visual that would convey the goal of project, being networking jung people across many disciplines, sharing knowledge.
+
+Paging through [paperjs.org/examples](https://paperjs.org/examples/) as i used to do a lot back then we discoverd [the meta ball expample](https://paperjs.org/examples/meta-balls/) and instantly knew, there could be something there. The way the blobs connected so cleanly and the stark black and white aesthetic fitted the bill and designer as well clients saw the vision.
+
+Since i also wanted to convey a sense of growth, i came up with the idea of a central attractor, controlled by the user. Following the pointer on desktop or the gyroscope (RIP) on mobile devices
+
+
 
 Metaballs are organic-looking blobs that fuse together as they approach each other. The visual is everywhere in motion design and creative coding, but the underlying technique is surprisingly simple: it's just circles connected by carefully placed bezier curves.
 
