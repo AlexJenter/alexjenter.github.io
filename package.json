@@ -33,7 +33,6 @@
 		"d3": "^7.9.0",
 		"d3-delaunay": "^6.0.4",
 		"katex": "^0.16.45",
-		"paper": "^0.12.18",
 		"rehype-katex": "^4.0.0",
 		"remark-footnotes": "^2.0.0",
 		"remark-math": "^3.0.1"
