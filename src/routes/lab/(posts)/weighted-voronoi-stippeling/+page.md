@@ -51,7 +51,7 @@ Think of it as every pixel pulling the point toward itself with a force proporti
 My implementation is not without its flaws. The effect works best on images with high contrast, large areas of low light and on edges. Areas of uniform value often lack uniform distribution with clusters forming randomly. It's probably unavoidable to tweak those weights or add some brightness curves via the controls panel.
 
 
-Hero: Based on Photo by <a href="https://unsplash.com/@krivitskiy" target="_blank" rel="noopener noreferrer">Alexander Krivitskiy</a> on <a href="https://unsplash.com/photos/grayscale-photo-of-womans-face-o7wiNx9x9OQ" target="_blank" rel="noopener noreferrer">Unsplash</a>
+Hero: Based on Photo by <a href="https://unsplash.com/@krivitskiy" target="_blank" rel="noopener noreferrer" aria-label="Alexander Krivitskiy on Unsplash (opens in new tab)">Alexander Krivitskiy</a> on <a href="https://unsplash.com/photos/grayscale-photo-of-womans-face-o7wiNx9x9OQ" target="_blank" rel="noopener noreferrer" aria-label="Photo source on Unsplash (opens in new tab)">Unsplash</a>
       
  
 [^1]: [Coding Challenge 181: Weighted Voronoi Stippling](https://www.youtube.com/watch?v=Bxdt6T_1qgc)

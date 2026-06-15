@@ -131,13 +131,15 @@
         <svg
             viewBox="0 0 {W} {H}"
             class="svg"
-            aria-label="Interactive Voronoi diagram"
             aria-labelledby="voronoi-status"
         >
             <defs>
                 <clipPath id="clip">
                     <rect width={W} height={H} />
                 </clipPath>
+                <marker id="arr" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                    <path d="M0,0.5 L4.5,2.5 L0,4.5 Z" fill="var(--color-text-muted)" />
+                </marker>
             </defs>
 
             <g clip-path="url(#clip)">
@@ -193,7 +195,7 @@
     <div class="legend">
         <span class="leg-vec">
             Point
-            <svg width="60" height="10">
+            <svg width="60" height="10" aria-hidden="true">
                 <circle cx="10" cy="5" r="5" fill="var(--color-text)" />
                 {#if !isConverged}
                     <line
@@ -378,5 +380,12 @@
         font-size: var(--text-sm);
         color: var(--color-text-muted);
         line-height: var(--leading-normal);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .seed,
+        .centroid {
+            transition: none;
+        }
     }
 </style>

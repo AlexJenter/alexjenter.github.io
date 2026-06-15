@@ -19,6 +19,8 @@
 	onMount(() => {
 		const ctx = canvas!.getContext('2d')!;
 
+		const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 		let ready = false;
 		const ro = new ResizeObserver(async ([entry]) => {
 			const dpr = window.devicePixelRatio;
@@ -30,20 +32,23 @@
 			if (!ready) {
 				ready = true;
 				await setup?.(ctx, pw, ph);
+				if (reducedMotion) update?.(ctx, pw, ph, 0);
 			}
 		});
 
 		ro.observe(canvas!.parentElement!);
 
 		let rafId: number;
-		let last = performance.now();
-		const loop = (now: number) => {
-			const dt = now - last;
-			last = now;
-			const cont = update?.(ctx, pw, ph, dt);
-			if (cont !== false) rafId = requestAnimationFrame(loop);
-		};
-		rafId = requestAnimationFrame(loop);
+		if (!reducedMotion) {
+			let last = performance.now();
+			const loop = (now: number) => {
+				const dt = now - last;
+				last = now;
+				const cont = update?.(ctx, pw, ph, dt);
+				if (cont !== false) rafId = requestAnimationFrame(loop);
+			};
+			rafId = requestAnimationFrame(loop);
+		}
 
 		return () => {
 			ro.disconnect();

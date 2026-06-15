@@ -158,8 +158,7 @@
         <svg
             viewBox="0 0 {W} {H}"
             class="svg"
-            role="img"
-            aria-label="Weighted centroid accumulation diagram"
+            aria-labelledby="wc-status"
         >
             <defs>
                 <clipPath id="wc2-clip">
@@ -289,7 +288,7 @@
             <polygon points={CELL_POINTS} class="cell-edge" />
         </svg>
 
-        <div class="badge" class:badge--done={phase === "paused"}>
+        <div id="wc-status" class="badge" class:badge--done={phase === "paused"} aria-live="polite" aria-atomic="true">
             {#if phase === "counting"}
                 pixel {currentIdx} / {N}
             {:else if phase === "settling"}
@@ -302,7 +301,7 @@
 
     <div class="legend">
         <span class="leg-item">
-            <svg width="10" height="10"
+            <svg width="10" height="10" aria-hidden="true"
                 ><circle
                     cx="5"
                     cy="5"
@@ -313,7 +312,7 @@
             Initial Point
         </span>
         <span class="leg-item">
-            <svg width="12" height="12">
+            <svg width="12" height="12" aria-hidden="true">
                 <line
                     x1="1"
                     y1="1"
@@ -334,7 +333,7 @@
             weighted centroid
         </span>
         <span class="leg-item">
-            <svg width="10" height="10"
+            <svg width="10" height="10" aria-hidden="true"
                 ><circle
                     cx="5"
                     cy="5"
@@ -363,7 +362,7 @@
         </button>
     </div>
 
-    <figcaption>
+    <figcaption aria-live="polite" aria-atomic="true">
         {#if currentIdx === 0}
             <b>Before accumulation:</b> the generator (orange) sits in the light region.
             Press Play to watch each pixel cast its weighted vote.
@@ -502,5 +501,11 @@
         font-size: var(--text-sm);
         color: var(--color-text-muted);
         line-height: var(--leading-normal);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .seed.animate {
+            transition: none;
+        }
     }
 </style>
