@@ -261,7 +261,7 @@
                         height={STRIDE}
                         stroke="var(--color-text)"
                         stroke-width={isLatest ? 2 : 1}
-                        fill={isLatest
+                        fill={isLatest && currentIdx !== N
                             ? "var(--color-accent-warm)"
                             : `rgb(from var(--color-text) r g b / ${t})`}
                         opacity={isLatest ? 1 : 0.7}
@@ -310,7 +310,7 @@
                     fill="var(--color-accent-warm)"
                 /></svg
             >
-            generator
+            Initial Point
         </span>
         <span class="leg-item">
             <svg width="12" height="12">

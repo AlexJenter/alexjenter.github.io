@@ -3,6 +3,7 @@
     // @ts-ignore
     import { Delaunay } from "d3-delaunay";
     import { polygonCentroid } from "d3";
+    import { fade } from "svelte/transition";
 
     const W = 480;
     const H = 320;
@@ -130,8 +131,8 @@
         <svg
             viewBox="0 0 {W} {H}"
             class="svg"
-            role="img"
             aria-label="Interactive Voronoi diagram"
+            aria-labelledby="voronoi-status"
         >
             <defs>
                 <clipPath id="clip">
@@ -178,58 +179,53 @@
             </g>
         </svg>
 
-        <div class="badge" class:badge--converged={isConverged}>{label}</div>
+        <div
+            id="voronoi-status"
+            class="badge"
+            class:badge--converged={isConverged}
+            aria-live="polite"
+            aria-atomic="true"
+        >
+            {label}
+        </div>
     </div>
 
     <div class="legend">
-        <span class="leg-seed">
-            <svg width="10" height="10"
-                ><circle
-                    cx="5"
-                    cy="5"
-                    r="5"
-                    fill="var(--color-accent-warm)"
-                /></svg
-            >
-            generator
-        </span>
-        <span class="leg-centroid">
-            <svg width="10" height="10"
-                ><circle
-                    cx="5"
-                    cy="5"
-                    r="4.5"
-                    fill="none"
-                    stroke="var(--color-text)"
-                    stroke-width="1.5"
-                /></svg
-            >
-            centroid
-        </span>
-        {#if !isConverged}
-            <span class="leg-vec">
-                <svg width="18" height="10"
-                    ><line
-                        x1="0"
+        <span class="leg-vec">
+            Point
+            <svg width="60" height="10">
+                <circle cx="10" cy="5" r="5" fill="var(--color-text)" />
+                {#if !isConverged}
+                    <line
+                        transition:fade
+                        x1="15"
                         y1="5"
-                        x2="14"
+                        x2="40"
                         y2="5"
-                        stroke="var(--color-text-muted)"
-                        stroke-width="1"
-                        stroke-dasharray="3 2"
-                    /><polygon
-                        points="12,2 18,5 12,8"
-                        fill="var(--color-text-muted)"
-                    /></svg
-                >
-                update
-            </span>
-        {/if}
+                        stroke="var(--color-text)"
+                    />
+                    <circle
+                        transition:fade
+                        cx="45"
+                        cy="5"
+                        r="4.5"
+                        fill="none"
+                        stroke="var(--color-text)"
+                        stroke-width="1.5"
+                    />
+                {/if}
+            </svg>
+            {#if !isConverged}
+                <span transition:fade> Next Point </span>
+            {/if}
+        </span>
     </div>
 
     <div class="controls">
         <button class="btn" onclick={reset}>Reset</button>
-        <button class="btn" onclick={step} disabled={isConverged}>Step</button>
+        <button class="btn" onclick={step} disabled={isConverged}
+            >Iterate</button
+        >
         <button
             class="btn btn-primary"
             onclick={togglePlay}
@@ -237,12 +233,11 @@
         >
             {playing ? "Pause" : isConverged ? "Done" : "Play"}
         </button>
-        <span class="iter">iter {iter}</span>
     </div>
 
-    <figcaption>
+    <figcaption aria-live="polite" aria-atomic="true">
         {#if iter === 0}
-            <b>General Voronoi:</b> generator points (orange) are placed randomly
+            <b>General Voronoi:</b> generator points (filled) are placed randomly
             and do not coincide with their cell centroids (outlined circles).
         {:else if isConverged}
             <b>Centroidal Voronoi:</b> after {iter} iterations of Lloyd's relaxation,
