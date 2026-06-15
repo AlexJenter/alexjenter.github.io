@@ -56,4 +56,3 @@ Hero: Based on Photo by <a href="https://unsplash.com/@krivitskiy" target="_blan
  
 [^1]: [Coding Challenge 181: Weighted Voronoi Stippling](https://www.youtube.com/watch?v=Bxdt6T_1qgc)
 [^2]: [Stippling by Weighted Centroidal Voronoi Tessellations — Secord 2002 (PDF)](https://www.cs.ubc.ca/labs/imager/tr/pdf/secord.2002b.pdf)
-dl
