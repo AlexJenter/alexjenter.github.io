@@ -12,7 +12,7 @@ tags: graphics, math, time-capsule
   import RuleByte from "./RuleByte.svelte";
 </script>
 
-Ten years ago after watching this [fun fun function video](https://www.youtube.com/watch?v=bc-fVdbjAwk) on youtube, i wanted to try it for myself. [Mattias Petter Johansson](https://about.me/mpj "the guy behind the channel back then and one of my idols when it comes to communicating programming concepts"), got together with [Irina Shestak](https://github.com/lrlna "from her gh bio: a Rust engineer working on a graphql compiler @apollographql") to explain an advanced programming concept with pair programming. 
+Ten years ago after watching this [fun fun function video](https://www.youtube.com/watch?v=bc-fVdbjAwk) on youtube, i wanted to try it for myself. [Mattias Petter Johansson](https://about.me/mpj "the guy behind the channel back then and one of my idols when it comes to communicating programming concepts"), got together with [Irina Shestak](https://github.com/lrlna "in her own words: a Rust engineer working on a graphql compiler @apollographql") to explain an advanced programming concept with pair programming. 
 
 Though a whole lot of my love for programming and messing around with code comes from the videos on this channel, when it came to the part where they implemented the rules i was left thinking that i could do that in a more universal way. Dont get me wrong, in no way do i think im smarter than these people. I just saw an opportunity to have some fun and had some time on my hand.
 
