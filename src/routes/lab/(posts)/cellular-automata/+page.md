@@ -1,5 +1,5 @@
 ---
-status: draft
+status: public
 title: Elementary Cellular Automata
 date: "2026-06-29"
 cover: ./cover.svg

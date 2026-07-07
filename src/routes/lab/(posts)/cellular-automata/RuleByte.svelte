@@ -24,34 +24,36 @@
 
 <figure class="rb">
     <div class="grid">
-        {#each cols as g, i}
-            <div class="col">
-                <div class="place">{7 - i}</div>
-                &ShortDownArrow;
-                <div class="place">{g.l}{g.c}{g.r}</div>
-                <div class="pat" title={`pattern ${g.l}${g.c}${g.r}`}>
-                    <span class:on={g.l}></span>
-                    <span class:on={g.c}></span>
-                    <span class:on={g.r}></span>
-                </div>
+        <div class="columns">
+            {#each cols as g, i}
+                <div class="col">
+                    <div class="place">{7 - i}</div>
+                    &ShortDownArrow;
+                    <div class="place">{g.l}{g.c}{g.r}</div>
+                    <div class="pat" title={`pattern ${g.l}${g.c}${g.r}`}>
+                        <span class:on={g.l}></span>
+                        <span class:on={g.c}></span>
+                        <span class:on={g.r}></span>
+                    </div>
 
-                <button
-                    type="button"
-                    class="out"
-                    class:on={g.out}
-                    onclick={() => toggle(g.i)}
-                    aria-label={`Output for pattern ${g.l}${g.c}${g.r} (bit ${g.i}), currently ${g.out}`}
-                ></button>
-                &ShortUpArrow;
-                <div class="place-value">
-                    {g.out}
+                    <button
+                        type="button"
+                        class="out"
+                        class:on={g.out}
+                        onclick={() => toggle(g.i)}
+                        aria-label={`Output for pattern ${g.l}${g.c}${g.r} (bit ${g.i}), currently ${g.out}`}
+                    ></button>
+                    &ShortUpArrow;
+                    <div class="place-value">
+                        {g.out}
+                    </div>
                 </div>
-            </div>
-        {/each}
-    </div>
-    <div class="input">
-        <div>&ShortUpArrow;</div>
-        <label>Rule: <input type="number" bind:value={rule} /></label>
+            {/each}
+        </div>
+        <div class="input">
+            <div>&ShortUpArrow;</div>
+            <label>Rule: <input type="number" bind:value={rule} /></label>
+        </div>
     </div>
 
     <figcaption>
@@ -71,9 +73,15 @@
     }
 
     .grid {
+        background-color: var(--color-surface);
+        padding: 1rem 2rem;
+        border-radius: var(--radius-sm);
+    }
+
+    .columns {
         display: flex;
         gap: var(--space-2);
-        flex-wrap: wrap;
+        /*flex-direction: column;*/
         justify-content: center;
     }
 
@@ -94,6 +102,7 @@
         height: 11px;
         background: var(--color-surface);
         box-shadow: inset 0 0 0 1px var(--color-border);
+        outline: 1px solid var(--color-text-muted);
     }
 
     .pat span.on {
@@ -102,16 +111,18 @@
     }
 
     .out {
-        width: 33px;
-        height: 33px;
+        --size: 22px;
+        width: var(--size);
+        height: var(--size);
         padding: 0;
         font-family: var(--font-mono);
         font-size: var(--text-sm);
         color: var(--color-text-muted);
         background: var(--color-surface);
-        border: 1px solid var(--color-border);
-        border-radius: var(--radius-sm);
+        border: 1px solid var(--color-text-muted);
+        border-radius: 0;
         cursor: pointer;
+
         transition:
             background var(--duration-fast) var(--ease-out),
             color var(--duration-fast) var(--ease-out);
@@ -131,6 +142,8 @@
     }
 
     .place-value {
+        letter-spacing: 0.08em;
+        color: var(--color-text-muted);
         font-family: var(--font-mono);
     }
 
