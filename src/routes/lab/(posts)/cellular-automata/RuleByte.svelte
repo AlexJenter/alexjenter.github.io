@@ -24,8 +24,10 @@
 
 <figure class="rb">
     <div class="grid">
-        {#each cols as g}
+        {#each cols as g, i}
             <div class="col">
+                <div class="place">{7 - i}</div>
+                &ShortDownArrow;
                 <div class="place">{g.l}{g.c}{g.r}</div>
                 <div class="pat" title={`pattern ${g.l}${g.c}${g.r}`}>
                     <span class:on={g.l}></span>
