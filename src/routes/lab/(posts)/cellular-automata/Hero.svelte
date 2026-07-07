@@ -1,6 +1,7 @@
 <script lang="ts">
     import Canvas from "$lib/components/Canvas.svelte";
     import { Pane, Slider, Radio, Button } from "$lib/components/gui";
+    import { ruleTable, nextRow } from "./ca.js";
 
     let rule = $state(90); // applied live — drag it and the flow morphs
     let cells = $state(180); // hard reset (reseeds)
@@ -20,24 +21,6 @@
             .getPropertyValue(name)
             .trim();
         return v || fallback;
-    }
-
-    function ruleTable(n: number): Uint8Array {
-        const t = new Uint8Array(8);
-        for (let i = 0; i < 8; i++) t[i] = (n >> i) & 1;
-        return t;
-    }
-
-    function nextRow(row: Uint8Array, table: Uint8Array): Uint8Array {
-        const n = row.length;
-        const out = new Uint8Array(n);
-        for (let i = 0; i < n; i++) {
-            const l = row[(i - 1 + n) % n];
-            const c = row[i];
-            const r = row[(i + 1) % n];
-            out[i] = table[(l << 2) | (c << 1) | r];
-        }
-        return out;
     }
 
     type Sim = {
