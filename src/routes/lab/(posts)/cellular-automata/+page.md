@@ -8,31 +8,48 @@ tags: graphics, math, time-capsule
 ---
 
 <script>
-  import CellularAutomata from "./CellularAutomata.svelte";
+  import Neighbourhood from "./Neighbourhood.svelte";
+  import RuleByte from "./RuleByte.svelte";
 </script>
 
-Going through old repositories I found a single file called `cellular-automata.html`. One commit, dated **15 September 2016** — first push and last push two minutes apart. 3 KB of HTML with the whole program inlined in a `<script>` tag. Ten years on it still runs in a browser without a single change, which is more than I can say for most things I've written since.
+Ten years ago after watching this [fun fun function video](https://www.youtube.com/watch?v=bc-fVdbjAwk) on youtube, i wanted to try it for myself. [Mattias Petter Johansson](https://about.me/mpj "the guy behind the channel back then and one of my idols when it comes to communicating programming concepts"), got together with [Irina Shestak](https://github.com/lrlna "from her gh bio: a Rust engineer working on a graphql compiler @apollographql") to explain an advanced programming concept with pair programming. 
 
-It implements Wolfram's **elementary cellular automata**, and it turns out to be a near-perfect candidate for a rebuild: the idea is tiny, the original code is charming, and the output is the kind of thing you want to sit and poke at.
+Though a whole lot of my love for programming and messing around with code comes from the videos on this channel, when it came to the part where they implemented the rules i was left thinking that i could do that in a more universal way. Dont get me wrong, in no way do i think im smarter than these people. I just saw an opportunity to have some fun and had some time on my hand.
 
-<CellularAutomata />
+Combing through my old repos, looking for something to write about, i found a single file `cellular-automata.html`: one commit, dated 15 September 2016. To my surprise the thing still works. Gotta hand it backwards compatibility of the platform at this point.
 
-## One line, eight questions
+Lets get into it.
 
-The setup is about as minimal as a "system" gets. You have a single row of cells, each either on or off. To compute the next row, you look at every cell together with its two immediate neighbours — three cells in total. Three cells means $2^3 = 8$ possible local arrangements, and a *rule* is simply your answer to "for each of those eight arrangements, is the cell below on or off?"
+## Three cells make a number
 
-Eight yes/no answers pack into a single byte, so every possible elementary automaton has a number from 0 to 255. That's the entire space — $2^8 = 256$ universes, and you can scrub through all of them with the slider above. The strip of little icons under the canvas *is* the rulebook: each shows one of the eight neighbourhoods on top and the cell it produces underneath. Drag the rule and watch the bottom squares flip.
+The rules are almost embarrassingly simple. You have one row of cells, each on or off. To decide what a cell becomes in the next row, you look at three cells in the row above: the one directly overhead and its two neighbours.
 
-A few are worth knowing by name:
+Three cells, each on or off, read left to right, are just a binary number:
 
-- **Rule 90** draws a Sierpiński triangle out of nothing but XOR — it's on the cover.
+<Neighbourhood />
+
+So every possible local situation is a number from 0 to 7 — eight of them, no more. That's the entire input space. A cellular automaton just needs to answer, for each of those eight, one question: *is the cell below on or off?*
+
+## A rule is just a byte
+
+Eight patterns, eight yes/no answers. Eight bits. That's a byte — a single number from 0 to 255. Which is why there are exactly 256 of these automata, and why "Rule 90" is a complete, precise specification rather than a catalogue entry.
+
+Here's the part I find genuinely elegant. *Which* answer belongs to *which* pattern? You don't need a lookup table on the side — the pattern tells you. Read the three cells as binary, and that number is the answer's position in the rule's byte:
+
+<RuleByte />
+
+Rule 90 is just `90` written in binary, `01011010`. Each digit is the output for the pattern that matches its place. The number isn't a name stuck on the rule; it *is* the rule, decoded for free by the place-value you already know. The patterns matched against the row above are nothing but the bit positions of the rule number — in binary, all the way down.
+
+A few rules are worth knowing by name:
+
+- **Rule 90** draws a Sierpiński triangle from nothing but XOR
 - **Rule 30** is so disordered it shipped as a random-number generator in Mathematica.
-- **Rule 110** is, improbably, *Turing complete* — you can build a universal computer out of this one rule.
-- **Rule 184** models traffic jams: cars that only move when the road ahead is clear.
+- **Rule 110** is, improbably, *Turing complete* — a universal computer hiding in one byte.
+
 
 ## The 2016 engine
 
-Here is the heart of the original file, untouched. You can feel that ES6 had just landed — arrow functions on everything, the giddy `Math.random()<.5`:
+Here is the heart of the original file, untouched. You can feel that ES6 had just landed — arrow functions on everything, the cheerfully terse `Math.random()<.5`:
 
 ```js
 // make array of numbers for results
@@ -65,13 +82,13 @@ var calcNewRow = (oldRow, ruleNumber) => {
 }
 ```
 
-`makeRule` turns the number into a reversed 8-bit lookup table. `calcNewRow` then reads each cell's `left/self/right`, glues them into a string like `"101"`, and does `parseInt(..., 2)` to get an index from 0 to 7. That index into the table is the new cell. The whole simulator is those fifteen lines; everything else in the file just makes `<div>`s — one per cell, 120 × 120 of them, styled with a hot pink `#f06`.
+`makeRule` turns the number into a reversed 8-bit lookup table. `calcNewRow` reads each cell's `left/self/right`, glues them into a string like `"101"`, and runs `parseInt(..., 2)` to recover that index from 0 to 7 — exactly the encoding from the diagram above, done the long way round. The whole simulator is those fifteen lines; everything else in the file just makes `<div>`s, one per cell, styled in a hot pink `#f06`.
 
-There's even a bug I left in, and it's a good one. The left edge wraps around correctly (`arr[arr.length - 1]`), but the right-edge guard reads `index === arr.length`, which can never be true — the last valid index is `length - 1`. So the rightmost cell quietly reads `arr[index + 1]`, which is `undefined`, coerced to `NaN`. The string becomes something like `"10NaN"`, and `parseInt("10NaN", 2)` stops at the first character it can't parse and returns `2`. The off-by-one doesn't crash; it just degrades into a slightly different edge behaviour. Past me got away with it.
+There's a bug I left in, and it's a good one. The left edge wraps around correctly (`arr[arr.length - 1]`), but the right-edge guard reads `index === arr.length`, which can never be true — the last valid index is `length - 1`. So the rightmost cell quietly reads `undefined`, coerced to `NaN`. The string becomes `"10NaN"`, and `parseInt("10NaN", 2)` stops at the first character it can't read and returns `2`. The off-by-one doesn't crash; it just degrades into slightly different edge behaviour. Past me got away with it.
 
 ## The rebuild
 
-The logic survived intact — the only real change is honesty about that edge and dropping the string detour:
+The logic survived intact. The only real change is honesty about that edge and dropping the string detour:
 
 ```js
 function nextRow(row, table) {
@@ -87,6 +104,6 @@ function nextRow(row, table) {
 }
 ```
 
-Bit shifts instead of `parseInt` on a string, `Uint8Array` instead of an array of booleans, and a `<canvas>` instead of 14,400 DOM nodes — so it'll happily run hundreds of cells per row at sixty frames a second. Each generation is drawn one row below the last, top to bottom, because that downward axis *is* time: every row is computed entirely from the one above it.
+Bit shifts instead of `parseInt` on a string, a `Uint8Array` instead of an array of booleans, and a `<canvas>` instead of fourteen thousand DOM nodes — so it runs hundreds of cells wide at sixty frames a second. In the hero each new generation is drawn at the bottom and the whole thing scrolls up, because that downward axis *is* time: every row is computed entirely from the one above it.
 
-That's the part I find quietly remarkable. Nothing here knows about triangles, or chaos, or traffic. It's one rule, applied locally, over and over — and the structure falls out for free. It did in 2016, and it does now. Some toys age well.
+That's the part I find quietly remarkable. Nothing up there knows about triangles, or chaos, or traffic. It's one rule, applied locally, over and over — and the structure falls out for free. It did in 2016, and it does now. Some toys age well.

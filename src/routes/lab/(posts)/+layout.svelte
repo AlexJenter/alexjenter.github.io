@@ -118,4 +118,61 @@
         max-width: 100%;
         border-radius: var(--radius-md);
     }
+
+    /* Styled tooltips for link titles: [text](url "title").
+       The rehype-link-tooltips plugin turns the title into a .link-tip span. */
+    .post :global(a.has-tip) {
+        position: relative;
+    }
+
+    .post :global(a.has-tip .link-tip) {
+        position: absolute;
+        left: 50%;
+        bottom: calc(100% + var(--space-2));
+        z-index: 10;
+        transform: translateX(-50%) translateY(4px);
+
+        width: max-content;
+        max-width: min(22rem, 60vw);
+        padding: var(--space-2) var(--space-3);
+
+        background: var(--color-text);
+        color: var(--color-bg);
+        border-radius: var(--radius-md);
+
+        font-size: var(--text-sm);
+        line-height: var(--leading-normal);
+        text-align: left;
+        text-decoration: none;
+        text-wrap: pretty;
+
+        opacity: 0;
+        pointer-events: none;
+        transition:
+            opacity var(--duration-fast) var(--ease-out),
+            transform var(--duration-fast) var(--ease-out);
+    }
+
+    /* little pointer under the bubble */
+    .post :global(a.has-tip .link-tip)::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-top-color: var(--color-text);
+    }
+
+    .post :global(a.has-tip:hover .link-tip),
+    .post :global(a.has-tip:focus-visible .link-tip) {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .post :global(a.has-tip .link-tip) {
+            transition: none;
+        }
+    }
 </style>
