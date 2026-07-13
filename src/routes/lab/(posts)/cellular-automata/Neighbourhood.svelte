@@ -49,6 +49,9 @@
         align-items: center;
         gap: var(--space-3);
         font-family: var(--font-mono);
+        background-color: var(--color-surface);
+        padding: 2rem 3rem 4rem;
+        border-radius: var(--radius-lg);
     }
 
     .cells {
@@ -61,7 +64,7 @@
         width: 38px;
         height: 38px;
         padding: 0;
-        background: var(--color-surface);
+        background: var(--color-bg);
         border: 1px solid var(--color-border);
         border-radius: var(--radius-sm);
         cursor: pointer;

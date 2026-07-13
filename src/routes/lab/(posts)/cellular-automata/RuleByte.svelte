@@ -100,7 +100,7 @@
     .pat span {
         width: 11px;
         height: 11px;
-        background: var(--color-surface);
+        background: var(--color-bg);
         box-shadow: inset 0 0 0 1px var(--color-border);
         outline: 1px solid var(--color-text-muted);
     }
@@ -118,7 +118,7 @@
         font-family: var(--font-mono);
         font-size: var(--text-sm);
         color: var(--color-text-muted);
-        background: var(--color-surface);
+        background: var(--color-bg);
         border: 1px solid var(--color-text-muted);
         border-radius: 0;
         cursor: pointer;

@@ -1,4 +1,6 @@
 :root {
+    color-scheme: light;
+
     /* Color */
     --color-bg: #f5f4f0;
     --color-surface: #eceae4;
@@ -67,8 +69,14 @@
     --duration-slow: 400ms;
 }
 
+/* Dark palette.
+   Two triggers, same values (a rule can't span the media-query boundary):
+   1. the OS prefers dark AND the toggle hasn't forced light;
+   2. the toggle explicitly picked dark (e.g. on a light OS).
+   Keep the two blocks below in sync. */
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
         --color-bg: #111110;
         --color-surface: #1a1916;
         --color-border: #2e2c28;
@@ -87,4 +95,25 @@
         --syntax-class: #d9a15a;
         --syntax-punct: var(--color-text-muted);
     }
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --color-bg: #111110;
+    --color-surface: #1a1916;
+    --color-border: #2e2c28;
+    --color-text: #e8e6e0;
+    --color-text-muted: #9e9c98;
+    --color-accent: #e0deda;
+    --color-accent-warm: #e07840;
+    --color-hover: rgb(255 255 255 / 0.05);
+
+    /* Syntax — lifted for the dark paper */
+    --syntax-comment: #7c7a74;
+    --syntax-keyword: #e07840;
+    --syntax-string: #a9b884;
+    --syntax-number: #b79ac6;
+    --syntax-function: #8fb2cc;
+    --syntax-class: #d9a15a;
+    --syntax-punct: var(--color-text-muted);
 }

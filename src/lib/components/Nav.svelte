@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from "$app/stores";
+    import ThemeToggle from "./ThemeToggle.svelte";
 
     const links = [
         { href: "/lab", label: "Lab" },
@@ -21,6 +22,7 @@
                 >
             </li>
         {/each}
+        <li><ThemeToggle /></li>
     </ul>
 </nav>
 
@@ -48,6 +50,7 @@
 
     ul {
         display: flex;
+        align-items: center;
         gap: var(--space-6);
         list-style: none;
     }
