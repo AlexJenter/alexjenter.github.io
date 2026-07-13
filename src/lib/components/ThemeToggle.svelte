@@ -1,32 +1,40 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+    import { theme, type Preference } from "$lib/theme.svelte";
 
-    type Theme = "light" | "dark";
+    // Cycle order for the single-button control.
+    const order: Preference[] = ["system", "light", "dark"];
+    const nextLabel: Record<Preference, string> = {
+        system: "light",
+        light: "dark",
+        dark: "system",
+    };
 
-    // SSR-safe default; corrected to the real theme on mount.
-    let theme = $state<Theme>("light");
-
-    onMount(() => {
-        const stored = localStorage.getItem("theme");
-        theme =
-            stored === "light" || stored === "dark"
-                ? stored
-                : window.matchMedia("(prefers-color-scheme: dark)").matches
-                  ? "dark"
-                  : "light";
-    });
-
-    function toggle() {
-        theme = theme === "dark" ? "light" : "dark";
-        localStorage.setItem("theme", theme);
-        document.documentElement.dataset.theme = theme;
+    function cycle() {
+        const i = order.indexOf(theme.preference);
+        theme.set(order[(i + 1) % order.length]);
     }
 
-    let label = $derived(`Switch to ${theme === "dark" ? "light" : "dark"} theme`);
+    let label = $derived(`Switch to ${nextLabel[theme.preference]} theme`);
 </script>
 
-<button type="button" onclick={toggle} aria-label={label} title={label}>
-    {#if theme === "dark"}
+<button type="button" onclick={cycle} aria-label={label} title={label}>
+    {#if theme.preference === "system"}
+        <!-- monitor -->
+        <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+        >
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <path d="M8 21h8M12 17v4" />
+        </svg>
+    {:else if theme.preference === "dark"}
         <!-- moon -->
         <svg
             width="18"

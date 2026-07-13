@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
     import Canvas from "$lib/components/Canvas.svelte";
     import { Pane, Slider, FileInput, Button } from "$lib/components/gui";
+    import { theme } from "$lib/theme.svelte";
     import { applyWeightedCentroid, downloadSVG } from "./utils";
 
     import imgSrc from "./img0.jpg";
@@ -16,7 +17,7 @@
     let canvasW = 0;
     let canvasH = 0;
 
-    let isDark = $state(false);
+    let isDark = $derived(theme.resolved === "dark");
     let dotRadius = $state(10);
     let pendingPointCount = $state(1000);
     let pointCount = $state(1000);
@@ -49,17 +50,18 @@
         };
     });
 
-    onMount(() => {
-        const mq = window.matchMedia("(prefers-color-scheme: dark)");
-        isDark = mq.matches;
-        const onSchemeChange = (e: MediaQueryListEvent) => {
-            isDark = e.matches;
-            lum = null;
-            iterCount = 0;
-            resetKey++;
-        };
-        mq.addEventListener("change", onSchemeChange);
+    // Re-seed when the resolved theme flips (weights invert with theme, and the
+    // dot color changes). Guard the initial run so it only fires on a change.
+    let prevResolved = theme.resolved;
+    $effect(() => {
+        if (theme.resolved === prevResolved) return;
+        prevResolved = theme.resolved;
+        lum = null;
+        iterCount = 0;
+        resetKey++;
+    });
 
+    onMount(() => {
         const image = new Image();
         image.src = imgSrc;
         image.onload = () => {
@@ -67,8 +69,6 @@
             ar = image.naturalWidth / image.naturalHeight;
             resetKey++;
         };
-
-        return () => mq.removeEventListener("change", onSchemeChange);
     });
 
     const setup = (_ctx: CanvasRenderingContext2D, w: number, h: number) => {
