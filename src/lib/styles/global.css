@@ -119,3 +119,30 @@ img {
     height: 100%;
     width: 100%;
 }
+
+/* --- Lab hero: fixed backdrop + slide-up drawer + gentle scroll snap ------- */
+
+/* Class-gated to lab-post routes so home/resume pages keep free scroll. The
+   snap container is the root scroller; snap points live on the spacer (full
+   hero) and the drawer (revealed). */
+html.lab-post {
+    scroll-snap-type: y mandatory;
+}
+
+/* The hero is pinned as a full-viewport backdrop; the drawer + article scroll
+   up over it on an opaque layer. inset: 0 (not 100vw/svh) avoids a stray
+   horizontal scrollbar. */
+.hero-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: var(--color-bg);
+}
+
+/* Reserves the first screen so the fixed hero shows through; rest point = full
+   hero. lvh (not svh) so it still fills the screen once the mobile URL bar
+   retracts, otherwise the drawer peeks up from the bottom. */
+.hero-spacer {
+    height: 100lvh;
+    scroll-snap-align: start;
+}

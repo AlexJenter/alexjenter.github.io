@@ -119,7 +119,7 @@
     };
 </script>
 
-<div class="hero">
+<div class="hero hero-backdrop">
     {#if ar !== null}
         <div class="inner" style="--ar: {ar}">
             {#key `${resetKey}`}
@@ -132,6 +132,7 @@
         </div>
     {/if}
 </div>
+<div class="hero-spacer" aria-hidden="true"></div>
 {#if ar !== null}
     <Drawer title="Settings">
         <Slider
@@ -165,9 +166,8 @@
 {/if}
 
 <style>
+    /* fixed positioning/background come from the global .hero-backdrop */
     .hero {
-        width: 100vw;
-        height: 100svh;
         display: flex;
         justify-content: center;
         align-items: center;

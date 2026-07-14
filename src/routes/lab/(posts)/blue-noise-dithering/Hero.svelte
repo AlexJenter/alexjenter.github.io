@@ -99,9 +99,10 @@
     `;
 </script>
 
-<div class="hero">
+<div class="hero-backdrop">
     <FullscreenShader frag={FRAG} {uniforms} {textures} {label} bind:api={shader} />
 </div>
+<div class="hero-spacer" aria-hidden="true"></div>
 
 <Drawer title="Dither">
     <Slider
@@ -119,10 +120,5 @@
     />
 </Drawer>
 
-<style>
-    .hero {
-        width: 100vw;
-        height: 100svh;
-        background: var(--color-bg);
-    }
-</style>
+<!-- positioning/background come from the global .hero-backdrop + .hero-spacer -->
+

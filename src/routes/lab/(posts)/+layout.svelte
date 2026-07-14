@@ -34,26 +34,46 @@
                 Hero = m.default;
             });
     });
+
+    // Scope root-level scroll snapping to hero posts only (home/resume keep
+    // free scroll). The snap points live on the hero spacer + drawer.
+    $effect(() => {
+        const el = document.documentElement;
+        if (data.hasHero) {
+            el.classList.add("lab-post");
+            return () => el.classList.remove("lab-post");
+        }
+    });
 </script>
 
 {#if data.hasHero}
     {#if Hero}<Hero />{:else}<div class="hero-placeholder"></div>{/if}
 {/if}
-<article class="post">
-    <header>
-        <h1>{data.title}</h1>
-        <Date date={data.date} />
-    </header>
-    <div class="post-body">
-        {@render children()}
-    </div>
-</article>
+<!-- opaque layer that scrolls up over the fixed hero backdrop -->
+<div class="post-layer">
+    <article class="post">
+        <header>
+            <h1>{data.title}</h1>
+            <Date date={data.date} />
+        </header>
+        <div class="post-body">
+            {@render children()}
+        </div>
+    </article>
+</div>
 
 <style>
+    /* holds the first screen while the Hero chunk loads; matches .hero-spacer */
     .hero-placeholder {
-        width: 100vw;
-        height: 100svh;
-        margin-block-end: 7rem;
+        height: 100lvh;
+    }
+
+    /* opaque surface over the fixed hero — full-width so the hero can't peek at
+       the article's side margins */
+    .post-layer {
+        position: relative;
+        z-index: 1;
+        background: var(--color-bg);
     }
 
     header {

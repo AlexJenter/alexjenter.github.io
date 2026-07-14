@@ -109,7 +109,7 @@
     }
 </script>
 
-<div class="hero">
+<div class="hero hero-backdrop">
     <div class="inner">
         {#key `${cells}-${seed}-${regen}`}
             <Canvas {setup} {update} label={`Elementary cellular automaton, rule ${rule}`} />
@@ -117,6 +117,7 @@
     </div>
 
 </div>
+<div class="hero-spacer" aria-hidden="true"></div>
 
 <Drawer title="Rules">
     <div class="readout">
@@ -142,9 +143,8 @@
 </Drawer>
 
 <style>
+    /* fixed positioning/background come from the global .hero-backdrop */
     .hero {
-        width: 100vw;
-        height: 100svh;
         display: flex;
 
         > .inner {

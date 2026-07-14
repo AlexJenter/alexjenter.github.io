@@ -296,7 +296,7 @@
     };
 </script>
 
-<div class="hero">
+<div class="hero hero-backdrop">
     <div class="inner">
         {#key resetKey}
             <Canvas
@@ -307,6 +307,7 @@
         {/key}
     </div>
 </div>
+<div class="hero-spacer" aria-hidden="true"></div>
 <Drawer title="Controls">
     <Slider
         bind:value={restLength}
@@ -341,9 +342,8 @@
 </Drawer>
 
 <style>
+    /* fixed positioning/background come from the global .hero-backdrop */
     .hero {
-        width: 100vw;
-        height: 100svh;
         display: flex;
 
         > .inner {
