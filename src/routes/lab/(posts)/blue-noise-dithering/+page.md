@@ -3,6 +3,7 @@ status: draft
 title: Blue Noise Dithering
 date: "2026-07-14"
 description: A one-bit threshold dither, ported from shadertoy. inspired by Acerola
+cover: ./cover.png
 ---
 
 Some time ago I scribbled a tiny [Shadertoy](https://www.shadertoy.com/view/XlG3DW) that does exactly one thing: it thresholds a photograph against a noise texture and paints a single bit per pixel — ink or paper, nothing in between. Drag left–right and the noise zooms, so the dither slides from a hard, posterised threshold into a fine, grainy stipple.
