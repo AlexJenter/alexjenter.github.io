@@ -33,7 +33,7 @@
         justify-content: space-between;
         padding: var(--space-4) var(--space-8);
         /*border-bottom: 1px solid var(--color-border);*/
-        position: absolute;
+        position: fixed;
         width: 100%;
         top: 0;
         /*background: rgb(from var(--color-bg) r b g / 0.1);*/

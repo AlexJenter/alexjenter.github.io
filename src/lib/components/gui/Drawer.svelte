@@ -33,6 +33,7 @@
         background: var(--color-surface);
         border-top: 1px solid var(--color-border);
         color: var(--color-text);
+        padding: var(--space-4) var(--space-8);
         /* the "machine voice" — mono with aligned figures */
         font-family: var(--font-mono);
         font-variant-numeric: tabular-nums;
