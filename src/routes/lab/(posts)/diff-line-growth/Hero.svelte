@@ -1,6 +1,6 @@
 <script lang="ts">
     import Canvas from "$lib/components/Canvas.svelte";
-    import { Pane, Slider, Button } from "$lib/components/gui";
+    import { Drawer, Slider, Button } from "$lib/components/gui";
 
     type Vec2 = { x: number; y: number };
     type Point = { pos: Vec2; oldpos: Vec2; index: number };
@@ -306,46 +306,45 @@
             />
         {/key}
     </div>
-    <Pane title="Controls" fadeZone={200}>
-        <Slider
-            bind:value={restLength}
-            min={4}
-            max={30}
-            step={0.5}
-            label="Rest length"
-        />
-        <Slider
-            bind:value={repulsionRadius}
-            min={10}
-            max={60}
-            step={1}
-            label="Repulsion radius"
-        />
-        <Slider
-            bind:value={repulsionStrength}
-            min={0}
-            max={2}
-            step={0.01}
-            label="Repulsion strength"
-        />
-        <Slider
-            bind:value={bendStiffness}
-            min={0}
-            max={0.1}
-            step={0.0001}
-            label="Bend stiffness"
-        />
-        <Button onclick={() => (paused = !paused)} label={paused ? "Play" : "Pause"} />
-        <Button onclick={() => resetKey++} label="Reset" />
-    </Pane>
 </div>
+<Drawer title="Controls">
+    <Slider
+        bind:value={restLength}
+        min={4}
+        max={30}
+        step={0.5}
+        label="Rest length"
+    />
+    <Slider
+        bind:value={repulsionRadius}
+        min={10}
+        max={60}
+        step={1}
+        label="Repulsion radius"
+    />
+    <Slider
+        bind:value={repulsionStrength}
+        min={0}
+        max={2}
+        step={0.01}
+        label="Repulsion strength"
+    />
+    <Slider
+        bind:value={bendStiffness}
+        min={0}
+        max={0.1}
+        step={0.0001}
+        label="Bend stiffness"
+    />
+    <Button onclick={() => (paused = !paused)} label={paused ? "Play" : "Pause"} />
+    <Button onclick={() => resetKey++} label="Reset" />
+</Drawer>
 
 <style>
     .hero {
         width: 100vw;
         height: 100svh;
         display: flex;
-        margin-block-end: 7rem;
 
         > .inner {
             flex: 1;

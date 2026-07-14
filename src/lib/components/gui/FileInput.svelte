@@ -94,7 +94,7 @@
     }
 
     .zone {
-        aspect-ratio: 1;
+        /*aspect-ratio: 1;*/
         width: 100%;
         border: 3px dashed var(--color-border);
         border-radius: var(--radius-sm);

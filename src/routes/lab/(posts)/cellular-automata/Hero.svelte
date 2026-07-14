@@ -1,6 +1,6 @@
 <script lang="ts">
     import Canvas from "$lib/components/Canvas.svelte";
-    import { Pane, Slider, Radio, Button } from "$lib/components/gui";
+    import { Drawer, Slider, Radio, Button } from "$lib/components/gui";
     import { ruleTable, nextRow } from "./ca.js";
 
     let rule = $state(90); // applied live — drag it and the flow morphs
@@ -116,36 +116,36 @@
         {/key}
     </div>
 
-    <Pane title="Rules" fadeZone={200}>
-        <div class="readout">
-            <span>rule {rule}</span>
-            <span class="bits">{rule.toString(2).padStart(8, "0")}</span>
-        </div>
-        <Slider bind:value={rule} min={0} max={255} label="rule" />
-        <Slider bind:value={cells} min={48} max={420} step={4} label="cells" />
-        <Radio bind:value={seed} options={seedOptions} label="seed" />
-        <div class="presets">
-            {#each presets as p}
-                <button
-                    type="button"
-                    class:active={rule === p}
-                    onclick={() => (rule = p)}>{p}</button
-                >
-            {/each}
-        </div>
-        <Button onclick={() => (paused = !paused)} label={paused ? "Play" : "Pause"} />
-        {#if seed === "random"}
-            <Button onclick={() => regen++} label="New random seed" />
-        {/if}
-    </Pane>
 </div>
+
+<Drawer title="Rules">
+    <div class="readout">
+        <span>rule {rule}</span>
+        <span class="bits">{rule.toString(2).padStart(8, "0")}</span>
+    </div>
+    <Slider bind:value={rule} min={0} max={255} label="rule" />
+    <Slider bind:value={cells} min={48} max={420} step={4} label="cells" />
+    <Radio bind:value={seed} options={seedOptions} label="seed" />
+    <div class="presets">
+        {#each presets as p}
+            <button
+                type="button"
+                class:active={rule === p}
+                onclick={() => (rule = p)}>{p}</button
+            >
+        {/each}
+    </div>
+    <Button onclick={() => (paused = !paused)} label={paused ? "Play" : "Pause"} />
+    {#if seed === "random"}
+        <Button onclick={() => regen++} label="New random seed" />
+    {/if}
+</Drawer>
 
 <style>
     .hero {
         width: 100vw;
         height: 100svh;
         display: flex;
-        margin-block-end: 7rem;
 
         > .inner {
             flex: 1;

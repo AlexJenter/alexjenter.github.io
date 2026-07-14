@@ -1,4 +1,5 @@
 export { default as Pane } from './Pane.svelte';
+export { default as Drawer } from './Drawer.svelte';
 export { default as Slider } from './Slider.svelte';
 export { default as Button } from './Button.svelte';
 export { default as FileInput } from './FileInput.svelte';

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { theme } from "$lib/theme.svelte";
-    import { Pane, Slider, FileInput, Checkbox, Button } from "$lib/components/gui";
+    import { Drawer, Slider, FileInput, Checkbox, Button } from "$lib/components/gui";
     import FullscreenShader, {
         type ShaderApi,
     } from "$lib/components/FullscreenShader.svelte";
@@ -101,28 +101,27 @@
 
 <div class="hero">
     <FullscreenShader frag={FRAG} {uniforms} {textures} {label} bind:api={shader} />
-    <Pane title="Dither" fadeZone={200}>
-        <Slider
-            bind:value={ditherScale}
-            min={0.1}
-            max={20}
-            step={0.01}
-            label="Noise scale"
-        />
-        <Checkbox bind:value={invert} label="Invert" />
-        <FileInput bind:value={uploadedImage} label="Image" />
-        <Button
-            label="Export PNG"
-            onclick={() => shader?.download("dither.png", { from: "uImage" })}
-        />
-    </Pane>
 </div>
+<Drawer title="Dither">
+    <Slider
+        bind:value={ditherScale}
+        min={0.1}
+        max={20}
+        step={0.01}
+        label="Noise scale"
+    />
+    <Checkbox bind:value={invert} label="Invert" />
+    <FileInput bind:value={uploadedImage} label="Image" />
+    <Button
+        label="Export PNG"
+        onclick={() => shader?.download("dither.png", { from: "uImage" })}
+    />
+</Drawer>
 
 <style>
     .hero {
         width: 100vw;
         height: 100svh;
-        margin-block-end: 7rem;
         background: var(--color-bg);
     }
 </style>

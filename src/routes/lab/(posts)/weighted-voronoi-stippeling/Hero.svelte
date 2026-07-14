@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import Canvas from "$lib/components/Canvas.svelte";
-    import { Pane, Slider, FileInput, Button } from "$lib/components/gui";
+    import { Drawer, Slider, FileInput, Button } from "$lib/components/gui";
     import { theme } from "$lib/theme.svelte";
     import { applyWeightedCentroid, downloadSVG } from "./utils";
 
@@ -130,37 +130,39 @@
                 />
             {/key}
         </div>
-        <Pane title="Settings" fadeZone={200}>
-            <Slider
-                bind:value={dotRadius}
-                min={1}
-                max={20}
-                step={0.001}
-                label="Dot radius"
-            />
-            <Slider
-                bind:value={pendingPointCount}
-                min={100}
-                max={20000}
-                step={100}
-                label="Points"
-            />
-            <FileInput bind:value={uploadedImage} label="Image" />
-            <Button
-                onclick={() =>
-                    downloadSVG(pts, img!, canvasW, canvasH, dotRadius)}
-                label="Download SVG"
-            />
-            <Button
-                onclick={() => {
-                    pts = [];
-                    resetKey++;
-                }}
-                label="Reset"
-            />
-        </Pane>
     {/if}
 </div>
+{#if ar !== null}
+    <Drawer title="Settings">
+        <Slider
+            bind:value={dotRadius}
+            min={1}
+            max={20}
+            step={0.001}
+            label="Dot radius"
+        />
+        <Slider
+            bind:value={pendingPointCount}
+            min={100}
+            max={20000}
+            step={100}
+            label="Points"
+        />
+        <FileInput bind:value={uploadedImage} label="Image" />
+        <Button
+            onclick={() =>
+                downloadSVG(pts, img!, canvasW, canvasH, dotRadius)}
+            label="Download SVG"
+        />
+        <Button
+            onclick={() => {
+                pts = [];
+                resetKey++;
+            }}
+            label="Reset"
+        />
+    </Drawer>
+{/if}
 
 <style>
     .hero {
@@ -169,7 +171,6 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-block-end: 7rem;
 
         > .inner {
             aspect-ratio: var(--ar);
