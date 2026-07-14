@@ -29,7 +29,7 @@ For each pixel: if the image is brighter than the noise sample, the pixel is on.
 
 ## The hero
 
-The version at the top of this page is the same shader, cleaned up and dropped into a full-screen WebGL quad. Move the pointer horizontally to zoom the dither; the panel lets you drop in your own image and flip ink/paper.
+The version at the top of this page is the same shader, cleaned up and dropped into a reusable full-screen WebGL surface. The panel lets you set the noise scale, flip ink/paper, drop in your own image, and export the result as a PNG at the source image's **full resolution** — the export renders off-screen at native size rather than snapshotting the viewport.
 
 Three things changed on the way over:
 
