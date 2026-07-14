@@ -9,7 +9,7 @@
     import noiseSrc from "./blue-noise-rgba.png";
 
     // --- controls -----------------------------------------------------------
-    let ditherScale = $state(23.87);
+    let ditherScale = $state(8);
     let invert = $state(false);
     let uploadedImage = $state<string | undefined>(undefined);
 
@@ -105,7 +105,7 @@
         <Slider
             bind:value={ditherScale}
             min={0.1}
-            max={221}
+            max={20}
             step={0.01}
             label="Noise scale"
         />
