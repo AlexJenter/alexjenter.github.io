@@ -53,7 +53,6 @@
 
     ul {
         display: flex;
-        /*gap: 1px;*/
         list-style: none;
         background-color: var(--color-surface);
         overflow: hidden;
@@ -63,9 +62,8 @@
     li {
         display: flex;
         & + & {
-            border-left: 1px solid rgb(255 255 255 /0.35);
+            border-left: 1px solid rgb(255 255 255 /0.25);
         }
-        /*background-color: rgb(255 255 255 /0.25);*/
     }
 
     li > a,
