@@ -63,17 +63,18 @@
 </div>
 
 <style>
-    /* holds the first screen while the Hero chunk loads; matches .hero-spacer */
     .hero-placeholder {
         height: 100lvh;
     }
 
-    /* opaque surface over the fixed hero — full-width so the hero can't peek at
-       the article's side margins */
     .post-layer {
         position: relative;
         z-index: 1;
         background: var(--color-bg);
+        /* Own snap point so `mandatory` snapping doesn't yank clicks in the
+           article back to the drawer. Being taller than the viewport, this is a
+           large snap area — you can rest anywhere within it. */
+        scroll-snap-align: start;
     }
 
     header {

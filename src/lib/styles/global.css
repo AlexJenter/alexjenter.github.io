@@ -126,6 +126,7 @@ img {
    snap container is the root scroller; snap points live on the spacer (full
    hero) and the drawer (revealed). */
 html.lab-post {
+    scroll-snap-type: y proximity;
     scroll-snap-type: y mandatory;
 }
 

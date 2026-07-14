@@ -84,9 +84,14 @@
             vec2 imgUv = uv * uResolution / cover + (cover - uResolution) * 0.5 / cover;
             vec3 image = texture2D(uImage, imgUv).rgb;
 
-            // Isotropic centered coords -> square noise tiles at any aspect.
-            vec2 nuv = (gl_FragCoord.xy - 0.5 * uResolution) / uResolution.y;
-            vec3 noise = texture2D(uNoise, nuv * uDitherScale).rgb;
+            // Tile the noise in *image* space (not output space) so the grain
+            // is locked to the photo — identical in the live preview and the
+            // full-resolution export, whatever the viewport size/aspect. Scale
+            // x by the image aspect so the tiles stay square, and offset by the
+            // image centre so the grain scales about the middle, not a corner.
+            vec2 nuv = vec2(imgUv.x * uImageRes.x / uImageRes.y, imgUv.y);
+            vec2 nc  = vec2(0.5 * uImageRes.x / uImageRes.y, 0.5);
+            vec3 noise = texture2D(uNoise, (nuv - nc) * uDitherScale).rgb;
 
             float on = step(lum(noise), lum(image)); // 1 where image beats threshold
 
@@ -121,4 +126,3 @@
 </Drawer>
 
 <!-- positioning/background come from the global .hero-backdrop + .hero-spacer -->
-

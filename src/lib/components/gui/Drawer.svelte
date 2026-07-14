@@ -30,7 +30,7 @@
         position: relative;
         z-index: 1; /* rides above the fixed hero backdrop (z-index: 0) */
         width: 100%;
-        background: var(--color-surface);
+        background: rgb(0 0 0 / 0.9);
         border-top: 1px solid var(--color-border);
         color: var(--color-text);
         padding: var(--space-4) var(--space-8);
