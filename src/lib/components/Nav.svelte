@@ -32,31 +32,52 @@
         align-items: center;
         justify-content: space-between;
         padding: var(--space-4) var(--space-8);
-        border-bottom: 1px solid var(--color-border);
+        /*border-bottom: 1px solid var(--color-border);*/
         position: absolute;
         width: 100%;
         top: 0;
-        background: rgb(from var(--color-bg) r b g / 0.1);
+        /*background: rgb(from var(--color-bg) r b g / 0.1);*/
 
         z-index: 10;
     }
 
     .wordmark {
+        padding: 0.125em .75em;
         font-size: var(--text-lg);
         font-weight: 500;
         text-decoration: none;
         letter-spacing: -0.02em;
+        background-color: var(--color-surface);
+        border-radius: 4px;
     }
 
     ul {
         display: flex;
-        align-items: center;
-        gap: var(--space-6);
+        /*gap: 1px;*/
         list-style: none;
+        background-color: var(--color-surface);
+        overflow: hidden;
+        border-radius: 4px;
+    }
+
+    li {
+        display: flex;
+        & + & {
+            border-left: 1px solid rgb(255 255 255 /0.35);
+        }
+        /*background-color: rgb(255 255 255 /0.25);*/
+    }
+
+    li > a,
+    li > :global(button) {
+        padding: 0.25em 1em;
+        font-size: var(--text-sm);
     }
 
     a {
-        font-size: var(--text-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
         text-decoration: none;
         color: var(--color-text-muted);
         transition: color var(--duration-fast) var(--ease-out);

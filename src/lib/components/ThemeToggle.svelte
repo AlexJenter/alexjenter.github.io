@@ -52,6 +52,7 @@
     button {
         display: inline-flex;
         align-items: center;
+        height: 100%;
         justify-content: center;
         padding: 0;
         border: none;
