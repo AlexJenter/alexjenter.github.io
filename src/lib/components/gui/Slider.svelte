@@ -183,6 +183,7 @@
         gap: var(--space-2);
         font-family: var(--font-mono);
         font-size: var(--text-xs);
+        font-variant-numeric: tabular-nums;
     }
 
     .control.full {

@@ -21,7 +21,9 @@
 <style>
     time {
         display: block;
+        font-family: var(--font-mono);
         font-size: var(--text-sm);
+        font-variant-numeric: tabular-nums;
         color: var(--color-text-muted);
         margin-top: var(--space-2);
     }

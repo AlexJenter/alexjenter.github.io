@@ -22,7 +22,7 @@
 
     /* Type scale */
     --font-serif: "Fraunces Variable", Georgia, "Times New Roman", serif;
-    --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", monospace;
+    --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Code", "Source Code Pro", monospace;
 
     /* Fraunces optical size: low opsz = rounder/readable, high opsz = quirky/display */
     --font-opsz-body: 12;

@@ -158,11 +158,9 @@
         border: 1px solid var(--color-border);
         border-radius: var(--radius-md);
         box-shadow: 0 2px 12px rgb(0 0 0 / 0.12);
-        font-family: var(--font-serif);
-        font-variation-settings:
-            "opsz" var(--font-opsz-body),
-            "WONK" 0,
-            "SOFT" 0;
+        /* the control panel is the "machine voice" — mono, with aligned figures */
+        font-family: var(--font-mono);
+        font-variant-numeric: tabular-nums;
         user-select: none;
         touch-action: none;
     }
@@ -181,7 +179,7 @@
 
     .title {
         font-size: var(--text-sm);
-        font-weight: 300;
+        font-weight: 400;
         color: var(--color-text);
         letter-spacing: 0.02em;
         padding: var(--space-1) var(--space-3);

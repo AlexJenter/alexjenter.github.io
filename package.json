@@ -30,6 +30,7 @@
 	},
 	"dependencies": {
 		"@fontsource-variable/fraunces": "^5.2.9",
+		"@fontsource/ibm-plex-mono": "^5.2.7",
 		"d3": "^7.9.0",
 		"d3-delaunay": "^6.0.4",
 		"katex": "^0.16.45",

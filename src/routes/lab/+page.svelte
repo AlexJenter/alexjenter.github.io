@@ -31,8 +31,8 @@
                                 {/if}
                             {/if}
                             <div class="meta">
-                                <span class="title">{post.title}</span>
                                 <Date date={post.date} />
+                                <span class="title">{post.title}</span>
                                 {#if post.description}
                                     <p class="description">{post.description}</p>
                                 {/if}
