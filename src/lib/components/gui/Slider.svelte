@@ -25,7 +25,7 @@
 
     // Custom drag
     let trackEl: HTMLElement;
-    let dragging = false;
+    let dragging = $state(false);
     let lastX = 0;
     let accumValue = 0;
 
@@ -108,31 +108,14 @@
     }
 </script>
 
-<div class="row">
-    {#if label}
-        <span class="label" title={label}>{label}</span>
-    {/if}
-    <div class="control" class:full={!label}>
-        <div
-            bind:this={trackEl}
-            class="track"
-            class:dragging
-            role="slider"
-            tabindex="0"
-            aria-valuemin={min}
-            aria-valuemax={max}
-            aria-valuenow={value}
-            aria-label={label}
-            onpointerdown={onPointerDown}
-            onpointermove={onPointerMove}
-            onpointerup={onPointerUp}
-            onkeydown={onKeyDown}
-        >
-            <div class="track-line">
-                <div class="fill" style="width: {pct}%"></div>
-            </div>
-            <div class="thumb" style="left: {pct}%"></div>
-        </div>
+<!--
+    Ticked-gauge slider (viewfinder language): label + readout stacked above a
+    full-width graduated track with a playhead marker. Skin only — drag
+    (shift = fine), keyboard, and click-to-type behaviour are unchanged.
+-->
+<div class="slider">
+    <div class="head">
+        <span class="label" title={label}>{label ?? ""}</span>
         {#if editing}
             <input
                 bind:this={editEl}
@@ -147,112 +130,81 @@
             />
         {:else}
             <div
-                class="output-wrapper"
+                class="value"
                 onclick={startEdit}
                 role="button"
                 title="Click to edit"
                 tabindex="0"
                 onkeydown={(e) => e.key === "Enter" && startEdit()}
             >
-                <output>{display}</output>
+                {display}
             </div>
         {/if}
+    </div>
+    <div
+        bind:this={trackEl}
+        class="track"
+        class:dragging
+        role="slider"
+        tabindex="0"
+        aria-valuemin={min}
+        aria-valuemax={max}
+        aria-valuenow={value}
+        aria-label={label}
+        onpointerdown={onPointerDown}
+        onpointermove={onPointerMove}
+        onpointerup={onPointerUp}
+        onkeydown={onKeyDown}
+    >
+        <div class="ticks" aria-hidden="true"></div>
+        <div class="fill" style="width: {pct}%"></div>
+        <div class="marker" style="left: {pct}%"></div>
     </div>
 </div>
 
 <style>
-    .row {
-        display: grid;
-        grid-template-columns: 1fr 2fr;
-        align-items: center;
+    .slider {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-1);
+        font-family: var(--font-mono);
+        font-variant-numeric: tabular-nums;
+        font-size: var(--text-xs);
+    }
+
+    .head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
         gap: var(--space-2);
-        min-height: 22px;
+        min-width: 0;
     }
 
     .label {
-        font-size: var(--text-xs);
         color: var(--color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
-    .control {
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-        font-family: var(--font-mono);
-        font-size: var(--text-xs);
-        font-variant-numeric: tabular-nums;
-    }
-
-    .control.full {
-        grid-column: 1 / -1;
-    }
-
-    .track {
-        flex: 1;
-        min-width: 0;
-        position: relative;
-        height: 18px;
-        cursor: ew-resize;
-        display: flex;
-        align-items: center;
-        touch-action: none;
-        outline: none;
-    }
-
-    .track.dragging {
-        cursor: col-resize;
-    }
-
-    .track:focus-visible .thumb {
-        outline: 2px solid var(--color-text);
-        outline-offset: 2px;
-    }
-
-    .track-line {
-        position: absolute;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: var(--color-border);
-        border-radius: 2px;
-        overflow: hidden;
-    }
-
-    .fill {
-        height: 100%;
-        background: var(--color-text-muted);
-        border-radius: 2px;
-    }
-
-    .thumb {
-        position: absolute;
-        top: 50%;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: var(--color-text);
-        transform: translate(-50%, -50%);
-        pointer-events: none;
-        transition: background var(--duration-fast) var(--ease-out);
-    }
-
-    output {
-        color: var(--color-text-muted);
-        width: 2em;
-        display: block;
-        text-align: right;
+    .value {
+        flex-shrink: 0;
+        color: var(--color-text);
         cursor: text;
         border-bottom: 1px solid transparent;
         transition: border-color var(--duration-fast) var(--ease-out);
     }
 
-    .edit-input {
-        width: 4ch;
-        color: var(--color-text);
+    .value:hover {
+        border-bottom-color: var(--color-text-muted);
+    }
 
+    .edit-input {
+        flex-shrink: 0;
+        width: 6ch;
+        color: var(--color-text);
         background: none;
         border: none;
         border-bottom: 1px solid var(--color-text-muted);
@@ -266,5 +218,63 @@
     .edit-input::-webkit-inner-spin-button,
     .edit-input::-webkit-outer-spin-button {
         appearance: none;
+    }
+
+    .track {
+        position: relative;
+        height: 16px;
+        cursor: ew-resize;
+        touch-action: none;
+        outline: none;
+    }
+
+    .track.dragging {
+        cursor: col-resize;
+    }
+
+    /* ruler: a hairline baseline with short vertical graduation ticks */
+    .ticks {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 7px;
+        background:
+            linear-gradient(var(--color-border), var(--color-border)) 0 50% /
+                100% 1px no-repeat,
+            repeating-linear-gradient(
+                90deg,
+                var(--color-border) 0 1px,
+                transparent 1px 10px
+            );
+    }
+
+    /* magnitude fill from 0 to the value, along the baseline */
+    .fill {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 2px;
+        background: var(--color-text-muted);
+        pointer-events: none;
+    }
+
+    /* playhead marker at the current value — the bright, tall element */
+    .marker {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        transform: translateX(-1px);
+        background: var(--color-text);
+        pointer-events: none;
+        transition: background var(--duration-fast) var(--ease-out);
+    }
+
+    .track:focus-visible .marker {
+        outline: 2px solid var(--color-text);
+        outline-offset: 2px;
     }
 </style>
