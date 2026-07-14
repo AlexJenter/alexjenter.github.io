@@ -102,6 +102,7 @@
 <div class="hero">
     <FullscreenShader frag={FRAG} {uniforms} {textures} {label} bind:api={shader} />
 </div>
+
 <Drawer title="Dither">
     <Slider
         bind:value={ditherScale}
