@@ -54,6 +54,17 @@ class ThemeStore {
             document.documentElement.dataset.theme = pref;
         }
     }
+
+    /**
+     * Flip to the opposite of what's currently showing. Collapses back to
+     * "system" whenever the target matches the OS, so we keep following the OS
+     * whenever possible — and every click always makes a visible change.
+     */
+    toggle() {
+        const systemTheme: Theme = this.#systemDark ? "dark" : "light";
+        const target: Theme = this.resolved === "dark" ? "light" : "dark";
+        this.set(target === systemTheme ? "system" : target);
+    }
 }
 
 export const theme = new ThemeStore();

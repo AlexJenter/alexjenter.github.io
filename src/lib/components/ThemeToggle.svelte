@@ -1,40 +1,18 @@
 <script lang="ts">
-    import { theme, type Preference } from "$lib/theme.svelte";
+    import { theme } from "$lib/theme.svelte";
 
-    // Cycle order for the single-button control.
-    const order: Preference[] = ["system", "light", "dark"];
-    const nextLabel: Record<Preference, string> = {
-        system: "light",
-        light: "dark",
-        dark: "system",
-    };
-
-    function cycle() {
-        const i = order.indexOf(theme.preference);
-        theme.set(order[(i + 1) % order.length]);
-    }
-
-    let label = $derived(`Switch to ${nextLabel[theme.preference]} theme`);
+    let label = $derived(
+        `Switch to ${theme.resolved === "dark" ? "light" : "dark"} theme`,
+    );
 </script>
 
-<button type="button" onclick={cycle} aria-label={label} title={label}>
-    {#if theme.preference === "system"}
-        <!-- monitor -->
-        <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.75"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-        >
-            <rect x="2" y="3" width="20" height="14" rx="2" />
-            <path d="M8 21h8M12 17v4" />
-        </svg>
-    {:else if theme.preference === "dark"}
+<button
+    type="button"
+    onclick={() => theme.toggle()}
+    aria-label={label}
+    title={label}
+>
+    {#if theme.resolved === "dark"}
         <!-- moon -->
         <svg
             width="18"
