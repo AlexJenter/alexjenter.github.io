@@ -7,32 +7,41 @@
     let { label, onclick }: Props = $props();
 </script>
 
+<!-- Hairline command (viewfinder language): uppercase mono label, muted at
+     rest, brightens on hover, inverts solid on press. -->
 <button type="button" {onclick} class="btn">{label}</button>
 
 <style>
     .btn {
         width: 100%;
-        padding: var(--space-1) var(--space-2);
-        background: var(--color-bg);
+        padding: var(--space-2);
+        background: transparent;
         border: 1px solid var(--color-border);
-        border-radius: var(--radius-sm);
-        font-family: inherit;
+        font-family: var(--font-mono);
         font-size: var(--text-xs);
-        font-variation-settings: inherit;
-        color: var(--color-text);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--color-text-muted);
         cursor: pointer;
         transition:
-            background var(--duration-fast) var(--ease-out),
-            border-color var(--duration-fast) var(--ease-out);
+            color var(--duration-fast) var(--ease-out),
+            border-color var(--duration-fast) var(--ease-out),
+            background var(--duration-fast) var(--ease-out);
     }
 
     .btn:hover {
-        background: var(--color-border);
+        color: var(--color-text);
         border-color: var(--color-text-muted);
     }
 
     .btn:active {
-        background: var(--color-text-muted);
+        background: var(--color-text);
+        border-color: var(--color-text);
         color: var(--color-bg);
+    }
+
+    .btn:focus-visible {
+        outline: 2px solid var(--color-text);
+        outline-offset: 2px;
     }
 </style>

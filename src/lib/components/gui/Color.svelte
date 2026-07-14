@@ -9,11 +9,13 @@
     let inputEl: HTMLInputElement;
 </script>
 
-<div class="row">
+<!-- Swatch + hex readout (viewfinder language): label left, a sharp swatch and
+     uppercase mono hex on the right. -->
+<div class="field">
     {#if label}
         <span class="label" title={label}>{label}</span>
     {/if}
-    <div class="control" class:full={!label}>
+    <div class="control">
         <input
             bind:this={inputEl}
             type="color"
@@ -33,17 +35,21 @@
 </div>
 
 <style>
-    .row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+    .field {
+        display: flex;
         align-items: center;
+        justify-content: space-between;
         gap: var(--space-2);
         min-height: 22px;
+        font-family: var(--font-mono);
+        font-size: var(--text-xs);
+        font-variant-numeric: tabular-nums;
     }
 
     .label {
-        font-size: var(--text-xs);
         color: var(--color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -55,10 +61,6 @@
         gap: var(--space-2);
     }
 
-    .control.full {
-        grid-column: 1 / -1;
-    }
-
     .hidden-input {
         position: absolute;
         width: 0;
@@ -68,11 +70,10 @@
     }
 
     .swatch {
-        width: 20px;
-        height: 20px;
+        width: 16px;
+        height: 16px;
         flex-shrink: 0;
         border: 1px solid var(--color-border);
-        border-radius: var(--radius-sm);
         cursor: pointer;
         padding: 0;
         transition: border-color var(--duration-fast) var(--ease-out);
@@ -82,9 +83,13 @@
         border-color: var(--color-text-muted);
     }
 
+    .swatch:focus-visible {
+        outline: 2px solid var(--color-text);
+        outline-offset: 2px;
+    }
+
     .hex {
-        font-size: var(--text-xs);
-        color: var(--color-text-muted);
-        font-family: var(--font-mono);
+        color: var(--color-text);
+        text-transform: uppercase;
     }
 </style>

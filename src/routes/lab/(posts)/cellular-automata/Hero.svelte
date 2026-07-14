@@ -177,15 +177,16 @@
         min-width: 2.4em;
         font-family: var(--font-mono);
         font-size: var(--text-xs);
+        font-variant-numeric: tabular-nums;
         color: var(--color-text-muted);
-        background: var(--color-bg);
+        background: transparent;
         border: 1px solid var(--color-border);
-        border-radius: var(--radius-sm);
         padding: var(--space-1) 0;
         cursor: pointer;
         transition:
             color var(--duration-fast) var(--ease-out),
-            border-color var(--duration-fast) var(--ease-out);
+            border-color var(--duration-fast) var(--ease-out),
+            background var(--duration-fast) var(--ease-out);
     }
 
     .presets button:hover {
@@ -197,5 +198,10 @@
         color: var(--color-bg);
         background: var(--color-text);
         border-color: var(--color-text);
+    }
+
+    .presets button:focus-visible {
+        outline: 2px solid var(--color-text);
+        outline-offset: 2px;
     }
 </style>

@@ -32,7 +32,9 @@
     }
 </script>
 
-<div class="row" class:no-label={!label}>
+<!-- Viewfinder plate (viewfinder language): corner brackets frame the hint /
+     preview instead of a dashed box — literally a camera viewfinder. -->
+<div class="field">
     {#if label}
         <span class="label" title={label}>{label}</span>
     {/if}
@@ -52,10 +54,14 @@
         ondragleave={() => (dragging = false)}
         ondrop={handleDrop}
     >
+        <i class="tick tl" aria-hidden="true"></i>
+        <i class="tick tr" aria-hidden="true"></i>
+        <i class="tick bl" aria-hidden="true"></i>
+        <i class="tick br" aria-hidden="true"></i>
         {#if value}
             <img src={value} alt="Preview" />
         {:else}
-            <span class="hint">Drop or click</span>
+            <span class="hint">Drop / Click</span>
         {/if}
     </div>
     <input
@@ -69,24 +75,21 @@
 </div>
 
 <style>
-    .row {
-        display: grid;
-        grid-template-columns: 1fr;
-        align-items: start;
-        gap: var(--space-2);
-    }
-
-    .row.no-label .zone {
-        grid-column: 1 / -1;
+    .field {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-1);
+        font-family: var(--font-mono);
+        font-size: var(--text-xs);
     }
 
     .label {
-        font-size: var(--text-xs);
         color: var(--color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        padding-top: var(--space-1);
     }
 
     .hidden {
@@ -94,48 +97,80 @@
     }
 
     .zone {
-        /*aspect-ratio: 1;*/
+        position: relative;
         width: 100%;
-        border: 3px dashed var(--color-border);
-        border-radius: var(--radius-sm);
-        cursor: pointer;
+        min-height: 64px;
         display: flex;
         align-items: center;
         justify-content: center;
-        overflow: hidden;
-        background: var(--color-bg);
-        transition:
-            border-color var(--duration-fast) var(--ease-out),
-            background var(--duration-fast) var(--ease-out);
+        padding: var(--space-3);
+        cursor: pointer;
+        background: transparent;
+        transition: background var(--duration-fast) var(--ease-out);
     }
 
     .zone:hover,
     .zone.drag-over {
-        border-style: solid;
-        border-color: var(--color-text-muted);
         background: var(--color-surface);
     }
 
-    .zone.has-image {
-        border-style: solid;
-        border-color: var(--color-border);
+    .zone:focus-visible {
+        outline: 2px solid var(--color-text);
+        outline-offset: 2px;
     }
 
-    .zone.has-image:hover,
-    .zone.has-image.drag-over {
-        border-color: var(--color-text-muted);
+    /* camera-viewfinder corner brackets */
+    .tick {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        color: var(--color-text-muted);
+        pointer-events: none;
+        transition: color var(--duration-fast) var(--ease-out);
+    }
+    .tick.tl {
+        top: 0;
+        left: 0;
+        border-top: 1px solid;
+        border-left: 1px solid;
+    }
+    .tick.tr {
+        top: 0;
+        right: 0;
+        border-top: 1px solid;
+        border-right: 1px solid;
+    }
+    .tick.bl {
+        bottom: 0;
+        left: 0;
+        border-bottom: 1px solid;
+        border-left: 1px solid;
+    }
+    .tick.br {
+        bottom: 0;
+        right: 0;
+        border-bottom: 1px solid;
+        border-right: 1px solid;
+    }
+
+    .zone:hover .tick,
+    .zone.drag-over .tick,
+    .zone:focus-visible .tick {
+        color: var(--color-text);
     }
 
     .hint {
-        font-size: var(--text-xs);
         color: var(--color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
         pointer-events: none;
         user-select: none;
     }
 
     img {
         width: 100%;
-        height: 100%;
+        height: auto;
+        max-height: 240px;
         object-fit: contain;
         display: block;
         pointer-events: none;

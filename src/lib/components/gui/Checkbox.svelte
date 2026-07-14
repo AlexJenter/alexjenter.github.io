@@ -5,50 +5,69 @@
     }
 
     let { value = $bindable(), label }: Props = $props();
-
-    const uid = Math.random().toString(36).slice(2, 9);
 </script>
 
-<div class="row">
+<!-- Boolean cell (viewfinder language): the Slider's head row minus the track —
+     label left, a state box right that fills solid when on. -->
+<label class="check">
     {#if label}
-        <label class="label" for={uid}>{label}</label>
+        <span class="label">{label}</span>
     {/if}
-    <div class="control" class:full={!label}>
-        <input type="checkbox" bind:checked={value} id={uid} />
-    </div>
-</div>
+    <input type="checkbox" bind:checked={value} />
+    <span class="box" aria-hidden="true"></span>
+</label>
 
 <style>
-    .row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+    .check {
+        display: flex;
         align-items: center;
+        justify-content: space-between;
         gap: var(--space-2);
         min-height: 22px;
+        font-family: var(--font-mono);
+        font-size: var(--text-xs);
+        cursor: pointer;
     }
 
     .label {
-        font-size: var(--text-xs);
         color: var(--color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        cursor: pointer;
     }
 
-    .control {
-        display: flex;
-        align-items: center;
+    input {
+        position: absolute;
+        width: 0;
+        height: 0;
+        opacity: 0;
+        pointer-events: none;
     }
 
-    .control.full {
-        grid-column: 1 / -1;
-    }
-
-    input[type='checkbox'] {
-        accent-color: var(--color-text);
-        cursor: pointer;
+    .box {
+        flex-shrink: 0;
         width: 14px;
         height: 14px;
+        border: 1px solid var(--color-border);
+        background: transparent;
+        transition:
+            background var(--duration-fast) var(--ease-out),
+            border-color var(--duration-fast) var(--ease-out);
+    }
+
+    .check:hover .box {
+        border-color: var(--color-text-muted);
+    }
+
+    input:checked + .box {
+        background: var(--color-text);
+        border-color: var(--color-text);
+    }
+
+    input:focus-visible + .box {
+        outline: 2px solid var(--color-text);
+        outline-offset: 2px;
     }
 </style>

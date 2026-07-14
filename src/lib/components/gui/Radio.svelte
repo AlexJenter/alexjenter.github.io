@@ -10,64 +10,95 @@
     const name = Math.random().toString(36).slice(2, 9);
 </script>
 
-<div class="row">
+<!-- Segmented selector (viewfinder language): group label above a row of
+     hairline-divided cells; the chosen cell fills solid. Real radio inputs are
+     visually hidden but keep keyboard + group semantics. -->
+<div class="field">
     {#if label}
-        <span class="group-label">{label}</span>
+        <span class="label" title={label}>{label}</span>
     {/if}
-    <fieldset class:full={!label}>
+    <fieldset class="segments" aria-label={label}>
         {#each options as opt}
-            <label>
-                <input type="radio" {name} value={opt.value} bind:group={value} />
-                {opt.label}
+            <label class="segment" class:selected={value === opt.value}>
+                <input
+                    type="radio"
+                    {name}
+                    value={opt.value}
+                    bind:group={value}
+                />
+                <span>{opt.label}</span>
             </label>
         {/each}
     </fieldset>
 </div>
 
 <style>
-    .row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        align-items: start;
-        gap: var(--space-2);
-        min-height: 22px;
+    .field {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-1);
+        font-family: var(--font-mono);
+        font-size: var(--text-xs);
     }
 
-    .group-label {
-        font-size: var(--text-xs);
+    .label {
         color: var(--color-text-muted);
-        padding-top: 3px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
-    fieldset {
-        border: none;
-        padding: 0;
-        margin: 0;
+    .segments {
         display: flex;
-        flex-direction: column;
-        gap: var(--space-1);
+        flex-wrap: wrap;
+        margin: 0;
+        padding: 0;
+        border: 1px solid var(--color-border);
     }
 
-    fieldset.full {
-        grid-column: 1 / -1;
-    }
-
-    label {
+    .segment {
+        flex: 1 0 auto;
         display: flex;
         align-items: center;
-        gap: var(--space-1);
-        font-size: var(--text-xs);
+        justify-content: center;
+        padding: var(--space-1) var(--space-2);
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
         color: var(--color-text-muted);
         cursor: pointer;
+        /* single hairline between cells; outer edge is the fieldset border */
+        border-left: 1px solid var(--color-border);
+        transition:
+            color var(--duration-fast) var(--ease-out),
+            background var(--duration-fast) var(--ease-out);
     }
 
-    input[type='radio'] {
-        accent-color: var(--color-text);
-        cursor: pointer;
-        width: 12px;
-        height: 12px;
+    .segment:first-child {
+        border-left: none;
+    }
+
+    .segment:hover {
+        color: var(--color-text);
+    }
+
+    .segment.selected {
+        background: var(--color-text);
+        color: var(--color-bg);
+    }
+
+    .segment input {
+        position: absolute;
+        width: 0;
+        height: 0;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .segment:focus-within {
+        outline: 2px solid var(--color-text);
+        outline-offset: 2px;
     }
 </style>
