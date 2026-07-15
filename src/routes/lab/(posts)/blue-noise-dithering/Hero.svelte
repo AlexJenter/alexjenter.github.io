@@ -68,7 +68,7 @@
     <Slider
         bind:value={ditherScale}
         min={0.1}
-        max={20}
+        max={42}
         step={0.01}
         label="Noise scale"
     />
