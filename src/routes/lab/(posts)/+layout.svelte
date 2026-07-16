@@ -84,6 +84,7 @@
            article back to the drawer. Being taller than the viewport, this is a
            large snap area — you can rest anywhere within it. */
         scroll-snap-align: start;
+        overflow: clip;
     }
 
     header {
