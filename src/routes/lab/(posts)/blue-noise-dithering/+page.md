@@ -6,7 +6,12 @@ description: A one-bit threshold dither, ported from shadertoy. inspired by Acer
 cover: ./cover.png
 ---
 
-Some time ago I scribbled a tiny [Shadertoy](https://www.shadertoy.com/view/XlG3DW) that does exactly one thing: it thresholds a photograph against a noise texture and paints a single bit per pixel — ink or paper, nothing in between. Drag left–right and the noise zooms, so the dither slides from a hard, posterised threshold into a fine, grainy stipple.
+
+Some time ago, watching a video on [«Making an Inktober Shader»](https://www.youtube.com/watch?v=E9-LRRDVmo8) by [«Acerola»](https://www.youtube.com/@Acerola_t) i felt the need to put it a small [shadertoy](https://www.shadertoy.com/view/XlG3DW) example. Kind of as a note to myself. 
+
+
+
+I scribbled a tiny [Shadertoy](https://www.shadertoy.com/view/XlG3DW) that does exactly one thing: it thresholds a photograph against a noise texture and paints a single bit per pixel — ink or paper, nothing in between. Drag left–right and the noise zooms, so the dither slides from a hard, posterised threshold into a fine, grainy stipple.
 
 The whole thing is four lines of logic:
 

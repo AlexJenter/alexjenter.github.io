@@ -10,6 +10,9 @@
     import FRAG from "./dither.frag.glsl?raw";
 
     // --- controls -----------------------------------------------------------
+    const SCALE_MIN = 0.1;
+    const SCALE_MAX = 42;
+
     let ditherScale = $state(8);
     let invert = $state(false);
     let uploadedImage = $state<string | undefined>(undefined);
@@ -57,27 +60,90 @@
         uNoise: { src: noiseSrc, wrap: "repeat" as const },
     });
 
+    // --- drag-to-scale (grab the noise) -------------------------------------
+    // Press on the hero and drag: density scales as startRadius / radius about
+    // the viewport centre (the grain's pivot) — moving toward the centre
+    // densifies the grain (half the distance ⇒ double density), moving out
+    // coarsens it. Mouse/pen only; touch is left free to scroll the page.
+    let heroEl: HTMLElement;
+    let dragging = $state(false);
+    let startRadius = 0;
+    let startScale = 0;
+
+    function radiusFromCentre(e: PointerEvent): number {
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight / 2;
+        return Math.max(Math.hypot(e.clientX - cx, e.clientY - cy), 1); // avoid /0
+    }
+
+    function onScaleDown(e: PointerEvent) {
+        if (e.pointerType === "touch") return; // leave touch for scrolling
+        e.preventDefault();
+        startRadius = radiusFromCentre(e);
+        startScale = ditherScale;
+        dragging = true;
+        heroEl.setPointerCapture(e.pointerId);
+    }
+
+    function onScaleMove(e: PointerEvent) {
+        if (!dragging) return;
+        // density ∝ 1/radius, continuous from the grab point
+        ditherScale = Math.min(
+            SCALE_MAX,
+            Math.max(SCALE_MIN, (startScale * startRadius) / radiusFromCentre(e)),
+        );
+    }
+
+    function onScaleUp(e: PointerEvent) {
+        if (!dragging) return;
+        dragging = false;
+        heroEl.releasePointerCapture?.(e.pointerId);
+    }
 </script>
 
-<div class="hero-backdrop">
+<!-- Pointer-only scale affordance; the accessible equivalent is the labelled
+     "Noise scale" Slider in the drawer (keyboard + ARIA). -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div
+    bind:this={heroEl}
+    class="hero-backdrop"
+    class:dragging
+    onpointerdown={onScaleDown}
+    onpointermove={onScaleMove}
+    onpointerup={onScaleUp}
+    onpointercancel={onScaleUp}
+>
     <FullscreenShader frag={FRAG} {uniforms} {textures} {label} bind:api={shader} />
 </div>
 <div class="hero-spacer" aria-hidden="true"></div>
 
 <Drawer title="Dither">
+    <div class="col">
+
     <Slider
         bind:value={ditherScale}
-        min={0.1}
-        max={42}
+        min={SCALE_MIN}
+        max={SCALE_MAX}
         step={0.01}
         label="Noise scale"
     />
     <Checkbox bind:value={invert} label="Invert" />
-    <FileInput bind:value={uploadedImage} label="Image" />
     <Button
         label="Export PNG"
         onclick={() => shader?.download("dither.png", { from: "uImage" })}
     />
+    </div>
+    <FileInput bind:value={uploadedImage} label="Image" />
 </Drawer>
 
 <!-- positioning/background come from the global .hero-backdrop + .hero-spacer -->
+<style>
+    /* grab-the-noise affordance */
+    .hero-backdrop {
+        cursor: grab;
+    }
+    .hero-backdrop.dragging {
+        cursor: grabbing;
+        user-select: none;
+    }
+</style>
