@@ -1,11 +1,13 @@
 <script lang="ts">
     import { work, education, languages, skills } from "$lib/data/resume";
     import EntryHeader from "./EntryHeader.svelte";
+    import Seo from "$lib/components/Seo.svelte";
 </script>
 
-<svelte:head>
-    <title>Resume — Alex Jenter</title>
-</svelte:head>
+<Seo
+    title="Resume — Alex Jenter"
+    description="Résumé of Alex Jenter — web developer with a background in design."
+/>
 
 <div class="resume">
     <header>

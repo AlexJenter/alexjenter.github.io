@@ -1,6 +1,12 @@
 <script lang="ts">
     import { links } from "$lib/data/work";
+    import Seo from "$lib/components/Seo.svelte";
 </script>
+
+<Seo
+    title="Alex Jenter — Frontend dev & creative coder"
+    description="Frontend developer and creative coder building interfaces and experiments on the web."
+/>
 
 <section class="hero">
     <h1>Frontend dev &<br />creative coder.</h1>

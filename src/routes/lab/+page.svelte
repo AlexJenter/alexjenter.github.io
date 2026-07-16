@@ -1,7 +1,13 @@
 <script lang="ts">
     import Date from "$lib/components/Date.svelte";
+    import Seo from "$lib/components/Seo.svelte";
     let { data } = $props();
 </script>
+
+<Seo
+    title="Lab — Alex Jenter"
+    description="Experiments in graphics, generative art, and interaction on the web."
+/>
 
 <section class="page">
     <h1>Lab</h1>

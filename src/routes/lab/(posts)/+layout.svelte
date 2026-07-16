@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
     import Date from "$lib/components/Date.svelte";
+    import Seo from "$lib/components/Seo.svelte";
 
     import type { Component } from "svelte";
 
@@ -45,6 +46,14 @@
         }
     });
 </script>
+
+<Seo
+    title={data.title ? `${data.title} — Alex Jenter` : "Alex Jenter"}
+    description={data.description ??
+        "An experiment from Alex Jenter's lab — graphics, generative art, and interaction on the web."}
+    type="article"
+    publishedTime={data.date}
+/>
 
 {#if data.hasHero}
     {#if Hero}<Hero />{:else}<div class="hero-placeholder"></div>{/if}
