@@ -133,8 +133,9 @@
     {/if}
 </div>
 <div class="hero-spacer" aria-hidden="true"></div>
-{#if ar !== null}
-    <Drawer title="Settings">
+
+<Drawer title="Settings" grid={true}>
+    <div class="area-A">
         <Slider
             bind:value={dotRadius}
             min={1}
@@ -149,10 +150,8 @@
             step={100}
             label="Points"
         />
-        <FileInput bind:value={uploadedImage} label="Image" />
         <Button
-            onclick={() =>
-                downloadSVG(pts, img!, canvasW, canvasH, dotRadius)}
+            onclick={() => downloadSVG(pts, img!, canvasW, canvasH, dotRadius)}
             label="Download SVG"
         />
         <Button
@@ -162,8 +161,11 @@
             }}
             label="Reset"
         />
-    </Drawer>
-{/if}
+    </div>
+    <div class="area-B">
+        <FileInput bind:value={uploadedImage} label="Image" />
+    </div>
+</Drawer>
 
 <style>
     /* fixed positioning/background come from the global .hero-backdrop */

@@ -3,10 +3,13 @@
 
     interface Props {
         title: string;
+        /** Opt into the structured responsive grid (1 / 2 / 4 columns with
+            named A–D slots). Off by default = the original auto-fit flow. */
+        grid?: boolean;
         children?: Snippet;
     }
 
-    let { title, children }: Props = $props();
+    let { title, grid = false, children }: Props = $props();
 </script>
 
 <!--
@@ -14,12 +17,13 @@
     spacer. The hero is a fixed backdrop; this drawer is an opaque, relatively
     positioned layer (z-index: 1) that slides up over it as you scroll, with a
     gentle scroll-snap rest point (align: end). Mono "machine voice" (see
-    typography memory). Internal grid is a first pass, meant to be iterated on.
+    typography memory). Pass `grid` to opt into the structured responsive
+    column grid (A–D slots) defined in the styles below.
 -->
 <section class="drawer" aria-label="{title} controls">
     <div class="frame">
         <span class="title">{title}</span>
-        <div class="grid">
+        <div class="grid" class:cols={grid}>
             {@render children?.()}
         </div>
     </div>
@@ -60,5 +64,63 @@
         grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
         gap: var(--space-3) var(--space-6);
         align-items: start;
+    }
+
+    /* Opt-in structured grid (`grid` prop). Explicit column counts + named-area
+       placement, per viewport. Breakpoints are the literals from tokens.css
+       (media conditions can't read var()): tablet 48rem, desktop 75rem.
+       mobile: 1 col · tablet: 2 cols · desktop: 4 cols with content centred in
+       the middle two. Swap the desktop line to "A B C D" for a full-width 4-up.
+       minmax(0, 1fr) so a wide control/label can't blow out its column. */
+    .grid.cols {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "A"
+            "B"
+            "C"
+            "D";
+    }
+
+    @media (min-width: 48rem) {
+        .grid.cols {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-areas:
+                "A B"
+                "C D";
+        }
+    }
+
+    @media (min-width: 75rem) {
+        .grid.cols {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-areas:
+                ". A B ."
+                ". C D .";
+        }
+    }
+
+    /* Slot mapping. A slot holds one control or a stacked group; wrap it in
+       <div class="area-A"> … </div>. Slotted children keep the *hero's* style
+       scope, so the Drawer reaches them via :global — kept local by the
+       `.grid.cols` prefix. Unused slots just leave their area empty. */
+    .grid.cols :global(.area-A),
+    .grid.cols :global(.area-B),
+    .grid.cols :global(.area-C),
+    .grid.cols :global(.area-D) {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+    }
+    .grid.cols :global(.area-A) {
+        grid-area: A;
+    }
+    .grid.cols :global(.area-B) {
+        grid-area: B;
+    }
+    .grid.cols :global(.area-C) {
+        grid-area: C;
+    }
+    .grid.cols :global(.area-D) {
+        grid-area: D;
     }
 </style>

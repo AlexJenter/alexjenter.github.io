@@ -119,27 +119,45 @@
 </div>
 <div class="hero-spacer" aria-hidden="true"></div>
 
-<Drawer title="Rules">
-    <div class="readout">
-        <span>rule {rule}</span>
-        <span class="bits">{rule.toString(2).padStart(8, "0")}</span>
+<Drawer title="Rules" grid={true}>
+    <!-- A: rule readout + live rule slider -->
+    <div class="area-A">
+        <div class="readout">
+            <span>rule {rule}</span>
+            <span class="bits">{rule.toString(2).padStart(8, "0")}</span>
+        </div>
+        <Slider bind:value={rule} min={0} max={255} label="rule" />
     </div>
-    <Slider bind:value={rule} min={0} max={255} label="rule" />
-    <Slider bind:value={cells} min={48} max={420} step={4} label="cells" />
-    <Radio bind:value={seed} options={seedOptions} label="seed" />
-    <div class="presets">
-        {#each presets as p}
-            <button
-                type="button"
-                class:active={rule === p}
-                onclick={() => (rule = p)}>{p}</button
-            >
-        {/each}
+
+    <!-- B: rule presets -->
+    <div class="area-B">
+        <div class="presets">
+            {#each presets as p}
+                <button
+                    type="button"
+                    class:active={rule === p}
+                    onclick={() => (rule = p)}>{p}</button
+                >
+            {/each}
+        </div>
     </div>
-    <Button onclick={() => (paused = !paused)} label={paused ? "Play" : "Pause"} />
-    {#if seed === "random"}
-        <Button onclick={() => regen++} label="New random seed" />
-    {/if}
+
+    <!-- C: grid size + seeding -->
+    <div class="area-C">
+        <Slider bind:value={cells} min={48} max={420} step={4} label="cells" />
+        <Radio bind:value={seed} options={seedOptions} label="seed" />
+    </div>
+
+    <!-- D: playback -->
+    <div class="area-D">
+        <Button
+            onclick={() => (paused = !paused)}
+            label={paused ? "Play" : "Pause"}
+        />
+        {#if seed === "random"}
+            <Button onclick={() => regen++} label="New random seed" />
+        {/if}
+    </div>
 </Drawer>
 
 <style>

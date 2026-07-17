@@ -1,6 +1,12 @@
 <script lang="ts">
     import { theme } from "$lib/theme.svelte";
-    import { Drawer, Slider, FileInput, Checkbox, Button } from "$lib/components/gui";
+    import {
+        Drawer,
+        Slider,
+        FileInput,
+        Checkbox,
+        Button,
+    } from "$lib/components/gui";
     import FullscreenShader, {
         type ShaderApi,
     } from "$lib/components/FullscreenShader.svelte";
@@ -34,8 +40,12 @@
     function readThemeColors() {
         const s = getComputedStyle(document.documentElement);
         return {
-            ink: parseColor(s.getPropertyValue("--color-text").trim() || "#1a1916"),
-            paper: parseColor(s.getPropertyValue("--color-bg").trim() || "#f5f4f0"),
+            ink: parseColor(
+                s.getPropertyValue("--color-text").trim() || "#1a1916",
+            ),
+            paper: parseColor(
+                s.getPropertyValue("--color-bg").trim() || "#f5f4f0",
+            ),
         };
     }
 
@@ -90,7 +100,10 @@
         // density ∝ 1/radius, continuous from the grab point
         ditherScale = Math.min(
             SCALE_MAX,
-            Math.max(SCALE_MIN, (startScale * startRadius) / radiusFromCentre(e)),
+            Math.max(
+                SCALE_MIN,
+                (startScale * startRadius) / radiusFromCentre(e),
+            ),
         );
     }
 
@@ -113,27 +126,35 @@
     onpointerup={onScaleUp}
     onpointercancel={onScaleUp}
 >
-    <FullscreenShader frag={FRAG} {uniforms} {textures} {label} bind:api={shader} />
+    <FullscreenShader
+        frag={FRAG}
+        {uniforms}
+        {textures}
+        {label}
+        bind:api={shader}
+    />
 </div>
 <div class="hero-spacer" aria-hidden="true"></div>
 
-<Drawer title="Dither">
-    <div class="col">
+<Drawer title="Dither" grid={true}>
+    <div class="area-A">
+        <Slider
+            bind:value={ditherScale}
+            min={SCALE_MIN}
+            max={SCALE_MAX}
+            step={0.01}
+            label="Noise scale"
+        />
+        <Checkbox bind:value={invert} label="Invert" />
 
-    <Slider
-        bind:value={ditherScale}
-        min={SCALE_MIN}
-        max={SCALE_MAX}
-        step={0.01}
-        label="Noise scale"
-    />
-    <Checkbox bind:value={invert} label="Invert" />
-    <Button
-        label="Export PNG"
-        onclick={() => shader?.download("dither.png", { from: "uImage" })}
-    />
+        <Button
+            label="Export PNG"
+            onclick={() => shader?.download("dither.png", { from: "uImage" })}
+        />
     </div>
-    <FileInput bind:value={uploadedImage} label="Image" />
+    <div class="area-B">
+        <FileInput bind:value={uploadedImage} label="Image" />
+    </div>
 </Drawer>
 
 <!-- positioning/background come from the global .hero-backdrop + .hero-spacer -->

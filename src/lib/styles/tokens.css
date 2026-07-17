@@ -20,6 +20,12 @@
     --syntax-class: #a6702a; /* warm gold */
     --syntax-punct: var(--color-text-muted);
 
+    /* Breakpoints — the app is fluid-first; these are the only step points.
+       CSS media conditions can't read var(), so @media rules hardcode the same
+       literals (see Drawer.svelte's opt-in `grid`). Kept here as the reference. */
+    --bp-tablet: 48rem; /* 768px */
+    --bp-desktop: 75rem; /* 1200px */
+
     /* Type scale */
     --font-serif: "Fraunces Variable", Georgia, "Times New Roman", serif;
     --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Code", "Source Code Pro", monospace;

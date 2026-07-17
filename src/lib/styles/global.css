@@ -124,10 +124,16 @@ img {
 
 /* Class-gated to lab-post routes so home/resume pages keep free scroll. The
    snap container is the root scroller; snap points live on the spacer (full
-   hero) and the drawer (revealed). */
+   hero) and the drawer (revealed).
+
+   proximity (not mandatory): the hero — and its only top-of-page snap point,
+   .hero-spacer — mounts client-side (dynamic import in +layout.svelte), so on
+   load there's a window where the top anchor doesn't exist yet. `mandatory`
+   would be forced to snap the page down onto the drawer/post-layer during that
+   gap, landing you scrolled up over the hero with the title/date off-screen.
+   `proximity` only snaps once you come to rest near a point, so it can't yank. */
 html.lab-post {
     scroll-snap-type: y proximity;
-    scroll-snap-type: y mandatory;
 }
 
 /* The hero is pinned as a full-viewport backdrop; the drawer + article scroll
