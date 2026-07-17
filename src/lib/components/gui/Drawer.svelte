@@ -34,17 +34,9 @@
         position: relative;
         z-index: 1; /* rides above the fixed hero backdrop (z-index: 0) */
         width: 100%;
-        background: rgb(0 0 0 / 0.9);
-        /* The surface is pinned near-black in both themes, so pin the ink
-           vars to the dark palette too (keep in sync with tokens.css) —
-           otherwise light-theme text is near-black on black. Custom props
-           inherit into the slotted controls, restyling them wholesale. */
-        --color-bg: #111110;
-        --color-surface: #1a1916;
-        --color-border: #2e2c28;
-        --color-text: #e8e6e0;
-        --color-text-muted: #9e9c98;
-        --color-hover: rgb(255 255 255 / 0.05);
+        /* Theme-aware translucent surface: the page bg at 0.9 letting the
+           hero glow through — the theme's own inks stay legible on it. */
+        background: rgb(from var(--color-bg) r g b / 0.9);
         border-top: 1px solid var(--color-border);
         color: var(--color-text);
         padding: var(--space-4) var(--space-8);
