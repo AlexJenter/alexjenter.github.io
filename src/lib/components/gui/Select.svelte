@@ -10,7 +10,7 @@
 
 <!-- Instrument dropdown (viewfinder language): label above a full-width mono
      field with a muted chevron and sharp corners. -->
-<div class="field">
+<label class="field">
     {#if label}
         <span class="label" title={label}>{label}</span>
     {/if}
@@ -19,7 +19,7 @@
             <option value={opt.value}>{opt.label}</option>
         {/each}
     </select>
-</div>
+</label>
 
 <style>
     .field {
