@@ -1,5 +1,7 @@
 <script lang="ts">
     import favicon from "$lib/assets/favicon.svg";
+    import frauncesWoff2 from "@fontsource-variable/fraunces/files/fraunces-latin-full-normal.woff2?url";
+    import plexMonoWoff2 from "@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2?url";
     import "$lib/styles/global.css";
     import Nav from "$lib/components/Nav.svelte";
 
@@ -8,6 +10,8 @@
 
 <svelte:head>
     <link rel="icon" href={favicon} />
+    <link rel="preload" href={frauncesWoff2} as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href={plexMonoWoff2} as="font" type="font/woff2" crossorigin="anonymous" />
 </svelte:head>
 
 <a href="#main" class="skip-link">Skip to main content</a>
