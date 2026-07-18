@@ -136,6 +136,8 @@
                 <button
                     type="button"
                     class:active={rule === p}
+                    aria-label="Rule {p}"
+                    aria-pressed={rule === p}
                     onclick={() => (rule = p)}>{p}</button
                 >
             {/each}

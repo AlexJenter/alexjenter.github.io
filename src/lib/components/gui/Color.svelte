@@ -28,7 +28,7 @@
             class="swatch"
             style="background: {value}"
             onclick={() => inputEl.click()}
-            aria-label="Pick color"
+            aria-label={label ? `Pick ${label} color` : "Pick color"}
         ></button>
         <span class="hex">{value}</span>
     </div>

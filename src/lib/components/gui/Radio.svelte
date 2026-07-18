@@ -17,7 +17,12 @@
     {#if label}
         <span class="label" title={label}>{label}</span>
     {/if}
-    <fieldset class="segments" aria-label={label}>
+    <fieldset class="segments">
+        {#if label}
+            <!-- sr-only legend: the group name AT actually honours; the visible
+                 .label span above stays purely presentational -->
+            <legend class="sr-only">{label}</legend>
+        {/if}
         {#each options as opt}
             <label class="segment" class:selected={value === opt.value}>
                 <input
@@ -97,8 +102,20 @@
         pointer-events: none;
     }
 
-    .segment:focus-within {
+    .segment:has(:focus-visible) {
         outline: 2px solid var(--color-text);
         outline-offset: 2px;
+    }
+
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+        border: 0;
     }
 </style>

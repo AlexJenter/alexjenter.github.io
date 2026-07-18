@@ -17,9 +17,11 @@
         </div>
     </header>
 
+    <!-- role="list" on the styled lists: list-style: none makes Safari/VoiceOver
+         drop their list semantics otherwise -->
     <section>
         <h2>Work</h2>
-        <ol class="entries">
+        <ol class="entries" role="list">
             {#each work as entry}
                 <li class="entry">
                     <EntryHeader
@@ -29,7 +31,7 @@
                     />
                     <p class="title">{entry.title}</p>
                     <p class="description">{entry.description}</p>
-                    <ul class="highlights">
+                    <ul class="highlights" role="list">
                         {#each entry.highlights as h}
                             <li>{h}</li>
                         {/each}
@@ -41,7 +43,7 @@
 
     <section id="education">
         <h2>Education</h2>
-        <ol class="entries">
+        <ol class="entries" role="list">
             {#each education as entry}
                 <li class="entry">
                     <EntryHeader
@@ -61,7 +63,7 @@
             {#each Object.entries(skills) as [category, items]}
                 <div class="skill-group">
                     <h3>{category}</h3>
-                    <ul>
+                    <ul role="list">
                         {#each items as item}
                             <li>{item}</li>
                         {/each}

@@ -16,7 +16,8 @@
 <section class="work">
     <h2>Work</h2>
     <p>Selected projects.</p>
-    <ul>
+    <!-- list-style: none strips list semantics in Safari/VoiceOver -->
+    <ul role="list">
         {#each links as { url, label }}
             <li><a href={url} target="_blank" rel="noopener">{label}</a></li>
         {/each}

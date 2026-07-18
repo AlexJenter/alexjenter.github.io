@@ -68,6 +68,14 @@
             e.preventDefault();
             value = snap(clamp(value - inc));
             accumValue = value;
+        } else if (e.key === "Home") {
+            e.preventDefault();
+            value = min;
+            accumValue = min;
+        } else if (e.key === "End") {
+            e.preventDefault();
+            value = max;
+            accumValue = max;
         }
     }
 
@@ -125,20 +133,20 @@
                 {max}
                 {step}
                 class="edit-input"
+                aria-label={label ? `${label} value` : "Value"}
                 onblur={commit}
                 onkeydown={handleEditKey}
             />
         {:else}
-            <div
+            <button
+                type="button"
                 class="value"
-                onclick={startEdit}
-                role="button"
                 title="Click to edit"
-                tabindex="0"
-                onkeydown={(e) => e.key === "Enter" && startEdit()}
+                aria-label={label ? `Edit ${label} value` : "Edit value"}
+                onclick={startEdit}
             >
                 {display}
-            </div>
+            </button>
         {/if}
     </div>
     <div
@@ -191,14 +199,23 @@
 
     .value {
         flex-shrink: 0;
+        font: inherit;
+        background: none;
+        padding: 0;
         color: var(--color-text);
         cursor: text;
+        border: none;
         border-bottom: 1px solid transparent;
         transition: border-color var(--duration-fast) var(--ease-out);
     }
 
     .value:hover {
         border-bottom-color: var(--color-text-muted);
+    }
+
+    .value:focus-visible {
+        outline: 2px solid var(--color-text);
+        outline-offset: 2px;
     }
 
     .edit-input {

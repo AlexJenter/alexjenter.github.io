@@ -38,15 +38,13 @@
     {#if label}
         <span class="label" title={label}>{label}</span>
     {/if}
-    <div
+    <button
+        type="button"
         class="zone"
         class:drag-over={dragging}
         class:has-image={!!value}
-        role="button"
-        tabindex="0"
         aria-label={label ?? "Image input"}
         onclick={() => inputEl.click()}
-        onkeydown={(e) => e.key === "Enter" && inputEl.click()}
         ondragover={(e) => {
             e.preventDefault();
             dragging = true;
@@ -63,7 +61,7 @@
         {:else}
             <span class="hint">Drop / Click</span>
         {/if}
-    </div>
+    </button>
     <input
         bind:this={inputEl}
         type="file"
@@ -105,6 +103,9 @@
         justify-content: center;
         padding: var(--space-3);
         cursor: pointer;
+        font: inherit;
+        color: inherit;
+        border: none;
         background: transparent;
         transition: background var(--duration-fast) var(--ease-out);
     }

@@ -8,12 +8,12 @@
     --color-text: #1a1916;
     --color-text-muted: #5c5a56;
     --color-accent: #2a2a2a;
-    --color-accent-warm: #c8622a;
+    --color-accent-warm: #ab4f1d; /* ≥4.5:1 on bg and surface (AA for body text) */
     --color-hover: rgb(0 0 0 / 0.05);
 
     /* Syntax highlighting (Prism token roles) — warm, low-saturation */
     --syntax-comment: #8a877f;
-    --syntax-keyword: #c8622a; /* = accent-warm, the anchor hue */
+    --syntax-keyword: #ab4f1d; /* = accent-warm, the anchor hue */
     --syntax-string: #5f6d3b; /* dusty olive */
     --syntax-number: #7a5c8a; /* dusty violet */
     --syntax-function: #3a5f7a; /* muted slate blue */

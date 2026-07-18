@@ -16,7 +16,10 @@
         <p class="empty">No posts yet.</p>
     {:else}
         {#snippet postList(posts: typeof data.publicPosts)}
-            <ol class="post-list">
+            <!-- role="list" restores list semantics that Safari/VoiceOver drop
+                 with list-style: none; covers are decorative inside a link
+                 that already carries the title, hence alt="" -->
+            <ol class="post-list" role="list">
                 {#each posts as post}
                     <li>
                         <a href="/lab/{post.slug}" class="post-link">
@@ -24,13 +27,13 @@
                                 {#if post.cover.svg}
                                     <img
                                         src={post.cover.src}
-                                        alt={post.title}
+                                        alt=""
                                         class="teaser"
                                     />
                                 {:else}
                                     <enhanced:img
                                         src={post.cover.src}
-                                        alt={post.title}
+                                        alt=""
                                         class="teaser"
                                         sizes="(min-width: 1200px) 160px, 120px"
                                     />
