@@ -1,9 +1,15 @@
 <script lang="ts">
     import Canvas from "$lib/components/Canvas.svelte";
-    import { Drawer, Button } from "$lib/components/gui";
-    import { Drop, metaball, type MetaballCurve } from "./metaballs.ts";
+    import { Drawer, Button, Checkbox } from "$lib/components/gui";
+    import {
+        Drop,
+        metaball,
+        type MetaballCurve,
+        type Vec2,
+    } from "./metaballs.ts";
 
     let paused = $state(false);
+    let debug = $state(false);
 
     // Sim state lives at module scope so setup/update share it. All
     // coordinates are in device pixels (Canvas hands us the raw backing
@@ -15,7 +21,8 @@
     let sceneState = false;
     let mouse = { x: 0, y: 0 };
 
-    const randomSize = () => (Math.random() * mainDropSize + mainDropSize) * 0.2;
+    const randomSize = () =>
+        (Math.random() * mainDropSize + mainDropSize) * 0.2;
 
     const setup = (_ctx: CanvasRenderingContext2D, w: number, h: number) => {
         mainDropSize = Math.min(w, h) * 0.2;
@@ -35,7 +42,7 @@
         }
     };
 
-    function drawCurve(ctx: CanvasRenderingContext2D, m: MetaballCurve) {
+    function traceCurve(ctx: CanvasRenderingContext2D, m: MetaballCurve) {
         ctx.beginPath();
         ctx.moveTo(m.p1a.x, m.p1a.y);
         ctx.bezierCurveTo(
@@ -56,12 +63,152 @@
             m.p1b.y,
         );
         ctx.closePath();
+    }
+
+    // --- Illustrator-style debug overlay -----------------------------------
+    // Deliberately pinned palette: the overlay impersonates Illustrator's
+    // selection UI (Layer-1 blue paths, white-filled anchors), so it does NOT
+    // follow the site theme — that's the joke, and the blue reads on both the
+    // ink and paper scene states.
+    const AI_BLUE = "#4f9eff";
+    const AI_WHITE = "#ffffff";
+
+    function anchor(
+        ctx: CanvasRenderingContext2D,
+        p: Vec2,
+        size: number,
+        solid: boolean,
+    ) {
+        const half = size / 2;
+        if (solid) {
+            ctx.fillStyle = AI_BLUE;
+            ctx.fillRect(p.x - half, p.y - half, size, size);
+        } else {
+            ctx.fillStyle = AI_WHITE;
+            ctx.fillRect(p.x - half, p.y - half, size, size);
+            ctx.strokeRect(p.x - half, p.y - half, size, size);
+        }
+    }
+
+    function handle(
+        ctx: CanvasRenderingContext2D,
+        from: Vec2,
+        to: Vec2,
+        dotRad: number,
+    ) {
+        ctx.beginPath();
+        ctx.moveTo(from.x, from.y);
+        ctx.lineTo(to.x, to.y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(to.x, to.y, dotRad, 0, Math.PI * 2);
+        ctx.fillStyle = AI_BLUE;
         ctx.fill();
+    }
+
+    function drawDebug(
+        ctx: CanvasRenderingContext2D,
+        curves: MetaballCurve[],
+        dpr: number,
+    ) {
+        const px = (n: number) => n * dpr;
+        ctx.save();
+        ctx.lineWidth = px(1);
+        ctx.strokeStyle = AI_BLUE;
+
+        // Selection bounding box around everything, with the eight hollow
+        // scale handles (corners + edge midpoints).
+        let minX = Infinity,
+            minY = Infinity,
+            maxX = -Infinity,
+            maxY = -Infinity;
+        for (const d of drops) {
+            minX = Math.min(minX, d.pos.x - d.rad);
+            minY = Math.min(minY, d.pos.y - d.rad);
+            maxX = Math.max(maxX, d.pos.x + d.rad);
+            maxY = Math.max(maxY, d.pos.y + d.rad);
+        }
+        ctx.strokeRect(minX, minY, maxX - minX, maxY - minY);
+        const midX = (minX + maxX) / 2;
+        const midY = (minY + maxY) / 2;
+        for (const hx of [minX, midX, maxX]) {
+            for (const hy of [minY, midY, maxY]) {
+                if (hx === midX && hy === midY) continue;
+                anchor(ctx, { x: hx, y: hy }, px(5), false);
+            }
+        }
+
+        // Each drop: stroked circle, shape center cross, and the four
+        // cardinal anchors an Illustrator ellipse carries (hollow =
+        // unselected points on a selected path).
+        for (const d of drops) {
+            const { x, y } = d.pos;
+            ctx.beginPath();
+            ctx.arc(x, y, d.rad, 0, Math.PI * 2);
+            ctx.stroke();
+
+            const arm = px(3);
+            ctx.beginPath();
+            ctx.moveTo(x - arm, y);
+            ctx.lineTo(x + arm, y);
+            ctx.moveTo(x, y - arm);
+            ctx.lineTo(x, y + arm);
+            ctx.stroke();
+
+            anchor(ctx, { x: x + d.rad, y }, px(5), false);
+            anchor(ctx, { x: x - d.rad, y }, px(5), false);
+            anchor(ctx, { x, y: y + d.rad }, px(5), false);
+            anchor(ctx, { x, y: y - d.rad }, px(5), false);
+        }
+
+        // The metaball bridges are the interesting geometry, so they get the
+        // full "selected point" treatment: stroked path, direction handles
+        // with round ends, solid anchor squares.
+        for (const m of curves) {
+            traceCurve(ctx, m);
+            ctx.stroke();
+
+            handle(ctx, m.p1a, m.c1out, px(1.75));
+            handle(ctx, m.p2a, m.c2ain, px(1.75));
+            handle(ctx, m.p2b, m.c2out, px(1.75));
+            handle(ctx, m.p1b, m.c1bin, px(1.75));
+
+            anchor(ctx, m.p1a, px(5), true);
+            anchor(ctx, m.p2a, px(5), true);
+            anchor(ctx, m.p2b, px(5), true);
+            anchor(ctx, m.p1b, px(5), true);
+        }
+
+        ctx.restore();
     }
 
     const update = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
         if (!mainDrop) return; // Canvas starts the loop before setup has run
-        if (paused) return;
+
+        // Pause freezes the simulation but not the render, so the debug
+        // overlay (and a live theme switch) still applies to the held frame.
+        if (!paused) {
+            mainDrop.place(mouse);
+            mainDrop.update(randomSize);
+
+            if (mainDrop.rad > diagonal / 2) {
+                mainDrop.setSize(mainDropSize * 2);
+                sceneState = !sceneState;
+            }
+
+            for (let i = 1; i < drops.length; i++) {
+                drops[i].follow(mainDrop.pos).update(randomSize);
+                const dist = Math.hypot(
+                    mainDrop.pos.x - drops[i].pos.x,
+                    mainDrop.pos.y - drops[i].pos.y,
+                );
+                if (dist + drops[i].rad < mainDrop.rad) {
+                    drops[i].teleport(w, h);
+                    drops[i].fixed = true;
+                    mainDrop.grow(1.03);
+                }
+            }
+        }
 
         // Re-read each frame so the manual theme toggle applies immediately.
         const styles = getComputedStyle(document.documentElement);
@@ -72,33 +219,13 @@
         ctx.fillRect(0, 0, w, h);
         ctx.fillStyle = sceneState ? bg : fg;
 
-        mainDrop.place(mouse);
-        mainDrop.update(randomSize);
-
-        if (mainDrop.rad > diagonal / 2) {
-            mainDrop.setSize(mainDropSize * 2);
-            sceneState = !sceneState;
-        }
-
-        for (let i = 1; i < drops.length; i++) {
-            drops[i].follow(mainDrop.pos).update(randomSize);
-            const dist = Math.hypot(
-                mainDrop.pos.x - drops[i].pos.x,
-                mainDrop.pos.y - drops[i].pos.y,
-            );
-            if (dist + drops[i].rad < mainDrop.rad) {
-                drops[i].teleport(w, h);
-                drops[i].fixed = true;
-                mainDrop.grow(1.03);
-            }
-        }
-
         for (const drop of drops) {
             ctx.beginPath();
             ctx.arc(drop.pos.x, drop.pos.y, drop.rad, 0, Math.PI * 2);
             ctx.fill();
         }
 
+        const curves: MetaballCurve[] = [];
         for (let i = 1; i < drops.length; i++) {
             if (!drops[i].fixed) {
                 const curve = metaball(
@@ -107,9 +234,15 @@
                     0.5,
                     drops[i].rad * 3 + mainDrop.rad,
                 );
-                if (curve) drawCurve(ctx, curve);
+                if (curve) curves.push(curve);
             }
         }
+        for (const curve of curves) {
+            traceCurve(ctx, curve);
+            ctx.fill();
+        }
+
+        if (debug) drawDebug(ctx, curves, window.devicePixelRatio || 1);
     };
 
     function onPointerMove(e: PointerEvent) {
@@ -132,11 +265,16 @@
 </div>
 <div class="hero-spacer" aria-hidden="true"></div>
 
-<Drawer title="Metaballs">
-    <Button
-        onclick={() => (paused = !paused)}
-        label={paused ? "Play" : "Pause"}
-    />
+<Drawer title="Metaballs" grid={true}>
+    <div class="area-A">
+        <Button
+            onclick={() => (paused = !paused)}
+            label={paused ? "Play" : "Pause"}
+        />
+    </div>
+    <div class="area-B">
+        <Checkbox bind:value={debug} label="debug" />
+    </div>
 </Drawer>
 
 <style>
