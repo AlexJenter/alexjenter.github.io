@@ -116,28 +116,6 @@
         ctx.lineWidth = px(1);
         ctx.strokeStyle = AI_BLUE;
 
-        // Selection bounding box around everything, with the eight hollow
-        // scale handles (corners + edge midpoints).
-        let minX = Infinity,
-            minY = Infinity,
-            maxX = -Infinity,
-            maxY = -Infinity;
-        for (const d of drops) {
-            minX = Math.min(minX, d.pos.x - d.rad);
-            minY = Math.min(minY, d.pos.y - d.rad);
-            maxX = Math.max(maxX, d.pos.x + d.rad);
-            maxY = Math.max(maxY, d.pos.y + d.rad);
-        }
-        ctx.strokeRect(minX, minY, maxX - minX, maxY - minY);
-        const midX = (minX + maxX) / 2;
-        const midY = (minY + maxY) / 2;
-        for (const hx of [minX, midX, maxX]) {
-            for (const hy of [minY, midY, maxY]) {
-                if (hx === midX && hy === midY) continue;
-                anchor(ctx, { x: hx, y: hy }, px(5), false);
-            }
-        }
-
         // Each drop: stroked circle, shape center cross, and the four
         // cardinal anchors an Illustrator ellipse carries (hollow =
         // unselected points on a selected path).
