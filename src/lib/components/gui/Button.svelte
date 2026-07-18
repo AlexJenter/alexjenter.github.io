@@ -11,22 +11,18 @@
      rest, brightens on hover, inverts solid on press. -->
 <button type="button" {onclick} class="btn">{label}</button>
 
-<style>
+<style lang="scss">
+    @use "$lib/styles/mixins" as m;
+
     .btn {
+        @include m.meta-label;
+        @include m.transition(color, border-color, background);
         width: 100%;
         padding: var(--space-2);
         background: transparent;
         border: 1px solid var(--color-border);
-        font-family: var(--font-mono);
-        font-size: var(--text-xs);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
         color: var(--color-text-muted);
         cursor: pointer;
-        transition:
-            color var(--duration-fast) var(--ease-out),
-            border-color var(--duration-fast) var(--ease-out),
-            background var(--duration-fast) var(--ease-out);
     }
 
     .btn:hover {
@@ -41,7 +37,6 @@
     }
 
     .btn:focus-visible {
-        outline: 2px solid var(--color-text);
-        outline-offset: 2px;
+        @include m.focus-ring;
     }
 </style>

@@ -1,0 +1,30 @@
+// Shared Sass layer: mixins only, no emitted CSS. Anything that would emit
+// output here gets duplicated into every component that @use-s this file.
+// All values resolve through theme tokens (tokens.css), so output stays
+// theme-agnostic and flips with light/dark at runtime.
+@use "sass:list";
+
+// The machine voice: uppercase mono meta-label (buttons, control labels,
+// captions). Extracted from gui/Button, Checkbox, Radio, Color, FileInput.
+@mixin meta-label($size: var(--text-xs), $tracking: 0.08em) {
+    font-family: var(--font-mono);
+    font-size: $size;
+    text-transform: uppercase;
+    letter-spacing: $tracking;
+}
+
+// Standard keyboard-focus treatment for interactive elements.
+@mixin focus-ring($offset: 2px) {
+    outline: 2px solid var(--color-text);
+    outline-offset: $offset;
+}
+
+// Token-driven hover/press transition over an arbitrary property list:
+//   @include transition(color, border-color, background);
+@mixin transition($props...) {
+    $value: ();
+    @each $prop in $props {
+        $value: list.append($value, $prop var(--duration-fast) var(--ease-out), $separator: comma);
+    }
+    transition: $value;
+}
