@@ -26,6 +26,7 @@
         min-height: 22px;
         font-family: var(--font-mono);
         font-size: var(--text-xs);
+        letter-spacing: 0.08em;
         cursor: pointer;
     }
 
@@ -36,6 +37,9 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        flex: 1;
+        padding: var(--space-2);
+        border: 1px solid var(--color-border);
     }
 
     input {
@@ -48,8 +52,9 @@
 
     .box {
         flex-shrink: 0;
-        width: 14px;
-        height: 14px;
+        width: 22px;
+        height: auto;
+        aspect-ratio: 1;
         border: 1px solid var(--color-border);
         background: transparent;
         transition:
