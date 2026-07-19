@@ -4,7 +4,18 @@
     // Colocated stories: any `X.story.svelte` next to a component in $lib
     // shows up here automatically. Glob must run in the component (not a
     // load function) — component constructors don't serialize.
-    const modules = import.meta.glob<{ default: Component }>(
+    //
+    // A story can opt into placement/naming via exports from its
+    // `script module` block:
+    //   export const order = 10; // lower sorts first; unordered go last
+    //   export const title = "…"; // overrides the path-derived name
+    interface StoryModule {
+        default: Component;
+        order?: number;
+        title?: string;
+    }
+
+    const modules = import.meta.glob<StoryModule>(
         "/src/lib/**/*.story.svelte",
         {
             eager: true,
@@ -13,10 +24,13 @@
 
     const stories = Object.entries(modules)
         .map(([path, mod]) => ({
-            name: path.replace("/src/lib/", "").replace(".story.svelte", ""),
+            name:
+                mod.title ??
+                path.replace("/src/lib/", "").replace(".story.svelte", ""),
+            order: mod.order ?? Number.MAX_SAFE_INTEGER,
             story: mod.default,
         }))
-        .sort((a, b) => a.name.localeCompare(b.name));
+        .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
 </script>
 
 <svelte:head>

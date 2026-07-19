@@ -1,3 +1,7 @@
+<script module lang="ts">
+    export const order = 2;
+</script>
+
 <!-- Type specimen. Headings are class-based (not h1–h4 elements) so the
      workbench page keeps a sane document outline; the classes include the
      same prose-h* mixins the lab post layout applies to real headings. -->

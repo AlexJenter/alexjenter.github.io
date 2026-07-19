@@ -1,3 +1,7 @@
+<script module lang="ts">
+    export const order = 1;
+</script>
+
 <script lang="ts">
     import { theme } from "$lib/theme.svelte";
     import tokensRaw from "./tokens.css?raw";
