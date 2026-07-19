@@ -28,3 +28,50 @@
     }
     transition: $value;
 }
+
+// Display voice: Fraunces at high optical size, wonky + soft. Mirrors the
+// element-level h1–h4 rule in global.css (plain CSS, can't @include); this
+// mixin is the opt-in for class-based display text and specimens.
+@mixin display-voice {
+    line-height: var(--leading-tight);
+    font-variation-settings:
+        "opsz" var(--font-opsz-display),
+        "WONK" 1,
+        "SOFT" 100;
+}
+
+// Prose heading scale — single source of truth. The lab post layout applies
+// these to element selectors under `.post :global(...)`; stories and one-off
+// display text apply them to classes.
+@mixin prose-h1 {
+    @include display-voice;
+    font-size: var(--text-4xl);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-3);
+}
+
+@mixin prose-h2 {
+    @include display-voice;
+    font-size: var(--text-2xl);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    margin-top: var(--space-12);
+    margin-bottom: var(--space-4);
+}
+
+@mixin prose-h3 {
+    @include display-voice;
+    font-size: var(--text-xl);
+    font-weight: 400;
+    margin-top: var(--space-8);
+    margin-bottom: var(--space-3);
+}
+
+@mixin prose-h4 {
+    @include display-voice;
+    font-size: var(--text-lg);
+    font-weight: 400;
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-2);
+}

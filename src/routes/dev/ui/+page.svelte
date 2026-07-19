@@ -35,13 +35,6 @@
         </p>
     </header>
 
-    <h1>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem deserunt
-        voluptates eius expedita ipsum totam. Molestias quos repellat modi
-        molestiae, voluptatibus assumenda corrupti ut, non minima expedita nam
-        dicta quis!
-    </h1>
-
     {#each stories as { name, story: Story } (name)}
         <section aria-label={name}>
             <h2>{name}</h2>

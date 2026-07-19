@@ -71,7 +71,9 @@
     </article>
 </div>
 
-<style>
+<style lang="scss">
+    @use "$lib/styles/mixins" as m;
+
     .hero-placeholder {
         height: 100lvh;
     }
@@ -104,25 +106,19 @@
     }
 
     .post :global(h1) {
-        font-size: var(--text-4xl);
-        font-weight: 400;
-        letter-spacing: -0.02em;
-        margin-bottom: var(--space-3);
+        @include m.prose-h1;
     }
 
     .post :global(h2) {
-        font-size: var(--text-2xl);
-        font-weight: 400;
-        letter-spacing: -0.01em;
-        margin-top: var(--space-12);
-        margin-bottom: var(--space-4);
+        @include m.prose-h2;
     }
 
     .post :global(h3) {
-        font-size: var(--text-xl);
-        font-weight: 400;
-        margin-top: var(--space-8);
-        margin-bottom: var(--space-3);
+        @include m.prose-h3;
+    }
+
+    .post :global(h4) {
+        @include m.prose-h4;
     }
 
     .post :global(p) {
