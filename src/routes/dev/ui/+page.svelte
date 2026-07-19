@@ -4,14 +4,17 @@
     // Colocated stories: any `X.story.svelte` next to a component in $lib
     // shows up here automatically. Glob must run in the component (not a
     // load function) — component constructors don't serialize.
-    const modules = import.meta.glob<{ default: Component }>("/src/lib/**/*.story.svelte", {
-        eager: true
-    });
+    const modules = import.meta.glob<{ default: Component }>(
+        "/src/lib/**/*.story.svelte",
+        {
+            eager: true,
+        },
+    );
 
     const stories = Object.entries(modules)
         .map(([path, mod]) => ({
             name: path.replace("/src/lib/", "").replace(".story.svelte", ""),
-            story: mod.default
+            story: mod.default,
         }))
         .sort((a, b) => a.name.localeCompare(b.name));
 </script>
@@ -26,10 +29,18 @@
         <h1>UI Workbench</h1>
         <p class="hint">
             {stories.length}
-            {stories.length === 1 ? "story" : "stories"} · components render under the real layout, tokens
-            and theme — flip the theme in the nav to check both palettes
+            {stories.length === 1 ? "story" : "stories"} · components render under
+            the real layout, tokens and theme — flip the theme in the nav to check
+            both palettes
         </p>
     </header>
+
+    <h1>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem deserunt
+        voluptates eius expedita ipsum totam. Molestias quos repellat modi
+        molestiae, voluptatibus assumenda corrupti ut, non minima expedita nam
+        dicta quis!
+    </h1>
 
     {#each stories as { name, story: Story } (name)}
         <section aria-label={name}>
@@ -39,7 +50,10 @@
             </div>
         </section>
     {:else}
-        <p class="hint">No stories yet. Add a `Component.story.svelte` next to any component in src/lib.</p>
+        <p class="hint">
+            No stories yet. Add a `Component.story.svelte` next to any component
+            in src/lib.
+        </p>
     {/each}
 </div>
 
