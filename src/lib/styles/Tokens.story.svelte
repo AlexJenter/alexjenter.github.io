@@ -14,7 +14,8 @@
     const spaces = names.filter((n) => n.startsWith("--space-"));
     const radii = names.filter((n) => n.startsWith("--radius-"));
     const misc = names.filter(
-        (n) => ![colors, syntax, sizes, spaces, radii].some((g) => g.includes(n)),
+        (n) =>
+            ![colors, syntax, sizes, spaces, radii].some((g) => g.includes(n)),
     );
 
     let root = $state<HTMLElement>();
@@ -26,7 +27,9 @@
         void theme.resolved;
         if (!root) return;
         const cs = getComputedStyle(root);
-        values = Object.fromEntries(names.map((n) => [n, cs.getPropertyValue(n).trim()]));
+        values = Object.fromEntries(
+            names.map((n) => [n, cs.getPropertyValue(n).trim()]),
+        );
     });
 
     // WCAG 2.x contrast, to verify the guarantees annotated in tokens.css
@@ -66,7 +69,8 @@
         }),
     );
 
-    const short = (n: string) => n.replace(/^--(color|syntax|text|space|radius)-/, "");
+    const short = (n: string) =>
+        n.replace(/^--(color|syntax|text|space|radius)-/, "");
 </script>
 
 <div class="tokens" bind:this={root}>
@@ -103,7 +107,9 @@
         <div class="grid">
             {#each syntax as n (n)}
                 <div class="card">
-                    <div class="swatch code" style:color={`var(${n})`}>{"{ }"}</div>
+                    <div class="swatch code" style:color={`var(${n})`}>
+                        {"{ }"}
+                    </div>
                     <p class="name">{short(n)}</p>
                     <p class="value">{values[n] ?? ""}</p>
                 </div>
@@ -117,7 +123,9 @@
             <div class="row">
                 <span class="name">{short(n)}</span>
                 <span class="value">{values[n] ?? ""}</span>
-                <span class="sample" style:font-size={`var(${n})`}>Aante quixotic</span>
+                <span class="sample" style:font-size={`var(${n})`}
+                    >Aante quixotic</span
+                >
             </div>
         {/each}
     </section>
@@ -138,7 +146,10 @@
         <div class="grid">
             {#each radii as n (n)}
                 <div class="card">
-                    <div class="swatch chip" style:border-radius={`var(${n})`}></div>
+                    <div
+                        class="swatch chip"
+                        style:border-radius={`var(${n})`}
+                    ></div>
                     <p class="name">{short(n)}</p>
                     <p class="value">{values[n] ?? ""}</p>
                 </div>
