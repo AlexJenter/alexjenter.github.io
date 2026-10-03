@@ -1,16 +1,10 @@
 <script lang="ts">
+    import { mulberry32 } from "$lib/utils/random";
+
     const uid = $props.id();
     const d = 10;
 
     // Seeded so the prerendered HTML and the hydrated client draw the same grid.
-    function mulberry32(seed: number) {
-        return () => {
-            seed = (seed + 0x6d2b79f5) | 0;
-            let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-            t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-        };
-    }
     const random = mulberry32(6);
 
     const sourceImage = Array.from({ length: 9 }, () => random());

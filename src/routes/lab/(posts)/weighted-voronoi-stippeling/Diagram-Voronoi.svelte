@@ -4,6 +4,7 @@
     import { Delaunay } from "d3-delaunay";
     import { polygonCentroid } from "d3";
     import { fade } from "svelte/transition";
+    import { mulberry32 } from "$lib/utils/random";
 
     const W = 480;
     const H = 320;
@@ -12,13 +13,13 @@
 
     type Pt = [number, number];
 
-    function rand(): Pt[] {
+    function rand(random = Math.random): Pt[] {
         return Array.from(
             { length: N },
             () =>
                 [
-                    PAD + Math.random() * (W - 2 * PAD),
-                    PAD + Math.random() * (H - 2 * PAD),
+                    PAD + random() * (W - 2 * PAD),
+                    PAD + random() * (H - 2 * PAD),
                 ] as Pt,
         );
     }
@@ -50,7 +51,9 @@
         });
     }
 
-    let seeds = $state<Pt[]>(rand());
+    // Seeded so the prerendered HTML and the hydrated client start from the
+    // same points; reset() reshuffles with Math.random (client-only).
+    let seeds = $state<Pt[]>(rand(mulberry32(6)));
     let iter = $state(0);
     let playing = $state(false);
     let timerId: ReturnType<typeof setTimeout> | null = null;
