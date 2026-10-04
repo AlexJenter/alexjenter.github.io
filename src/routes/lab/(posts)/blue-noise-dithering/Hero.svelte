@@ -119,7 +119,7 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
     bind:this={heroEl}
-    class="hero-backdrop"
+    class="hero-stage"
     class:dragging
     onpointerdown={onScaleDown}
     onpointermove={onScaleMove}
@@ -134,7 +134,6 @@
         bind:api={shader}
     />
 </div>
-<div class="hero-spacer" aria-hidden="true"></div>
 
 <Drawer title="Dither" grid={true}>
     <div class="area-A">
@@ -157,13 +156,13 @@
     </div>
 </Drawer>
 
-<!-- positioning/background come from the global .hero-backdrop + .hero-spacer -->
+<!-- positioning/background come from the global .hero-stage -->
 <style>
     /* grab-the-noise affordance */
-    .hero-backdrop {
+    .hero-stage {
         cursor: grab;
     }
-    .hero-backdrop.dragging {
+    .hero-stage.dragging {
         cursor: grabbing;
         user-select: none;
     }

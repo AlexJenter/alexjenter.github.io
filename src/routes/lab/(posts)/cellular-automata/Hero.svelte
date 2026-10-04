@@ -109,7 +109,7 @@
     }
 </script>
 
-<div class="hero hero-backdrop">
+<div class="hero hero-stage">
     <div class="inner">
         {#key `${cells}-${seed}-${regen}`}
             <Canvas {setup} {update} label={`Elementary cellular automaton, rule ${rule}`} />
@@ -117,7 +117,6 @@
     </div>
 
 </div>
-<div class="hero-spacer" aria-hidden="true"></div>
 
 <Drawer title="Rules" grid={true}>
     <!-- A: rule readout + live rule slider -->
@@ -163,7 +162,7 @@
 </Drawer>
 
 <style>
-    /* fixed positioning/background come from the global .hero-backdrop */
+    /* sticky positioning/background come from the global .hero-stage */
     .hero {
         display: flex;
 

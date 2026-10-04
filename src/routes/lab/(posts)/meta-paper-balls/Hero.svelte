@@ -232,7 +232,7 @@
 <!-- Pointer-only attractor affordance; the scene also evolves on its own, and
      the drawer's Pause button is the keyboard-reachable control. -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="hero hero-backdrop" onpointermove={onPointerMove}>
+<div class="hero hero-stage" onpointermove={onPointerMove}>
     <div class="inner">
         <Canvas
             {setup}
@@ -241,7 +241,6 @@
         />
     </div>
 </div>
-<div class="hero-spacer" aria-hidden="true"></div>
 
 <Drawer title="Metaballs" grid={true}>
     <div class="area-A">
@@ -256,7 +255,7 @@
 </Drawer>
 
 <style>
-    /* fixed positioning/background come from the global .hero-backdrop */
+    /* sticky positioning/background come from the global .hero-stage */
     .hero {
         display: flex;
         cursor: none; /* the main blob is the cursor */

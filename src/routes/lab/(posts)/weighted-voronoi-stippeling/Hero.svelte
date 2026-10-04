@@ -119,7 +119,7 @@
     };
 </script>
 
-<div class="hero hero-backdrop">
+<div class="hero hero-stage">
     {#if ar !== null}
         <div class="inner" style="--ar: {ar}">
             {#key `${resetKey}`}
@@ -132,7 +132,6 @@
         </div>
     {/if}
 </div>
-<div class="hero-spacer" aria-hidden="true"></div>
 
 <Drawer title="Settings" grid={true}>
     <div class="area-A">
@@ -168,7 +167,7 @@
 </Drawer>
 
 <style>
-    /* fixed positioning/background come from the global .hero-backdrop */
+    /* sticky positioning/background come from the global .hero-stage */
     .hero {
         display: flex;
         justify-content: center;

@@ -36,16 +36,12 @@
             });
     });
 
-    // Scope root-level scroll snapping to hero posts only (home/resume keep
-    // free scroll). The snap points live on the hero spacer + drawer.
-    $effect(() => {
-        const el = document.documentElement;
-        if (data.hasHero) {
-            el.classList.add("lab-post");
-            return () => el.classList.remove("lab-post");
-        }
-    });
+    // Only one scroller live at a time: the hero's scroller takes gestures
+    // only while the page is at its very top (see .hero-scroller.locked).
+    let scrollY = $state(0);
 </script>
+
+<svelte:window bind:scrollY />
 
 <Seo
     title={data.title ? `${data.title} — Alex Jenter` : "Alex Jenter"}
@@ -56,9 +52,16 @@
 />
 
 {#if data.hasHero}
-    {#if Hero}<Hero />{:else}<div class="hero-placeholder"></div>{/if}
+    <!-- Server-rendered at a known height, so the article's position never
+         depends on the hero chunk or its drawer. The hero renders a sticky
+         .hero-stage plus its <Drawer> into the scroller. -->
+    <div class="hero-shell">
+        <div class="hero-scroller" class:locked={scrollY > 0}>
+            {#if Hero}<Hero />{/if}
+        </div>
+    </div>
 {/if}
-<!-- opaque layer that scrolls up over the fixed hero backdrop -->
+<!-- opaque layer that scrolls up over the pinned hero -->
 <div class="post-layer">
     <article class="post">
         <header>
@@ -74,18 +77,42 @@
 <style lang="scss">
     @use "$lib/styles/mixins" as m;
 
-    .hero-placeholder {
-        height: 100lvh;
+    /* Pinned like a fixed backdrop: sticky for the whole of <main>, while the
+       .post-layer (z-index 1) slides up over it. svh, not dvh/lvh: the mobile
+       URL bar showing/hiding never resizes it, so canvases don't reset. */
+    .hero-shell {
+        position: sticky;
+        top: 0;
+        height: 100svh;
+        z-index: 0;
+    }
+
+    /* The hero's own scroller: a gesture that starts over the hero scrolls
+       this until the drawer is revealed and stops there (browsers latch a
+       gesture to one scroller); the next gesture scrolls the page. Replaces
+       scroll-snap. No scrollbar — the drawer itself is the affordance. */
+    .hero-scroller {
+        height: 100%;
+        overflow-y: auto;
+        scrollbar-width: none;
+    }
+
+    .hero-scroller::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Once the page has moved off the top, the hero's scroller locks: overflow
+       hidden keeps its position (drawer stays as it was) but takes no
+       wheel/touch, so a gesture over the visible hero scrolls the page. Order
+       is always page ↔ drawer ↔ hero. */
+    .hero-scroller.locked {
+        overflow-y: hidden;
     }
 
     .post-layer {
         position: relative;
         z-index: 1;
         background: var(--color-bg);
-        /* Own snap point so `mandatory` snapping doesn't yank clicks in the
-           article back to the drawer. Being taller than the viewport, this is a
-           large snap area — you can rest anywhere within it. */
-        scroll-snap-align: start;
         overflow: clip;
     }
 

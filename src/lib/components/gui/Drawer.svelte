@@ -13,12 +13,12 @@
 </script>
 
 <!--
-    "Viewfinder" control drawer. Lives in the flow directly after a hero's
-    spacer. The hero is a fixed backdrop; this drawer is an opaque, relatively
-    positioned layer (z-index: 1) that slides up over it as you scroll, with a
-    gentle scroll-snap rest point (align: end). Mono "machine voice" (see
-    typography memory). Pass `grid` to opt into the structured responsive
-    column grid (A–D slots) defined in the styles below.
+    "Viewfinder" control drawer. Lives in the hero's scroller directly after
+    its pinned .hero-stage; this drawer is a translucent, relatively
+    positioned layer (z-index: 1) that slides up over the stage as the
+    scroller scrolls, and the scroller's end is its rest point. Mono "machine
+    voice" (see typography memory). Pass `grid` to opt into the structured
+    responsive column grid (A–D slots) defined in the styles below.
 -->
 <section class="drawer" aria-label="{title} controls">
     <div class="frame">
@@ -32,7 +32,7 @@
 <style>
     .drawer {
         position: relative;
-        z-index: 1; /* rides above the fixed hero backdrop (z-index: 0) */
+        z-index: 1; /* rides above the sticky .hero-stage */
         width: 100%;
         /* Theme-aware translucent surface: the page bg at 0.9 letting the
            hero glow through — the theme's own inks stay legible on it. */
@@ -43,8 +43,6 @@
         /* the "machine voice" — mono with aligned figures */
         font-family: var(--font-mono);
         font-variant-numeric: tabular-nums;
-        /* rest point once scrolled up over the hero */
-        scroll-snap-align: end;
     }
 
     .frame {
