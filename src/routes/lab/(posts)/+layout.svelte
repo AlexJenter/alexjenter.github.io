@@ -39,6 +39,27 @@
     // Only one scroller live at a time: the hero's scroller takes gestures
     // only while the page is at its very top (see .hero-scroller.locked).
     let scrollY = $state(0);
+
+    // A fully revealed drawer is remembered per post for this tab's session,
+    // so a reload brings it back out. Browsers only restore the page scroll.
+    let scroller = $state<HTMLElement>();
+    const drawerKey = $derived(`hero-drawer:${data.slug}`);
+
+    function onScrollerScroll() {
+        const s = scroller!;
+        const max = s.scrollHeight - s.clientHeight;
+        if (max <= 0) return; // hero (and drawer) not mounted yet
+        if (s.scrollTop >= max - 1) sessionStorage.setItem(drawerKey, "open");
+        else sessionStorage.removeItem(drawerKey);
+    }
+
+    // Once a hero has mounted: open its drawer if it was open before, else
+    // start closed (the scroller is reused when navigating between posts).
+    $effect(() => {
+        if (!Hero || !scroller) return;
+        const open = sessionStorage.getItem(drawerKey) === "open";
+        scroller.scrollTop = open ? scroller.scrollHeight : 0;
+    });
 </script>
 
 <svelte:window bind:scrollY />
@@ -56,12 +77,17 @@
          depends on the hero chunk or its drawer. The hero renders a sticky
          .hero-stage plus its <Drawer> into the scroller. -->
     <div class="hero-shell">
-        <div class="hero-scroller" class:locked={scrollY > 0}>
+        <div
+            class="hero-scroller"
+            class:locked={scrollY > 0}
+            bind:this={scroller}
+            onscroll={onScrollerScroll}
+        >
             {#if Hero}<Hero />{/if}
         </div>
     </div>
 {/if}
-<!-- opaque layer that scrolls up over the pinned hero -->
+<!-- opaque article layer, stacked above the hero -->
 <div class="post-layer">
     <article class="post">
         <header>
@@ -77,14 +103,12 @@
 <style lang="scss">
     @use "$lib/styles/mixins" as m;
 
-    /* Pinned like a fixed backdrop: sticky for the whole of <main>, while the
-       .post-layer (z-index 1) slides up over it. svh, not dvh/lvh: the mobile
-       URL bar showing/hiding never resizes it, so canvases don't reset. */
+    /* The first screen, in normal flow: once the drawer is out, the page scroll
+       carries hero and drawer away together and the article follows. svh, not
+       dvh/lvh: the mobile URL bar showing/hiding never resizes it, so canvases
+       don't reset. */
     .hero-shell {
-        position: sticky;
-        top: 0;
         height: 100svh;
-        z-index: 0;
     }
 
     /* The hero's own scroller: a gesture that starts over the hero scrolls

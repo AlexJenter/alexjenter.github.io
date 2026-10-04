@@ -38,21 +38,40 @@
 
 		ro.observe(canvas!.parentElement!);
 
-		let rafId: number;
-		if (!reducedMotion) {
-			let last = performance.now();
-			const loop = (now: number) => {
-				const dt = now - last;
-				last = now;
-				const cont = update?.(ctx, pw, ph, dt);
-				if (cont !== false) rafId = requestAnimationFrame(loop);
-			};
+		// The loop only runs while the canvas is on screen. `stopped` is set once
+		// update() returns false, so a finished loop stays finished.
+		let rafId = 0;
+		let stopped = false;
+		let last = 0;
+		const loop = (now: number) => {
+			const dt = now - last;
+			last = now;
+			if (update?.(ctx, pw, ph, dt) === false) {
+				stopped = true;
+				rafId = 0;
+				return;
+			}
 			rafId = requestAnimationFrame(loop);
-		}
+		};
+		const start = () => {
+			if (rafId || stopped || reducedMotion) return;
+			last = performance.now(); // resume without one huge dt
+			rafId = requestAnimationFrame(loop);
+		};
+		const pause = () => {
+			cancelAnimationFrame(rafId);
+			rafId = 0;
+		};
+
+		const io = new IntersectionObserver(([entry]) =>
+			entry.isIntersecting ? start() : pause()
+		);
+		io.observe(canvas!);
 
 		return () => {
 			ro.disconnect();
-			cancelAnimationFrame(rafId);
+			io.disconnect();
+			pause();
 		};
 	});
 </script>
