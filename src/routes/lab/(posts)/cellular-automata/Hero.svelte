@@ -5,7 +5,7 @@
     import { ruleTable, nextRow } from "./ca.js";
 
     let rule = $state(90); // applied live — drag it and the flow morphs
-    let cells = $state(180); // hard reset (reseeds)
+    let cellSize = $state(7); // CSS px per cell; hard reset (reseeds)
     let seed = $state<"single" | "random">("random");
     let paused = $state(false);
     let regen = $state(0);
@@ -40,8 +40,10 @@
             "(prefers-reduced-motion: reduce)",
         ).matches;
 
-        const desired = Math.min(1000, Math.max(16, Math.round(cells)));
-        const cell = Math.max(1, Math.round(w / desired));
+        // A fixed on-screen cell size (w and h are device px), so the grid
+        // reads the same on a phone as on a desktop; narrow screens simply
+        // show fewer columns instead of shrinking cells into static.
+        const cell = Math.max(1, Math.round(cellSize * window.devicePixelRatio));
         const cols = Math.ceil(w / cell);
         const visRows = Math.ceil(h / cell) + 2;
 
@@ -104,7 +106,7 @@
 </script>
 
 <div class="hero-stage">
-    {#key `${cells}-${seed}-${regen}`}
+    {#key `${cellSize}-${seed}-${regen}`}
         <Canvas {setup} {update} label={`Elementary cellular automaton, rule ${rule}`} />
     {/key}
 </div>
@@ -136,7 +138,7 @@
 
     <!-- C: grid size + seeding -->
     <div class="area-C">
-        <Slider bind:value={cells} min={48} max={420} step={4} label="cells" />
+        <Slider bind:value={cellSize} min={3} max={24} step={1} label="cell size" />
         <Radio bind:value={seed} options={seedOptions} label="seed" />
     </div>
 
