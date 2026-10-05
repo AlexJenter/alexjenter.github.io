@@ -14,3 +14,29 @@ export const SITE_URL = (
 
 /** Site-wide name used for `og:site_name` and title suffixes. */
 export const SITE_NAME = "Alex Jenter";
+
+/** OG preview cards: laid out at 1200×630, rendered at 2× for crisp previews. */
+export const OG = { width: 1200, height: 630, scale: 2 };
+
+/**
+ * Headings and descriptions of the pages that aren't posts, keyed by their
+ * OG image slug — shared by each page's <Seo> and its generated preview card
+ * (see $lib/server/og). Posts take theirs from frontmatter.
+ */
+export const PAGES = {
+  index: {
+    heading: "Frontend dev & creative coder",
+    description:
+      "Frontend developer and creative coder building interfaces and experiments on the web.",
+  },
+  lab: {
+    heading: "Lab",
+    description:
+      "Experiments in graphics, generative art, and interaction on the web.",
+  },
+  resume: {
+    heading: "Resume",
+    description:
+      "Résumé of Alex Jenter — web developer with a background in design.",
+  },
+};

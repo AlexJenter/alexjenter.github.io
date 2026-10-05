@@ -1,17 +1,9 @@
 <script>
+    import { formatDate } from "$lib/date";
+
     let { date } = $props();
 
-    const formatted = $derived(
-        date
-            ? new Date(
-                  date.includes("T") ? date : date + "T00:00:00",
-              ).toLocaleDateString("de-CH", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-              })
-            : null,
-    );
+    const formatted = $derived(date ? formatDate(date) : null);
 </script>
 
 {#if formatted}

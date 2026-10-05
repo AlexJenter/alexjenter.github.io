@@ -2,11 +2,12 @@
     import { work, education, languages, skills } from "$lib/data/resume";
     import EntryHeader from "./EntryHeader.svelte";
     import Seo from "$lib/components/Seo.svelte";
+    import { PAGES, SITE_NAME } from "$lib/site";
 </script>
 
 <Seo
-    title="Resume — Alex Jenter"
-    description="Résumé of Alex Jenter — web developer with a background in design."
+    title="{PAGES.resume.heading} — {SITE_NAME}"
+    description={PAGES.resume.description}
 />
 
 <div class="resume">

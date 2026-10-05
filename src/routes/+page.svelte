@@ -1,11 +1,12 @@
 <script lang="ts">
     import { links } from "$lib/data/work";
     import Seo from "$lib/components/Seo.svelte";
+    import { PAGES, SITE_NAME } from "$lib/site";
 </script>
 
 <Seo
-    title="Alex Jenter — Frontend dev & creative coder"
-    description="Frontend developer and creative coder building interfaces and experiments on the web."
+    title="{SITE_NAME} — {PAGES.index.heading}"
+    description={PAGES.index.description}
 />
 
 <section class="hero">

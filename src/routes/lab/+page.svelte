@@ -1,12 +1,13 @@
 <script lang="ts">
     import Date from "$lib/components/Date.svelte";
     import Seo from "$lib/components/Seo.svelte";
+    import { PAGES, SITE_NAME } from "$lib/site";
     let { data } = $props();
 </script>
 
 <Seo
-    title="Lab — Alex Jenter"
-    description="Experiments in graphics, generative art, and interaction on the web."
+    title="{PAGES.lab.heading} — {SITE_NAME}"
+    description={PAGES.lab.description}
 />
 
 <section class="page">

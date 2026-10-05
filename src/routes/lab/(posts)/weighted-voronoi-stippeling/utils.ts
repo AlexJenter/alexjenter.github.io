@@ -66,10 +66,11 @@ export function downloadSVG(
   const fg = cssVar("--color-text");
   const bg = cssVar("--color-bg");
 
+  // Literal colours, not CSS variables: most SVG tools outside the browser
+  // (librsvg, editors, viewers) don't resolve var() and paint it black.
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${nw} ${nh}" width="${nw}" height="${nh}">
-    <style>:root{--fg:${fg};--bg:${bg}}</style>
-    <rect width="100%" height="100%" fill="var(--bg)"/>
-    <g fill="var(--fg)">${circles}</g>
+    <rect width="100%" height="100%" fill="${bg}"/>
+    <g fill="${fg}">${circles}</g>
   </svg>`;
 
   const a = document.createElement("a");
