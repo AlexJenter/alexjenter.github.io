@@ -1,4 +1,6 @@
-export const links = [
+/** Sites listed under "Selected sites" on the resume. `note` is an optional
+    line of context: who it was for, what I did. */
+export const sites: { url: string; label: string; note?: string }[] = [
   {
     url: "https://zentrumfuerliterarischegegenwart.ch",
     label: "Zentrum für Literarische Gegenwart",

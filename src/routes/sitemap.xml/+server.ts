@@ -1,4 +1,4 @@
-import type { PostFrontmatter } from "$lib";
+import { getPosts } from "$lib/server/posts";
 import { SITE_URL } from "$lib/site";
 
 // Endpoints do NOT inherit the root layout's `prerender = true`, so set it here
@@ -9,26 +9,10 @@ export const prerender = true;
 type SitemapUrl = { loc: string; lastmod?: string };
 
 export function GET() {
-  const modules = import.meta.glob("/src/routes/lab/**/+page.md", {
-    eager: true,
-  });
-
-  const posts = Object.entries(modules)
-    .filter(
-      ([, mod]: [string, any]) =>
-        (mod.metadata as PostFrontmatter).status === "public",
-    )
-    .map(([path, mod]: [string, any]) => ({
-      slug: path.split("/").at(-2)!,
-      date: (mod.metadata as PostFrontmatter).date,
-    }))
-    .sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-    );
+  const posts = getPosts("public");
 
   const urls: SitemapUrl[] = [
     { loc: `${SITE_URL}/` },
-    { loc: `${SITE_URL}/lab` },
     { loc: `${SITE_URL}/resume` },
     ...posts.map((p) => ({
       loc: `${SITE_URL}/lab/${p.slug}`,

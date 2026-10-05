@@ -1,7 +1,9 @@
 <script lang="ts">
-    import { links } from "$lib/data/work";
+    import PostGrid from "$lib/components/PostGrid.svelte";
     import Seo from "$lib/components/Seo.svelte";
     import { PAGES, SITE_NAME } from "$lib/site";
+
+    let { data } = $props();
 </script>
 
 <Seo
@@ -9,61 +11,40 @@
     description={PAGES.index.description}
 />
 
-<section class="hero">
-    <h1>Frontend dev &<br />creative coder.</h1>
-    <p>Building interfaces and experiments on the web.</p>
-</section>
-
-<section class="work">
-    <h2>Work</h2>
-    <p>Selected projects.</p>
-    <!-- list-style: none strips list semantics in Safari/VoiceOver -->
-    <ul role="list">
-        {#each links as { url, label }}
-            <li><a href={url} target="_blank" rel="noopener">{label}</a></li>
-        {/each}
-    </ul>
+<section class="page">
+    <PostGrid posts={data.posts}>
+        {#snippet intro()}
+            <h1>I'm Alex Jenter, a frontend developer and creative coder.</h1>
+            <p>
+                This is my lab: experiments with graphics, generative art and
+                interaction on the web. Most of them come with controls to
+                play with.
+            </p>
+            <p>Client work is listed in my <a href="/resume">resume</a>.</p>
+        {/snippet}
+    </PostGrid>
 </section>
 
 <style>
-    .hero {
-        padding: var(--space-24) var(--space-8);
-        max-width: var(--max-w-wide);
-        margin: 0 auto;
-    }
-
-    .work {
-        padding: var(--space-16) var(--space-8);
+    .page {
+        padding: var(--space-24) var(--space-8) var(--space-16);
         max-width: var(--max-w-wide);
         margin: 0 auto;
     }
 
     h1 {
-        font-size: var(--text-5xl);
+        font-size: var(--text-3xl);
         font-weight: 400;
-        letter-spacing: -0.03em;
+        letter-spacing: -0.02em;
+        line-height: var(--leading-tight);
         margin-bottom: var(--space-4);
     }
 
     p {
-        font-size: var(--text-lg);
         color: var(--color-text-muted);
     }
 
-    .work {
-        ul {
-            list-style: none;
-        }
-        /*ul:hover li {
-            letter-spacing: 2px;
-            opacity: 0.5;
-            transition:
-                letter-spacing 300ms ease-out,
-                opacity 300ms ease-out;
-            &:hover {
-                opacity: 1;
-                letter-spacing: initial;
-            }
-        }*/
+    p + p {
+        margin-top: var(--space-3);
     }
 </style>

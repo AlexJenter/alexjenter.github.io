@@ -3,7 +3,6 @@
     import ThemeToggle from "./ThemeToggle.svelte";
 
     const links = [
-        { href: "/lab", label: "Lab" },
         { href: "/resume", label: "Resume" },
     ];
 </script>

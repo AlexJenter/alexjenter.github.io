@@ -1,5 +1,6 @@
 <script lang="ts">
     import { work, education, languages, skills } from "$lib/data/resume";
+    import { sites } from "$lib/data/sites";
     import EntryHeader from "./EntryHeader.svelte";
     import Seo from "$lib/components/Seo.svelte";
     import { PAGES, SITE_NAME } from "$lib/site";
@@ -77,6 +78,20 @@
             <h2>Languages</h2>
             <p>{languages}</p>
         </div>
+    </section>
+
+    <!-- The address is shown, not only linked, so it survives printing. -->
+    <section id="sites">
+        <h2>Selected sites</h2>
+        <ul class="sites" role="list">
+            {#each sites as { url, label, note }}
+                <li>
+                    <a href={url} target="_blank" rel="noopener">{label}</a>
+                    <span class="host">{new URL(url).host.replace(/^www\./, "")}</span>
+                    {#if note}<p class="note">{note}</p>{/if}
+                </li>
+            {/each}
+        </ul>
     </section>
 </div>
 
@@ -183,6 +198,31 @@
     .skill-group li,
     .two-col p {
         font-size: var(--text-sm);
+    }
+
+    .sites {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+    }
+
+    .sites a {
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    .host {
+        margin-left: var(--space-3);
+        font-size: var(--text-sm);
+        color: var(--color-text-muted);
+        font-variation-settings: "opsz" var(--font-opsz-body);
+    }
+
+    .note {
+        font-size: var(--text-sm);
+        color: var(--color-text-muted);
+        font-variation-settings: "opsz" var(--font-opsz-body);
     }
 
     /* Print */

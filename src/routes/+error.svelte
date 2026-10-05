@@ -21,7 +21,7 @@
     {:else}
         <p>{page.error?.message ?? "The page failed to load."} ({page.status})</p>
     {/if}
-    <p>Try the <a href="/">home page</a> or the <a href="/lab">lab</a>.</p>
+    <p>Try the <a href="/">home page</a>.</p>
 </section>
 
 <style>

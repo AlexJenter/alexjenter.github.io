@@ -33,12 +33,7 @@ export const PAGES = {
   index: {
     heading: "Frontend dev & creative coder",
     description:
-      "Frontend developer and creative coder building interfaces and experiments on the web.",
-  },
-  lab: {
-    heading: "Lab",
-    description:
-      "Experiments in graphics, generative art, and interaction on the web.",
+      "Frontend developer and creative coder. Experiments in graphics, generative art, and interaction on the web.",
   },
   resume: {
     heading: "Resume",

@@ -30,7 +30,7 @@
             <p>
                 Body text is <strong>Fraunces</strong> at low optical size — rounder and
                 built for reading, with <em>WONK</em> left on so the quirks survive.
-                Links get a <a href="/lab">warm accent on hover</a>, and inline code
+                Links get a <a href="/">warm accent on hover</a>, and inline code
                 like <code>theme.resolved</code> sits in a surface chip.
             </p>
             <p>
