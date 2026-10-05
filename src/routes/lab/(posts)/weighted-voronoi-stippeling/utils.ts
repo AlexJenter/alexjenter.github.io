@@ -7,8 +7,39 @@ import { cssVar } from "$lib/theme.svelte";
 // to the plain geometric centroid — but only if density is non-zero. Without
 // a floor, a Voronoi cell sampling only raw=0 pixels (e.g. flat white
 // background) ends up with sumW===0 and its point freezes in place instead
-// of relaxing into an even spacing.
-const MIN_WEIGHT = 1;
+// of relaxing into an even spacing. Kept tiny so blank areas still weigh
+// next to nothing against ink: at 1, a white background held ~4% of the dots.
+const MIN_WEIGHT = 0.01;
+
+/** Ink weight of pixel i, 0.01–255: darkness squared (or lightness, inverted). */
+function weightAt(lum: Uint8ClampedArray, i: number, invert: boolean): number {
+  const raw = invert ? 255 - lum[i] : lum[i];
+  return Math.max((raw * raw) / 255, MIN_WEIGHT);
+}
+
+/**
+ * Starting points placed where the image has ink (rejection sampling on the
+ * same weights). Lloyd relaxation only moves points locally, so from a
+ * uniform start about half of them stay stranded in an empty background.
+ */
+export function seedPoints(
+  n: number,
+  lum: Uint8ClampedArray,
+  w: number,
+  h: number,
+  invert = false,
+): [number, number][] {
+  const pts: [number, number][] = [];
+  // a nearly blank image would take forever; past this, accept anything
+  const maxTries = n * 1000;
+  for (let tries = 0; pts.length < n; tries++) {
+    const x = Math.random() * w;
+    const y = Math.random() * h;
+    const p = weightAt(lum, (y | 0) * w + (x | 0), invert) / 255;
+    if (tries > maxTries || Math.random() < p) pts.push([x, y]);
+  }
+  return pts;
+}
 
 export function applyWeightedCentroid(
   pts: [number, number][],
@@ -26,8 +57,7 @@ export function applyWeightedCentroid(
   let nearest = 0;
   for (let y = 0; y < h; y += 2) {
     for (let x = 0; x < w; x += 2) {
-      const raw = invert ? 255 - lum[y * w + x] : lum[y * w + x];
-      const weight = Math.max((raw * raw) / 255, MIN_WEIGHT);
+      const weight = weightAt(lum, y * w + x, invert);
       nearest = delaunay.find(x, y, nearest);
       sumX[nearest] += x * weight;
       sumY[nearest] += y * weight;

@@ -30,7 +30,7 @@ void main() {
         : vec2(uResolution.x, uImageRes.y * uResolution.x / uImageRes.x);
     vec2 imageUv = outputUv * uResolution / coverSize
                  + (coverSize - uResolution) * 0.5 / coverSize;
-    vec3 image = texture2D(uImage, imageUv).rgb;
+    vec4 image = texture2D(uImage, imageUv);
 
     // Tile the noise in *image* space (not output space) so the grain
     // is locked to the photo — identical in the live preview and the
@@ -40,12 +40,15 @@ void main() {
     vec2 noiseUv     = vec2(imageUv.x * imageAspect, imageUv.y);
     vec2 noiseCenter = vec2(0.5 * imageAspect, 0.5);
 
-    float n = texture2D(uNoise, (noiseUv - noiseCenter) * uDitherScale).r;
-    float imageIsBrighter = step(n, lum(image));
+    vec4  noise = texture2D(uNoise, (noiseUv - noiseCenter) * uDitherScale);
+    float imageIsBrighter = step(noise.r, lum(image.rgb));
+    // Cut-outs: alpha is dithered too (against another noise channel), so
+    // transparent pixels show plain paper and soft edges stay one bit.
+    float covered = step(noise.g, image.a);
 
     vec3 lighter = lum(uPaper) >= lum(uInk) ? uPaper : uInk;
     vec3 darker  = lum(uPaper) >= lum(uInk) ? uInk : uPaper;
     vec3 bright = mix(lighter, darker, uInvert);
     vec3 dark   = mix(darker, lighter, uInvert);
-    gl_FragColor = vec4(mix(dark, bright, imageIsBrighter), 1.0);
+    gl_FragColor = vec4(mix(uPaper, mix(dark, bright, imageIsBrighter), covered), 1.0);
 }

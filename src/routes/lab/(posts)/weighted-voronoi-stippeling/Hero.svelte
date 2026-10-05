@@ -2,7 +2,7 @@
     import Canvas from "$lib/components/Canvas.svelte";
     import { Drawer, Slider, FileInput, Button } from "$lib/components/gui";
     import { theme, cssVar } from "$lib/theme.svelte";
-    import { applyWeightedCentroid, downloadSVG } from "./utils";
+    import { applyWeightedCentroid, downloadSVG, seedPoints } from "./utils";
 
     import imgSrc from "./img0.jpg";
 
@@ -42,6 +42,7 @@
         const image = new Image();
         image.src = uploadedImage ?? imgSrc;
         image.onload = () => {
+            pts = []; // seeded afresh from the new image in setup()
             lum = null;
             iterCount = 0;
             img = image;
@@ -64,17 +65,15 @@
     const setup = (_ctx: CanvasRenderingContext2D, w: number, h: number) => {
         canvasW = w;
         canvasH = h;
-        if (pts.length !== pointCount) {
-            pts = Array.from(
-                { length: pointCount },
-                () =>
-                    [Math.random() * w, Math.random() * h] as [number, number],
-            );
-        }
         iterCount = 0;
 
         const offscreen = new OffscreenCanvas(w, h);
         const offCtx = offscreen.getContext("2d")!;
+        // Cut-outs: transparent pixels become the tone that draws no dots —
+        // white where dark pixels draw (light theme), black where light ones
+        // do — so the background stays empty. An empty canvas reads as black.
+        offCtx.fillStyle = isDark ? "#000" : "#fff";
+        offCtx.fillRect(0, 0, w, h);
         offCtx.drawImage(img!, 0, 0, w, h);
         const { data } = offCtx.getImageData(0, 0, w, h);
         const buf = new Uint8ClampedArray(w * h);
@@ -83,6 +82,10 @@
                 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
         }
         lum = buf;
+
+        if (pts.length !== pointCount) {
+            pts = seedPoints(pointCount, buf, w, h, !isDark);
+        }
     };
 
     const update = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
