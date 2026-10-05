@@ -224,12 +224,6 @@
             break-inside: avoid;
         }
 
-        a[href]::after {
-            content: " (" attr(href) ")";
-            font-size: 0.75em;
-            color: #666;
-        }
-
         #education {
             break-before: page;
         }

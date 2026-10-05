@@ -68,3 +68,27 @@ class ThemeStore {
 }
 
 export const theme = new ThemeStore();
+
+/**
+ * A design token's current value (a CSS custom property on :root), for
+ * canvas/JS drawing. Client-only. Cheap enough to read per frame, which also
+ * picks up a theme toggle immediately.
+ */
+export function cssVar(name: string, fallback = ""): string {
+    return (
+        getComputedStyle(document.documentElement)
+            .getPropertyValue(name)
+            .trim() || fallback
+    );
+}
+
+/** A token's color as [r, g, b] 0–255, whatever CSS color syntax it uses. */
+export function cssRGB(name: string, fallback = "#000"): [number, number, number] {
+    const c = document.createElement("canvas");
+    c.width = c.height = 1;
+    const ctx = c.getContext("2d")!;
+    ctx.fillStyle = cssVar(name, fallback);
+    ctx.fillRect(0, 0, 1, 1);
+    const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+    return [r, g, b];
+}

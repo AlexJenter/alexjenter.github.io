@@ -1,7 +1,11 @@
-import type { LoadEvent } from "@sveltejs/kit";
+import type { PageServerLoad } from "./$types";
 import type { PostFrontmatter } from "$lib";
 
-export const load = ({ url }: LoadEvent) => {
+// Server-only (runs at prerender): the eager glob below imports every post's
+// full module — diagrams, d3 and all — just to read frontmatter. In a
+// universal load that whole graph shipped to the browser on /lab; here the
+// browser only gets the resulting JSON.
+export const load = (({ url }) => {
   const isLocalhost =
     url.hostname === "localhost" || url.hostname === "127.0.0.1";
   const modules = import.meta.glob("/src/routes/lab/**/+page.md", {
@@ -57,4 +61,4 @@ export const load = ({ url }: LoadEvent) => {
     publicPosts: posts.filter((p) => !p.draft),
     draftPosts: posts.filter((p) => p.draft),
   };
-};
+}) satisfies PageServerLoad;

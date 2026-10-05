@@ -1,5 +1,6 @@
 // @ts-ignore
 import { Delaunay } from "d3-delaunay";
+import { cssVar } from "$lib/theme.svelte";
 
 // Density floor: keeps Lloyd relaxation alive in flat zero-tone regions.
 // Per Secord §2.1, a *uniform* density still reduces the weighted centroid
@@ -62,12 +63,8 @@ export function downloadSVG(
     )
     .join("");
 
-  const fg = window
-    .getComputedStyle(document.body)
-    .getPropertyValue("--color-text");
-  const bg = window
-    .getComputedStyle(document.body)
-    .getPropertyValue("--color-bg");
+  const fg = cssVar("--color-text");
+  const bg = cssVar("--color-bg");
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${nw} ${nh}" width="${nw}" height="${nh}">
     <style>:root{--fg:${fg};--bg:${bg}}</style>

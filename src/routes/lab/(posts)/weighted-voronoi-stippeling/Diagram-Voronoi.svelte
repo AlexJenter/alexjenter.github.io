@@ -328,8 +328,6 @@
         align-items: center;
     }
 
-    .leg-seed,
-    .leg-centroid,
     .leg-vec {
         display: flex;
         align-items: center;
@@ -370,13 +368,6 @@
 
     .btn-primary:hover:not(:disabled) {
         opacity: 0.8;
-    }
-
-    .iter {
-        margin-left: auto;
-        font-family: var(--font-mono);
-        font-size: var(--text-sm);
-        color: var(--color-text-muted);
     }
 
     figcaption {

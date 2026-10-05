@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { theme } from "$lib/theme.svelte";
+    import { theme, cssRGB } from "$lib/theme.svelte";
     import {
         Drawer,
         Slider,
@@ -27,25 +27,12 @@
 
     const label = "Blue-noise dithered photograph";
 
-    // Read the theme's ink/paper as [r,g,b] 0..1 via a 1px canvas (format-agnostic).
-    function parseColor(css: string): [number, number, number] {
-        const c = document.createElement("canvas");
-        c.width = c.height = 1;
-        const cx = c.getContext("2d")!;
-        cx.fillStyle = css;
-        cx.fillRect(0, 0, 1, 1);
-        const [r, g, b] = cx.getImageData(0, 0, 1, 1).data;
-        return [r / 255, g / 255, b / 255];
-    }
+    // The theme's ink/paper as [r,g,b] 0..1 for the shader.
+    const unit = (rgb: number[]) => rgb.map((c) => c / 255);
     function readThemeColors() {
-        const s = getComputedStyle(document.documentElement);
         return {
-            ink: parseColor(
-                s.getPropertyValue("--color-text").trim() || "#1a1916",
-            ),
-            paper: parseColor(
-                s.getPropertyValue("--color-bg").trim() || "#f5f4f0",
-            ),
+            ink: unit(cssRGB("--color-text", "#1a1916")),
+            paper: unit(cssRGB("--color-bg", "#f5f4f0")),
         };
     }
 
@@ -72,7 +59,7 @@
 
     // --- drag-to-scale (grab the noise) -------------------------------------
     // Press on the hero and drag: density scales as startRadius / radius about
-    // the viewport centre (the grain's pivot) — moving toward the centre
+    // the hero's centre (the grain's pivot) — moving toward the centre
     // densifies the grain (half the distance ⇒ double density), moving out
     // coarsens it. Mouse/pen only; touch is left free to scroll the page.
     let heroEl: HTMLElement;
@@ -81,8 +68,10 @@
     let startScale = 0;
 
     function radiusFromCentre(e: PointerEvent): number {
-        const cx = window.innerWidth / 2;
-        const cy = window.innerHeight / 2;
+        // the hero's rect, not the window: it scrolls with the page
+        const r = heroEl.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
         return Math.max(Math.hypot(e.clientX - cx, e.clientY - cy), 1); // avoid /0
     }
 

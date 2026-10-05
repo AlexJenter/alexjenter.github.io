@@ -1,6 +1,7 @@
 <script lang="ts">
     import Canvas from "$lib/components/Canvas.svelte";
     import { Drawer, Slider, Radio, Button } from "$lib/components/gui";
+    import { cssVar } from "$lib/theme.svelte";
     import { ruleTable, nextRow } from "./ca.js";
 
     let rule = $state(90); // applied live — drag it and the flow morphs
@@ -15,13 +16,6 @@
     ];
 
     const presets = [90, 30, 110, 73, 150, 184, 45, 22];
-
-    function cssVar(name: string, fallback: string) {
-        const v = getComputedStyle(document.documentElement)
-            .getPropertyValue(name)
-            .trim();
-        return v || fallback;
-    }
 
     type Sim = {
         w: number;
@@ -109,13 +103,10 @@
     }
 </script>
 
-<div class="hero hero-stage">
-    <div class="inner">
-        {#key `${cells}-${seed}-${regen}`}
-            <Canvas {setup} {update} label={`Elementary cellular automaton, rule ${rule}`} />
-        {/key}
-    </div>
-
+<div class="hero-stage">
+    {#key `${cells}-${seed}-${regen}`}
+        <Canvas {setup} {update} label={`Elementary cellular automaton, rule ${rule}`} />
+    {/key}
 </div>
 
 <Drawer title="Rules" grid={true}>
@@ -162,16 +153,6 @@
 </Drawer>
 
 <style>
-    /* sticky positioning/background come from the global .hero-stage */
-    .hero {
-        display: flex;
-
-        > .inner {
-            flex: 1;
-            min-height: 0;
-        }
-    }
-
     .readout {
         display: flex;
         justify-content: space-between;

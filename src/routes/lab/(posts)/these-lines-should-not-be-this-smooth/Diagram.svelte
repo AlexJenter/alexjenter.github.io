@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
+    import { cssRGB } from '$lib/theme.svelte';
 
     // Grid dimensions per panel
     const GW = 100, GH = 72, GAP = 2;
@@ -124,18 +125,6 @@
     }
 
     onMount(() => {
-        function cssRGB(varName: string): [number, number, number] {
-            const tmp = document.createElement('canvas');
-            tmp.width = tmp.height = 1;
-            const c = tmp.getContext('2d')!;
-            c.fillStyle = getComputedStyle(document.documentElement)
-                .getPropertyValue(varName)
-                .trim();
-            c.fillRect(0, 0, 1, 1);
-            const d = c.getImageData(0, 0, 1, 1).data;
-            return [d[0], d[1], d[2]];
-        }
-
         const bg = cssRGB('--color-bg');
         const fg = cssRGB('--color-text');
         const mu = cssRGB('--color-text-muted');

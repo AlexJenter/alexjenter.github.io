@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { onMount } from "svelte";
     import Canvas from "$lib/components/Canvas.svelte";
     import { Drawer, Slider, FileInput, Button } from "$lib/components/gui";
-    import { theme } from "$lib/theme.svelte";
+    import { theme, cssVar } from "$lib/theme.svelte";
     import { applyWeightedCentroid, downloadSVG } from "./utils";
 
     import imgSrc from "./img0.jpg";
@@ -36,11 +35,12 @@
         return () => clearTimeout(timer);
     });
 
+    // Load the uploaded image, or the default one; a new image restarts the
+    // stipple. Done before the Canvas mounts so `ar` is known and setup() gets
+    // the right size straight away.
     $effect(() => {
-        const src = uploadedImage;
-        if (!src) return;
         const image = new Image();
-        image.src = src;
+        image.src = uploadedImage ?? imgSrc;
         image.onload = () => {
             lum = null;
             iterCount = 0;
@@ -59,16 +59,6 @@
         lum = null;
         iterCount = 0;
         resetKey++;
-    });
-
-    onMount(() => {
-        const image = new Image();
-        image.src = imgSrc;
-        image.onload = () => {
-            img = image;
-            ar = image.naturalWidth / image.naturalHeight;
-            resetKey++;
-        };
     });
 
     const setup = (_ctx: CanvasRenderingContext2D, w: number, h: number) => {
@@ -104,10 +94,7 @@
         }
 
         ctx.clearRect(0, 0, w, h);
-        ctx.fillStyle =
-            getComputedStyle(document.documentElement)
-                .getPropertyValue("--color-text")
-                .trim() || "#A9AFBC";
+        ctx.fillStyle = cssVar("--color-text", "#A9AFBC");
 
         for (const [x, y] of pts) {
             ctx.beginPath();
@@ -172,11 +159,14 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        /* letterbox against the stage itself (cq units), not the window: 100vw
+           counts a classic page scrollbar and would overflow the hero scroller */
+        container-type: size;
 
         > .inner {
             aspect-ratio: var(--ar);
-            width: min(100vw, 100svh * var(--ar));
-            height: min(100svh, 100vw / var(--ar));
+            width: min(100cqw, 100cqh * var(--ar));
+            height: min(100cqh, 100cqw / var(--ar));
         }
     }
 </style>

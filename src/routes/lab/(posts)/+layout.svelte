@@ -1,10 +1,11 @@
 <script lang="ts">
-    import type { Snippet } from "svelte";
+    import type { Component, Snippet } from "svelte";
     import Date from "$lib/components/Date.svelte";
     import Seo from "$lib/components/Seo.svelte";
 
-    import type { Component } from "svelte";
-
+    // Lazy: the keys alone say which post has a hero (known on the server too,
+    // so the shell is in the prerendered HTML); only that post's hero module
+    // is ever loaded.
     const heroModules = import.meta.glob("/src/routes/lab/**/Hero.svelte");
 
     interface Props {
@@ -14,26 +15,26 @@
             date?: string;
             description?: string;
             slug?: string;
-            hasHero?: boolean;
         };
     }
 
     let { children, data }: Props = $props();
 
+    const heroKey = $derived(
+        Object.keys(heroModules).find((k) =>
+            k.includes(`/${data.slug}/Hero.svelte`),
+        ),
+    );
     let Hero = $state<Component | null>(null);
 
     $effect(() => {
-        if (!data.hasHero) {
+        if (!heroKey) {
             Hero = null;
             return;
         }
-        const key = Object.keys(heroModules).find((k) =>
-            k.includes(`/${data.slug}/Hero.svelte`),
-        );
-        if (key)
-            heroModules[key]().then((m: any) => {
-                Hero = m.default;
-            });
+        heroModules[heroKey]().then((m: any) => {
+            Hero = m.default;
+        });
     });
 
     // Only one scroller live at a time: the hero's scroller takes gestures
@@ -72,7 +73,7 @@
     publishedTime={data.date}
 />
 
-{#if data.hasHero}
+{#if heroKey}
     <!-- Server-rendered at a known height, so the article's position never
          depends on the hero chunk or its drawer. The hero renders a sticky
          .hero-stage plus its <Drawer> into the scroller. -->
@@ -87,7 +88,7 @@
         </div>
     </div>
 {/if}
-<!-- opaque article layer, stacked above the hero -->
+<!-- full-width wrapper that clips diagrams overflowing the article -->
 <div class="post-layer">
     <article class="post">
         <header>
@@ -134,9 +135,6 @@
     }
 
     .post-layer {
-        position: relative;
-        z-index: 1;
-        background: var(--color-bg);
         overflow: clip;
     }
 

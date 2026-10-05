@@ -1,6 +1,7 @@
 <script lang="ts">
     import Canvas from "$lib/components/Canvas.svelte";
     import { Drawer, Button, Checkbox } from "$lib/components/gui";
+    import { cssVar } from "$lib/theme.svelte";
     import {
         Drop,
         metaball,
@@ -189,9 +190,8 @@
         }
 
         // Re-read each frame so the manual theme toggle applies immediately.
-        const styles = getComputedStyle(document.documentElement);
-        const bg = styles.getPropertyValue("--color-bg").trim();
-        const fg = styles.getPropertyValue("--color-text").trim();
+        const bg = cssVar("--color-bg");
+        const fg = cssVar("--color-text");
 
         ctx.fillStyle = sceneState ? fg : bg;
         ctx.fillRect(0, 0, w, h);
@@ -225,21 +225,21 @@
 
     function onPointerMove(e: PointerEvent) {
         const dpr = window.devicePixelRatio || 1;
-        mouse = { x: e.clientX * dpr, y: e.clientY * dpr };
+        // relative to the hero, not the viewport: it scrolls with the page
+        const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+        mouse = { x: (e.clientX - r.left) * dpr, y: (e.clientY - r.top) * dpr };
     }
 </script>
 
 <!-- Pointer-only attractor affordance; the scene also evolves on its own, and
      the drawer's Pause button is the keyboard-reachable control. -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="hero hero-stage" onpointermove={onPointerMove}>
-    <div class="inner">
-        <Canvas
-            {setup}
-            {update}
-            label="Meta paper balls — ink blobs that chase the pointer and merge"
-        />
-    </div>
+<div class="hero-stage" onpointermove={onPointerMove}>
+    <Canvas
+        {setup}
+        {update}
+        label="Meta paper balls — ink blobs that chase the pointer and merge"
+    />
 </div>
 
 <Drawer title="Metaballs" grid={true}>
@@ -256,13 +256,7 @@
 
 <style>
     /* sticky positioning/background come from the global .hero-stage */
-    .hero {
-        display: flex;
+    .hero-stage {
         cursor: none; /* the main blob is the cursor */
-
-        > .inner {
-            flex: 1;
-            min-height: 0;
-        }
     }
 </style>

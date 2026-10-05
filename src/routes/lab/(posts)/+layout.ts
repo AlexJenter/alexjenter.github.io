@@ -10,13 +10,6 @@ export const load = (async ({ url }) => {
   const mdModules = import.meta.glob("/src/routes/lab/**/+page.md", {
     import: "metadata",
   });
-  // Lazy glob: we only need the *keys* (which slugs have a hero) here, not the
-  // modules. Eager would statically import every hero — and transitively their
-  // heavy WebGL/Canvas deps — into this universal load chunk, loaded on every
-  // lab route. Object.keys() below resolves at build time without executing any
-  // loader, so nothing heavy is bundled.
-  const heroModules = import.meta.glob("/src/routes/lab/**/Hero.svelte");
-
   const slug = url.pathname.split("/").filter(Boolean).at(-1) ?? "";
 
   const mdKey = Object.keys(mdModules).find((path) =>
@@ -26,15 +19,10 @@ export const load = (async ({ url }) => {
     ? ((await mdModules[mdKey]()) as PostFrontmatter)
     : undefined;
 
-  const hasHero = Object.keys(heroModules).some((p) =>
-    p.includes(`/${slug}/Hero.svelte`),
-  );
-
   return {
     title: metadata?.title,
     date: metadata?.date,
     description: metadata?.description,
     slug,
-    hasHero,
   };
 }) satisfies LayoutLoad;

@@ -115,12 +115,6 @@
         transition: color var(--duration-fast) var(--ease-out);
     }
 
-    time.date {
-        font-size: var(--text-sm);
-        color: var(--color-text-muted);
-        font-variation-settings: "opsz" var(--font-opsz-body);
-    }
-
     .description {
         font-size: var(--text-sm);
         color: var(--color-text-muted);

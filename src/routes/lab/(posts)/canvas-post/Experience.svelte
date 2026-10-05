@@ -1,5 +1,6 @@
 <script lang="ts">
     import Canvas from "$lib/components/Canvas.svelte";
+    import { cssVar } from "$lib/theme.svelte";
 
     let t = 0;
 
@@ -20,9 +21,7 @@
 
         ctx.beginPath();
         ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.fillStyle = getComputedStyle(document.documentElement)
-            .getPropertyValue("--color-accent-warm")
-            .trim();
+        ctx.fillStyle = cssVar("--color-accent-warm");
         ctx.fill();
     };
 </script>

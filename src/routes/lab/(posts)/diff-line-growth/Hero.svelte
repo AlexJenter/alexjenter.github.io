@@ -1,6 +1,7 @@
 <script lang="ts">
     import Canvas from "$lib/components/Canvas.svelte";
     import { Drawer, Slider, Button } from "$lib/components/gui";
+    import { cssVar } from "$lib/theme.svelte";
 
     type Vec2 = { x: number; y: number };
     type Point = { pos: Vec2; oldpos: Vec2; index: number };
@@ -282,10 +283,7 @@
         stepSim();
 
         ctx.clearRect(0, 0, w, h);
-        ctx.strokeStyle =
-            getComputedStyle(document.documentElement)
-                .getPropertyValue("--color-text")
-                .trim() || "#1a1916";
+        ctx.strokeStyle = cssVar("--color-text", "#1a1916");
         ctx.lineWidth = 2;
         ctx.beginPath();
         for (const s of sticks) {
@@ -296,16 +294,10 @@
     };
 </script>
 
-<div class="hero hero-stage">
-    <div class="inner">
-        {#key resetKey}
-            <Canvas
-                {setup}
-                {update}
-                label="Differential line growth animation"
-            />
-        {/key}
-    </div>
+<div class="hero-stage">
+    {#key resetKey}
+        <Canvas {setup} {update} label="Differential line growth animation" />
+    {/key}
 </div>
 <Drawer title="Controls">
     <Slider
@@ -339,15 +331,3 @@
     <Button onclick={() => (paused = !paused)} label={paused ? "Play" : "Pause"} />
     <Button onclick={() => resetKey++} label="Reset" />
 </Drawer>
-
-<style>
-    /* sticky positioning/background come from the global .hero-stage */
-    .hero {
-        display: flex;
-
-        > .inner {
-            flex: 1;
-            min-height: 0;
-        }
-    }
-</style>
