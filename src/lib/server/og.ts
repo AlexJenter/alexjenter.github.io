@@ -15,10 +15,12 @@ import plexMono from "@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-no
 
 // Light theme tokens (tokens.css): a preview can't follow the viewer's theme.
 const PAPER = "#f5f4f0";
-const SURFACE = "#eceae4";
 const INK = "#1a1916";
 const MUTED = "#5c5a56";
-const ACCENT = "#ab4f1d"; // --color-accent-warm
+// The dark-theme --color-accent-warm, on purpose: lighter than the light
+// theme's, so the ink monogram pushes through the artwork while the cover
+// still clearly shows the post's topic.
+const ACCENT = "#e07840";
 
 const rgb = (hex: string) =>
   [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
@@ -29,11 +31,14 @@ const PAD = 72;
 const ART = 630;
 const ART_W = OG.width - ART;
 
-// The big "A" stamped on the artwork: Fraunces at wght 900 in the display
-// voice (opsz 72, SOFT 100, WONK 1), outlined with fontTools like the favicon
-// glyph. Its box spans x 38–1506, y -1400–0 (2000 units/em).
-const FAT_A =
-  "M354 -638H958V-431H354ZM535 -100Q535 -54 508 -27Q482 0 424 0H149Q92 0 65 -27Q38 -54 38 -100Q38 -131 51 -153Q65 -175 94 -198L116 -215Q135 -230 147 -250Q159 -270 179 -337L406 -1079Q422 -1132 419 -1156Q416 -1179 383 -1197Q353 -1213 339 -1238Q324 -1263 324 -1300Q324 -1347 352 -1373Q380 -1400 436 -1400H1098Q1155 -1400 1182 -1373Q1210 -1347 1210 -1300Q1210 -1262 1194 -1237Q1179 -1212 1148 -1194Q1123 -1180 1120 -1155Q1118 -1131 1132 -1082L1340 -407Q1369 -314 1387 -273Q1405 -231 1437 -211Q1476 -187 1491 -163Q1506 -138 1506 -100Q1506 -55 1479 -28Q1452 0 1395 0H919Q861 0 835 -27Q808 -54 808 -100Q808 -136 824 -159Q840 -182 872 -199L900 -215Q919 -226 917 -250Q915 -274 897 -333L636 -1221L669 -1217L415 -380Q400 -330 393 -300Q386 -270 397 -251Q407 -232 441 -213L472 -197Q503 -180 519 -157Q535 -135 535 -100Z";
+// The big "A" stamped on the artwork: Fraunces in the display voice (wght 400,
+// opsz 72, SOFT 100, WONK 1), outlined with fontTools like the favicon glyph.
+// 2000 units/em, cap height 1400 (y -1400–0); x0–x1 is the width.
+const A = {
+  x0: 24,
+  x1: 1341,
+  d: "M329 -577H927L934 -464H321ZM446 -54Q446 -28 431 -14Q415 0 383 0H87Q56 0 40 -14Q24 -28 24 -54Q24 -73 35 -85Q46 -97 68 -109L105 -121Q130 -130 140 -149Q151 -167 167 -218L492 -1213Q504 -1250 498 -1264Q492 -1278 460 -1289Q432 -1299 417 -1312Q402 -1325 402 -1346Q402 -1372 418 -1386Q435 -1400 466 -1400H889Q921 -1400 937 -1386Q953 -1371 953 -1346Q953 -1325 938 -1311Q923 -1298 894 -1288Q869 -1280 864 -1266Q858 -1252 868 -1220L1197 -225Q1213 -174 1233 -150Q1252 -127 1287 -114Q1318 -102 1330 -89Q1341 -75 1341 -54Q1341 -29 1326 -14Q1310 0 1278 0H904Q872 0 856 -14Q840 -28 840 -54Q840 -75 853 -88Q865 -102 888 -109L959 -121Q982 -127 983 -147Q984 -167 970 -211L617 -1299L644 -1301L295 -236Q284 -200 281 -178Q278 -155 289 -143Q299 -130 326 -121L399 -108Q422 -101 434 -88Q446 -74 446 -54Z",
+};
 
 /** Decode a data: URL as Vite's ?inline gives it (base64, or URL-encoded SVG). */
 function fromDataUrl(url: string): Buffer {
@@ -102,27 +107,39 @@ async function artwork(cover?: Buffer): Promise<Buffer> {
       .resize(w, h, { fit: "cover" })
       .flatten({ background: PAPER })
       .grayscale()
+      // stretch to the full range, so the ground lands exactly on paper and
+      // doesn't seam against the text column
+      .normalise()
       .raw()
       .toBuffer({ resolveWithObject: true });
-    // Duotone: each grey level t maps linearly from ink (t = 0) to accent (t = 1).
-    const [dark, light] = [rgb(INK), rgb(ACCENT)];
+    // Duotone, printed like accent ink on paper: each grey level maps linearly
+    // between accent (the marks) and paper (the background). The cover's
+    // dominant tone is taken as its background, so a dark-ground cover (light
+    // marks on black, like the voronoi export) still gets a paper background.
+    let sum = 0;
+    for (let i = 0; i < data.length; i += info.channels) sum += data[i];
+    const darkGround = sum / (data.length / info.channels) < 128;
+    const [mark, ground] = [rgb(ACCENT), rgb(PAPER)];
     const tones = Buffer.alloc(w * h * 3);
     for (let i = 0, j = 0; i < data.length; i += info.channels, j += 3) {
-      const t = data[i] / 255;
+      const v = darkGround ? 1 - data[i] / 255 : data[i] / 255; // 0 mark → 1 ground
+      // Snap the last 4% at either end, so a near-white ground lands exactly
+      // on paper (seamless with the text column) and marks on exact accent.
+      const t = Math.min(1, Math.max(0, (v - 0.04) / 0.92));
       for (let c = 0; c < 3; c++)
-        tones[j + c] = Math.round(dark[c] + (light[c] - dark[c]) * t);
+        tones[j + c] = Math.round(mark[c] + (ground[c] - mark[c]) * t);
     }
     base = sharp(tones, { raw: { width: w, height: h, channels: 3 } });
   } else {
-    // No cover: a flat field of the duotone's light end.
+    // No cover: just paper.
     base = sharp({
-      create: { width: w, height: h, channels: 3, background: ACCENT },
+      create: { width: w, height: h, channels: 3, background: PAPER },
     });
   }
-  // Glyph units → px: cap height 66% of the shorter side, so the A always
-  // fits; its box (x 38–1506, y -1400–0) is centred.
-  const k = (0.33 * Math.min(w, h)) / 1400;
-  const a = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}"><path fill="${SURFACE}" transform="translate(${w / 2 - ((38 + 1506) / 2) * k} ${h / 2 + 700 * k}) scale(${k})" d="${FAT_A}"/></svg>`;
+  // Glyph units → px: cap height 33% of the shorter side; its box
+  // (x0–x1, y -1400–0) is centred.
+  const k = (0.66 * Math.min(w, h)) / 1400;
+  const a = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}"><path fill="${INK}" transform="translate(${w / 2 - ((A.x0 + A.x1) / 2) * k} ${h / 2 + 700 * k}) scale(${k})" d="${A.d}"/></svg>`;
   return base
     .composite([{ input: Buffer.from(a) }])
     .png()
