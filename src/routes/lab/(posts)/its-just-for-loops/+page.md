@@ -1,5 +1,5 @@
 ---
-title: Its just for Loops
+title: It's just for Loops
 status: public
 date: "2024-04-01"
 cover: ./cover.svg

@@ -104,6 +104,12 @@
         flex-shrink: 0;
     }
 
+    /* enhanced:img wraps raster covers in a <picture>, which is then the flex
+       item — it needs the no-shrink too, or narrow screens squeeze it. */
+    .post-link > :global(picture) {
+        flex-shrink: 0;
+    }
+
     .meta {
         display: flex;
         flex-direction: column;

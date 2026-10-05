@@ -15,6 +15,12 @@ export const SITE_URL = (
 /** Site-wide name used for `og:site_name` and title suffixes. */
 export const SITE_NAME = "Alex Jenter";
 
+/** Profile links in the site footer. */
+export const PROFILES = [
+  { label: "GitHub", href: "https://github.com/AlexJenter" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/jenteralex/" },
+];
+
 /** OG preview cards: laid out at 1200×630, rendered at 2× for crisp previews. */
 export const OG = { width: 1200, height: 630, scale: 2 };
 

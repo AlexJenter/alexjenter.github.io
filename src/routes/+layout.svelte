@@ -3,6 +3,7 @@
     import plexMonoWoff2 from "@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2?url";
     import "$lib/styles/global.css";
     import Nav from "$lib/components/Nav.svelte";
+    import Footer from "$lib/components/Footer.svelte";
 
     let { children } = $props();
 </script>
@@ -22,6 +23,7 @@
 <main id="main">
     {@render children()}
 </main>
+<Footer />
 
 <style>
     .skip-link {
