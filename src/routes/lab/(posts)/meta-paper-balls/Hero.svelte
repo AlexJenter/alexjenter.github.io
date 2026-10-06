@@ -11,6 +11,10 @@
 
     let paused = $state(false);
     let debug = $state(false);
+    // Paused + debug: the held frame can be edited by dragging drops around.
+    const editable = $derived(paused && debug);
+    let hovering = $state(false); // pointer over a drop (grab cursor)
+    let grabbing = $state(false);
 
     // Sim state lives at module scope so setup/update share it. All
     // coordinates are in device pixels (Canvas hands us the raw backing
@@ -21,6 +25,8 @@
     let diagonal = 0;
     let sceneState = false;
     let mouse = { x: 0, y: 0 };
+    // the drop being dragged, and where it was grabbed relative to its centre
+    let drag: { drop: Drop; dx: number; dy: number } | null = null;
 
     const randomSize = () =>
         (Math.random() * mainDropSize + mainDropSize) * 0.2;
@@ -134,10 +140,12 @@
             ctx.lineTo(x, y + arm);
             ctx.stroke();
 
-            anchor(ctx, { x: x + d.rad, y }, px(5), false);
-            anchor(ctx, { x: x - d.rad, y }, px(5), false);
-            anchor(ctx, { x, y: y + d.rad }, px(5), false);
-            anchor(ctx, { x, y: y - d.rad }, px(5), false);
+            // the drop being dragged shows its points selected (solid)
+            const held = d === drag?.drop;
+            anchor(ctx, { x: x + d.rad, y }, px(5), held);
+            anchor(ctx, { x: x - d.rad, y }, px(5), held);
+            anchor(ctx, { x, y: y + d.rad }, px(5), held);
+            anchor(ctx, { x, y: y - d.rad }, px(5), held);
         }
 
         // The metaball bridges are the interesting geometry, so they get the
@@ -203,9 +211,12 @@
             ctx.fill();
         }
 
+        // Drops still growing in (`fixed`) don't bridge yet. Paused, they'd
+        // never finish growing, so while editing every drop can connect —
+        // dragging one next to the main drop forms its bridge.
         const curves: MetaballCurve[] = [];
         for (let i = 1; i < drops.length; i++) {
-            if (!drops[i].fixed) {
+            if (!drops[i].fixed || editable) {
                 const curve = metaball(
                     mainDrop,
                     drops[i],
@@ -223,18 +234,65 @@
         if (debug) drawDebug(ctx, curves, window.devicePixelRatio || 1);
     };
 
-    function onPointerMove(e: PointerEvent) {
+    // Pointer position in canvas (device) pixels, relative to the hero, not
+    // the viewport: it scrolls with the page.
+    function toCanvas(e: PointerEvent): Vec2 {
         const dpr = window.devicePixelRatio || 1;
-        // relative to the hero, not the viewport: it scrolls with the page
         const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
-        mouse = { x: (e.clientX - r.left) * dpr, y: (e.clientY - r.top) * dpr };
+        return { x: (e.clientX - r.left) * dpr, y: (e.clientY - r.top) * dpr };
+    }
+
+    // The smallest drop whose circle contains p, so small drops stay
+    // grabbable where they sit inside the big one.
+    function hit(p: Vec2): Drop | undefined {
+        let best: Drop | undefined;
+        for (const d of drops) {
+            const inside = Math.hypot(p.x - d.pos.x, p.y - d.pos.y) < d.rad;
+            if (inside && (!best || d.rad < best.rad)) best = d;
+        }
+        return best;
+    }
+
+    function onPointerMove(e: PointerEvent) {
+        const p = toCanvas(e);
+        mouse = p;
+        if (drag) {
+            drag.drop.pos = { x: p.x - drag.dx, y: p.y - drag.dy };
+        } else {
+            hovering = editable && hit(p) !== undefined;
+        }
+    }
+
+    function onPointerDown(e: PointerEvent) {
+        if (!editable) return;
+        const p = toCanvas(e);
+        const drop = hit(p);
+        if (!drop) return;
+        // dropped back in from rest: on Play the attraction starts afresh
+        drop.vel = { x: 0, y: 0 };
+        drop.acc = { x: 0, y: 0 };
+        drag = { drop, dx: p.x - drop.pos.x, dy: p.y - drop.pos.y };
+        grabbing = true;
+        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    }
+
+    function onPointerUp() {
+        drag = null;
+        grabbing = false;
     }
 </script>
 
 <!-- Pointer-only attractor affordance; the scene also evolves on its own, and
-     the drawer's Pause button is the keyboard-reachable control. -->
+     the drawer's Pause button is the keyboard-reachable control. Paused with
+     debug on, drops can be dragged (pointer only too). -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class={["hero-stage", { paused, debug }]} onpointermove={onPointerMove}>
+<div
+    class={["hero-stage", { paused, debug, editable }, editable && { hovering, grabbing }]}
+    onpointermove={onPointerMove}
+    onpointerdown={onPointerDown}
+    onpointerup={onPointerUp}
+    onpointercancel={onPointerUp}
+>
     <Canvas
         {setup}
         {update}
@@ -258,5 +316,18 @@
     /* sticky positioning/background come from the global .hero-stage */
     .hero-stage:not(.paused, .debug) {
         cursor: none; /* the main blob is the cursor */
+    }
+
+    /* editing the held frame: a touch on the art drags a drop, not the page */
+    .hero-stage.editable {
+        touch-action: none;
+    }
+
+    .hero-stage.editable.hovering {
+        cursor: grab;
+    }
+
+    .hero-stage.editable.grabbing {
+        cursor: grabbing;
     }
 </style>
