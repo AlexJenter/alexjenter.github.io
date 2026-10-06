@@ -2,7 +2,12 @@
     import Canvas from "$lib/components/Canvas.svelte";
     import { Drawer, Slider, FileInput, Button } from "$lib/components/gui";
     import { theme, cssVar } from "$lib/theme.svelte";
-    import { applyWeightedCentroid, downloadSVG, seedPoints } from "./utils";
+    import {
+        applyWeightedCentroid,
+        downloadSVG,
+        percentRadius,
+        seedPoints,
+    } from "./utils";
 
     import imgSrc from "./img0.jpg";
 
@@ -17,7 +22,7 @@
     let canvasH = 0;
 
     let isDark = $derived(theme.resolved === "dark");
-    let dotRadius = $state(10);
+    let dotSize = $state(0.8); // radius in % of the canvas, see percentRadius
     let pendingPointCount = $state(1000);
     let pointCount = $state(1000);
     let uploadedImage = $state<string | undefined>(undefined);
@@ -99,9 +104,10 @@
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = cssVar("--color-text", "#A9AFBC");
 
+        const r = percentRadius(dotSize, w, h);
         for (const [x, y] of pts) {
             ctx.beginPath();
-            ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
+            ctx.arc(x, y, r, 0, Math.PI * 2);
             ctx.fill();
         }
 
@@ -126,11 +132,11 @@
 <Drawer title="Stipple" grid={true}>
     <div class="area-A">
         <Slider
-            bind:value={dotRadius}
-            min={1}
-            max={20}
-            step={0.001}
-            label="Dot radius"
+            bind:value={dotSize}
+            min={0.1}
+            max={3}
+            step={0.01}
+            label="Dot radius %"
         />
         <Slider
             bind:value={pendingPointCount}
@@ -140,7 +146,7 @@
             label="Points"
         />
         <Button
-            onclick={() => downloadSVG(pts, img!, canvasW, canvasH, dotRadius)}
+            onclick={() => downloadSVG(pts, img!, canvasW, canvasH, dotSize)}
             label="Download SVG"
         />
         <Button

@@ -62,7 +62,7 @@
     --max-w-content: 72ch;
     --max-w-wide: 1200px;
     /* Lab hero: the drawer's head strip, always showing at the bottom of the
-       first screen — the stage stops this short of it (global.css). */
+       first screen, over the stage's bottom edge (Drawer.svelte). */
     --drawer-peek: 3rem;
 
     /* Radius */

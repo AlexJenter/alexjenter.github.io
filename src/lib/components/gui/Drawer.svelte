@@ -42,7 +42,8 @@
     its pinned .hero-stage; this drawer is a translucent, relatively
     positioned layer (z-index: 1) that slides up over the stage as the
     scroller scrolls, and the scroller's end is its rest point. Its head
-    strip (--drawer-peek tall) shows below the stage from the start: the
+    strip (--drawer-peek tall) overlaps the stage's bottom edge from the
+    start (negative margin-top): the
     title opens and closes the drawer, "Read" jumps to the post layout's
     #article. Mono "machine voice" (see typography memory). Pass `grid` to
     opt into the structured responsive column grid (A–D slots) defined in

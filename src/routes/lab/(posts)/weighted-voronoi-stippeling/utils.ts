@@ -73,18 +73,29 @@ export function applyWeightedCentroid(
   }
 }
 
+/**
+ * Dot radius in px for a size in % — measured, as SVG measures a circle's
+ * percentage `r`, against the normalised diagonal √((w² + h²) / 2). So a
+ * size means the same on any canvas and in the exported SVG, and the stipple
+ * looks the same at every screen size and pixel density.
+ */
+export function percentRadius(pct: number, w: number, h: number): number {
+  return (pct / 100) * Math.sqrt((w * w + h * h) / 2);
+}
+
 export function downloadSVG(
   pts: [number, number][],
   img: HTMLImageElement,
   canvasW: number,
   canvasH: number,
-  dotRadius: number,
+  dotSize: number,
 ): void {
   const nw = img.naturalWidth;
   const nh = img.naturalHeight;
   const scaleX = nw / canvasW;
   const scaleY = nh / canvasH;
-  const r = (dotRadius * scaleX).toFixed(2);
+  // the same % the canvas uses (see percentRadius), resolved by the SVG itself
+  const r = `${+dotSize.toFixed(3)}%`; // slider steps carry float noise
 
   const circles = pts
     .map(

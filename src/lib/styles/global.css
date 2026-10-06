@@ -164,8 +164,8 @@ img {
    (posts)/+layout.svelte) and stays pinned at its top while the hero's
    <Drawer>, next in the scroller, slides up over it. Scrolling past the drawer
    hands over to the page, which carries hero and drawer away together. The
-   stage stops short of the bottom so the drawer's head strip shows from the
-   start: the cue that there are controls, and an article, below. */
+   drawer's head strip overlaps the stage's bottom edge from the start (see
+   Drawer.svelte): the cue that there are controls, and an article, below. */
 .hero-stage {
     position: sticky;
     top: 0;
