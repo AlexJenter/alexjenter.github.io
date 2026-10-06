@@ -27,4 +27,5 @@ Which noise matters. White noise clumps into maze-like patterns. Blue noise ([CC
 
 The hero at the top runs the same shader with blue noise. Change the noise scale, invert ink and paper, drop in your own image, or export a PNG at the image's full resolution.
 
-<!-- TODO: cover.svg, a proper opening image, swap the Unsplash placeholder photo for the real one. -->
+Photo by <a href="https://unsplash.com/@daanverhoost?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Daan Verhoost</a> on <a href="https://unsplash.com/photos/a-single-pineapple-against-a-dark-background-Ut8-FW6_KIM?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>  
+Cover image cropped from <a href="https://unsplash.com/@lee_jay_dee?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Lesley Davidson</a> on <a href="https://unsplash.com/photos/closeup-photography-of-lime-FYMY-DJPLGo?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>

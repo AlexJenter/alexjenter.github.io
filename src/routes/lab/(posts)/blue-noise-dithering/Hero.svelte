@@ -11,7 +11,8 @@
         type ShaderApi,
     } from "$lib/components/FullscreenShader.svelte";
 
-    import imgSrc from "./test.jpg";
+    // import imgSrc from "./test.jpg";
+    import imgSrc from "./daan-verhoost-Ut8-FW6_KIM-unsplash.jpg";
     import noiseSrc from "./blue-noise-rgba.png";
     import FRAG from "./dither.frag.glsl?raw";
 
@@ -19,7 +20,7 @@
     const SCALE_MIN = 0.1;
     const SCALE_MAX = 42;
 
-    let ditherScale = $state(8);
+    let ditherScale = $state(7.99);
     let invert = $state(false);
     let uploadedImage = $state<string | undefined>(undefined);
 
