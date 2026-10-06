@@ -9,7 +9,8 @@
         seedPoints,
     } from "./utils";
 
-    import imgSrc from "./img0.jpg";
+    // import imgSrc from "./img0.jpg";
+    import imgSrc from "./dawn-casey-N30PVeoXad8-unsplash.jpg";
 
     const MAX_ITER = 20000;
 
@@ -22,9 +23,9 @@
     let canvasH = 0;
 
     let isDark = $derived(theme.resolved === "dark");
-    let dotSize = $state(0.8); // radius in % of the canvas, see percentRadius
-    let pendingPointCount = $state(1000);
-    let pointCount = $state(1000);
+    let dotSize = $state(0.4); // radius in % of the canvas, see percentRadius
+    let pendingPointCount = $state(2000);
+    let pointCount = $state(2000);
     let uploadedImage = $state<string | undefined>(undefined);
     let resetKey = $state(0);
 

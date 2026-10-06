@@ -14,7 +14,6 @@ import DiagramWeightedCentroid from "./Diagram-WeightedCentroid.svelte";
 
 After watching Dan Shiffman's YouTube video [^1] on the paper[^2], I had to try it for myself.
 
-
 ## Lloyd's Relaxations
 
 The algorithm builds on Lloyd's Relaxations, which uses properties of Voronoi diagrams in a clever way.
@@ -23,9 +22,9 @@ Each iteration goes something like this:
 
 1. Generate N random points
 2. Update the Points in each iteration like so
-    1. Calculate the Voronoi diagram of those points
-    2. Find the centroid of each cell (d3's `polygonCentroid` works well here)
-    3. Move each point to its cell's centroid
+   1. Calculate the Voronoi diagram of those points
+   2. Find the centroid of each cell (d3's `polygonCentroid` works well here)
+   3. Move each point to its cell's centroid
 
 Maybe just me, but I find it highly satisfying when it converges.
 
@@ -33,15 +32,15 @@ Maybe just me, but I find it highly satisfying when it converges.
 
 ## Weighted Relaxations
 
-Just one change to the loop above: instead of moving each point to the geometric centroid of its cell, move it to the *weighted* centroid — pulled toward the darker pixels so dots cluster where the image is darkest.
+Just one change to the loop above: instead of moving each point to the geometric centroid of its cell, move it to the _weighted_ centroid — pulled toward the darker pixels so dots cluster where the image is darkest.
 
 For each pixel (or subsample):
 
 1. Find its containing cell
 2. For each pixel of the cell
-    1. Take its weight (brightness)
-    2. Multiply pixel position by weight
-    3. Add that to a running total
+   1. Take its weight (brightness)
+   2. Multiply pixel position by weight
+   3. Add that to a running total
 3. That sum is the weighted centroid
 4. Move the point to the weighted centroid
 
@@ -51,9 +50,8 @@ Think of it as every pixel pulling the point toward itself with a force proporti
 
 My implementation is not without its flaws. The effect works best on images with high contrast, large areas of low light and on edges. Areas of uniform value often lack uniform distribution with clusters forming randomly. It's probably unavoidable to tweak those weights or add some brightness curves via the controls panel.
 
+Hero: Based on Photo by <a href="https://unsplash.com/@dawncasey?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Dawn Casey</a> on <a href="https://unsplash.com/photos/a-close-up-of-a-succulent-plant-on-a-black-background-N30PVeoXad8?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
 
-Hero: Based on Photo by <a href="https://unsplash.com/@krivitskiy" target="_blank" rel="noopener noreferrer" aria-label="Alexander Krivitskiy on Unsplash (opens in new tab)">Alexander Krivitskiy</a> on <a href="https://unsplash.com/photos/grayscale-photo-of-womans-face-o7wiNx9x9OQ" target="_blank" rel="noopener noreferrer" aria-label="Photo source on Unsplash (opens in new tab)">Unsplash</a>
-      
- 
 [^1]: [Coding Challenge 181: Weighted Voronoi Stippling](https://www.youtube.com/watch?v=Bxdt6T_1qgc)
+
 [^2]: [Stippling by Weighted Centroidal Voronoi Tessellations — Secord 2002 (PDF)](https://www.cs.ubc.ca/labs/imager/tr/pdf/secord.2002b.pdf)
