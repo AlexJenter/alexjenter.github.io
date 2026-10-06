@@ -26,8 +26,12 @@
             <li class:featured={i === 0}>
                 <a href="/lab/{post.slug}">
                     <div class="cover">
-                        {#if post.cover?.svg}
-                            <img src={post.cover.src} alt="" />
+                        {#if post.cover && !post.cover.enhanced}
+                            <img
+                                src={post.cover.src}
+                                alt=""
+                                class:pixelated={post.cover.pixelated}
+                            />
                         {:else if post.cover}
                             <enhanced:img
                                 src={post.cover.src}
@@ -94,6 +98,12 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+    }
+
+    /* pixel art covers (frontmatter coverPixelated): hard pixel edges at
+       any size and screen density, instead of smoothed into grey */
+    .cover img.pixelated {
+        image-rendering: pixelated;
     }
 
     h2 {

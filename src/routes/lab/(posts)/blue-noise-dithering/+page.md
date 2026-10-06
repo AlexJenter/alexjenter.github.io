@@ -4,7 +4,8 @@ title: Blue Noise Dithering
 short: Blue Noise
 date: "2026-07-14"
 description: "TIL: a one-bit dither is one comparison per pixel. Inspired by Acerola."
-cover: ./cover.png
+cover: ./cover-1bit.png
+coverPixelated: true
 ---
 
 <script>

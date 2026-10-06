@@ -68,9 +68,9 @@ const posts = import.meta.glob<PostFrontmatter>("/src/routes/lab/**/+page.md", {
   eager: true,
   import: "metadata",
 });
-// Covers are the frontmatter `cover` file; only cover.* files are bundled here.
+// Covers are the frontmatter `cover` file; only cover*.<ext> files are bundled here.
 const covers = import.meta.glob<string>(
-  "/src/routes/lab/**/cover.{svg,png,jpg,jpeg,webp}",
+  "/src/routes/lab/**/cover*.{svg,png,jpg,jpeg,webp}",
   { eager: true, query: "?inline", import: "default" },
 );
 
@@ -92,7 +92,7 @@ export function ogSlugs(): string[] {
 /** The artwork at its rendered size (ART_W × ART), so satori never stretches
     it: the cover cropped to fill and duotoned ink→accent (or a flat accent
     field), with the big surface-coloured "A" on top, distinct from both. */
-async function artwork(cover?: Buffer): Promise<Buffer> {
+async function artwork(cover?: Buffer, pixelated = false): Promise<Buffer> {
   const w = ART_W * OG.scale;
   const h = ART * OG.scale;
   let base: sharp.Sharp;
@@ -104,7 +104,8 @@ async function artwork(cover?: Buffer): Promise<Buffer> {
         ? Math.min(2400, (72 * 2 * Math.max(w, h)) / width)
         : undefined;
     const { data, info } = await sharp(cover, density ? { density } : {})
-      .resize(w, h, { fit: "cover" })
+      // pixel art keeps hard pixel edges, as in the grid
+      .resize(w, h, { fit: "cover", kernel: pixelated ? "nearest" : "lanczos3" })
       .flatten({ background: PAPER })
       .grayscale()
       // stretch to the full range, so the ground lands exactly on paper and
@@ -160,14 +161,17 @@ async function cardFor(slug: string): Promise<Card | undefined> {
   }
   const post = postsBySlug.get(slug);
   if (!post) return;
-  const { title, date, cover } = post.meta;
+  const { title, date, cover, coverPixelated } = post.meta;
   const coverUrl =
     cover && covers[post.path.replace("+page.md", cover.replace("./", ""))];
   return {
     kicker: `${SITE_NAME} — Lab`,
     title,
     footer: formatDate(date),
-    art: await artwork(coverUrl ? fromDataUrl(coverUrl) : undefined),
+    art: await artwork(
+      coverUrl ? fromDataUrl(coverUrl) : undefined,
+      coverPixelated === true,
+    ),
   };
 }
 

@@ -4,6 +4,10 @@ export type PostFrontmatter = {
   short?: string;
   date: string;
   cover?: string;
+  /** the cover is pixel art (e.g. a 1-bit dither exported at one pixel per
+      dot): served untouched instead of re-encoded and resized, and scaled up
+      with hard pixel edges */
+  coverPixelated?: boolean;
   description?: string;
   status?: "draft" | "public";
 };
@@ -14,6 +18,9 @@ export type PostSummary = {
   title: string;
   date: string;
   description?: string;
-  /** svg: a URL; raster: an enhanced:img source object */
-  cover?: { svg: true; src: string } | { svg: false; src: any };
+  /** enhanced: an enhanced:img source object (photos); otherwise the file's
+      URL, served as is (SVGs and `coverPixelated` covers) */
+  cover?:
+    | { enhanced: true; src: any }
+    | { enhanced: false; src: string; pixelated: boolean };
 };
