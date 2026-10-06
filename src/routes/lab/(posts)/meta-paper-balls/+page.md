@@ -1,6 +1,7 @@
 ---
 status: public
 title: Meta Paper Balls
+short: Metaballs
 date: "2026-06-15"
 cover: ./cover.svg
 description: Organic blobs that merge when they meet — just like people with their ideas

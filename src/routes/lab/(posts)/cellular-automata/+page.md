@@ -1,6 +1,7 @@
 ---
 status: public
 title: Elementary Cellular Automata
+short: Cellular Automata
 date: "2026-06-29"
 cover: ./cover.svg
 description: A 3 KB HTML file I wrote in 2016, rebuilt — Wolfram's 256 rules, live.

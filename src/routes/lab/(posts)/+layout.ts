@@ -21,6 +21,7 @@ export const load = (async ({ url }) => {
 
   return {
     title: metadata?.title,
+    short: metadata?.short,
     date: metadata?.date,
     description: metadata?.description,
     slug,

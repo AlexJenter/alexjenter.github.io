@@ -1,5 +1,6 @@
 ---
 title: It's just for Loops
+short: For Loops
 status: public
 date: "2024-04-01"
 cover: ./cover.svg

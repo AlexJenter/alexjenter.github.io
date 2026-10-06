@@ -123,7 +123,7 @@
     {/if}
 </div>
 
-<Drawer title="Settings" grid={true}>
+<Drawer title="Stipple" grid={true}>
     <div class="area-A">
         <Slider
             bind:value={dotRadius}

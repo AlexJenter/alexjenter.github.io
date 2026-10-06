@@ -1,5 +1,7 @@
 export type PostFrontmatter = {
   title: string;
+  /** shorter title for tight spots, e.g. the nav crumb on phones */
+  short?: string;
   date: string;
   cover?: string;
   description?: string;

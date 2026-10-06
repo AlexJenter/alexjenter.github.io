@@ -299,7 +299,7 @@
         <Canvas {setup} {update} label="Differential line growth animation" />
     {/key}
 </div>
-<Drawer title="Controls">
+<Drawer title="Forces">
     <Slider
         bind:value={restLength}
         min={4}

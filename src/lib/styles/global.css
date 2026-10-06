@@ -163,7 +163,9 @@ img {
 /* A hero's drawing surface. It lives in the layout's .hero-scroller (see
    (posts)/+layout.svelte) and stays pinned at its top while the hero's
    <Drawer>, next in the scroller, slides up over it. Scrolling past the drawer
-   hands over to the page, which carries hero and drawer away together. */
+   hands over to the page, which carries hero and drawer away together. The
+   stage stops short of the bottom so the drawer's head strip shows from the
+   start: the cue that there are controls, and an article, below. */
 .hero-stage {
     position: sticky;
     top: 0;

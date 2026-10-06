@@ -90,7 +90,7 @@
 {/if}
 <!-- full-width wrapper that clips diagrams overflowing the article -->
 <div class="post-layer">
-    <article class="post">
+    <article class="post" id="article">
         <header>
             <h1>{data.title}</h1>
             <Date date={data.date} />
