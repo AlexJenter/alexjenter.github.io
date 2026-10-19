@@ -10,9 +10,12 @@
 
     const MAX_STEPS = 128; // keep in sync with the shader's loop bound
 
-    let blend = $state(0.01);
-    let round = $state(0.01);
+    let blend = $state(0.005);
+    let round = $state(0.0025);
     let outline = $state(6);
+    let darkness = $state(5);
+    let grainAmount = $state(0.85);
+    let grainSize = $state(1.5);
     let steps = $state(MAX_STEPS);
     let debug = $state(false);
     // Unset until the reader picks; until then, reduced motion means still.
@@ -46,6 +49,9 @@
         uBlend: blend,
         uRound: round,
         uOutline: outline,
+        uDarkness: darkness,
+        uGrain: grainAmount,
+        uGrainSize: grainSize,
         uSteps: steps,
         uDebug: debug,
         uInk: colors.ink,
@@ -126,6 +132,27 @@
             max={6}
             step={0.1}
             label="Outline"
+        />
+        <Slider
+            bind:value={darkness}
+            min={1}
+            max={8}
+            step={0.1}
+            label="Darkness"
+        />
+        <Slider
+            bind:value={grainAmount}
+            min={0}
+            max={1}
+            step={0.01}
+            label="Grain"
+        />
+        <Slider
+            bind:value={grainSize}
+            min={0.5}
+            max={6}
+            step={0.1}
+            label="Grain size"
         />
         <Slider
             bind:value={steps}

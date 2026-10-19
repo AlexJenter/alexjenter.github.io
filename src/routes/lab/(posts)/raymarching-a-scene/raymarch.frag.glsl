@@ -13,6 +13,9 @@ uniform float uPitch;
 uniform float uBlend; // smooth-union radius
 uniform float uRound; // bar edge radius, 0..0.05
 uniform float uOutline; // outline width in pixels, 0 = off
+uniform float uGrain; // grain strength, 0 = off
+uniform float uDarkness; // exponent on the light value: higher = darker
+uniform float uGrainSize; // grain size on screen, in pixels
 uniform float uSteps; // march step budget (<= MAX_STEPS)
 uniform float uDebug; // 0 or 1: show steps taken instead of shading
 uniform vec3 uInk;
@@ -20,7 +23,8 @@ uniform vec3 uPaper;
 
 const int MAX_STEPS = 128;
 const float MAX_DIST = 30.0;
-const float OUTLINE_GAP = 0.01; // a near miss must be this much nearer than the hit
+const float FOG = 0.1; // exponential fog density: exp(-FOG * distance)
+const float OUTLINE_GAP = 0.02; // a near miss must be this much nearer than the hit
 
 float sdSphere(vec3 p, float r) {
     return length(p) - r;
@@ -47,10 +51,10 @@ float bar(vec2 q, float r) {
 
 float map(vec3 p) {
     vec3 p1 = mod(p + 1.0, 2.0) - 1.0; // repeat every 2, cell centred on the origin
-    float r = clamp(uRound, 0.0, 0.05);
+    float r = clamp(uBlend, 0.0, 0.05);
     float d = smin(bar(p1.yz, r), bar(p1.xz, r), uBlend);
     d = smin(d, bar(p1.xy, r), uBlend);
-    d = smin(d, sdRoundBox(p1, vec3(0.25), 0.0125), uBlend);
+    d = smin(d, sdRoundBox(p1, vec3(0.2), uBlend), uBlend);
     return d;
 }
 
@@ -93,6 +97,48 @@ float occlusion(vec3 p, vec3 n) {
         w *= 0.7;
     }
     return clamp(1.0 - 2.0 * occ, 0.0, 1.0);
+}
+
+// Hash-based 3D value noise (0..1), tied to the world position.
+float hash(vec3 p) {
+    p = fract(p * 0.3183099 + 0.1);
+    p *= 17.0;
+    return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+}
+
+float vnoise(vec3 x) {
+    vec3 i = floor(x);
+    vec3 f = fract(x);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(
+        mix(mix(hash(i), hash(i + vec3(1, 0, 0)), f.x),
+            mix(hash(i + vec3(0, 1, 0)), hash(i + vec3(1, 1, 0)), f.x), f.y),
+        mix(mix(hash(i + vec3(0, 0, 1)), hash(i + vec3(1, 0, 1)), f.x),
+            mix(hash(i + vec3(0, 1, 1)), hash(i + vec3(1, 1, 1)), f.x), f.y),
+        f.z);
+}
+
+// Three octaves of noise, about -0.5..0.5, with a constant grain size ON
+// SCREEN: the noise stays on the surface, but its frequency follows the
+// distance, so a grain is about uGrainSize pixels at any depth (like marks
+// made with one pencil). The level k = log2(cycles per unit) is a real
+// number. Each octave mixes the noise at floor(k) with the noise at floor(k)+1,
+// the way a mipmap mixes two levels. The weights a and b keep the variance
+// (a*a + b*b = 1), so the contrast does not change while you move.
+float grain(vec3 p, float t) {
+    float footprint = max(t, 0.01) / (1.8 * uResolution.y); // world size of one pixel
+    float k = -log2(max(uGrainSize, 0.1) * footprint); // grain wavelength = uGrainSize px
+    float lo = floor(k);
+    float m = k - lo;
+    float a = sqrt(1.0 - m);
+    float b = sqrt(m);
+    // Octave i is the noise at levels lo + i and lo + i + 1: 4 samples in all.
+    float n0 = vnoise(p * exp2(lo)) - 0.5;
+    float n1 = vnoise(p * exp2(lo + 1.0)) - 0.5;
+    float n2 = vnoise(p * exp2(lo + 2.0)) - 0.5;
+    float n3 = vnoise(p * exp2(lo + 3.0)) - 0.5;
+    float sum = 0.5 * (a * n0 + b * n1) + 0.3 * (a * n1 + b * n2) + 0.18 * (a * n2 + b * n3);
+    return sum / 0.78; // 0.5 + 0.3 + 0.18: keeps the total weight about 1
 }
 
 void main() {
@@ -157,7 +203,7 @@ void main() {
         return;
     }
 
-    vec3 col = uPaper; // background
+    vec3 col = uInk; // background: same as the fog
     if (hit) {
         vec3 p = ro + rd * t;
         vec3 n = normalAt(p);
@@ -166,8 +212,10 @@ void main() {
         float diff = clamp(dot(n, l), 0.0, 1.0);
         float sky = 0.5 + 0.5 * n.y;
         float lit = 0.1 + 0.2 * sky * occlusion(p, n) + 0.7 * diff;
+        lit = pow(clamp(lit, 0.0, 1.0), uDarkness);
+        lit *= 1.0 + uGrain * grain(p, t) * 2.0; // grain as albedo: dark faces show less
         col = mix(darker, lighter, clamp(lit, 0.0, 1.0));
-        col = mix(col, uPaper, 1.0 - exp(-0.035 * t)); // fog into the paper
+        col = mix(uInk, col, exp(-FOG * t)); // fog into the ink: black in light mode, white in dark
     }
 
     // Outline: a near miss inside the width, and a ray that ended (hit or
@@ -177,9 +225,9 @@ void main() {
     bool ended = hit || t > MAX_DIST;
     if (ended && uOutline > 0.0) {
         float px = 1.0 / (1.8 * uResolution.y); // angle of one pixel
-        float a = missAngle / px;               // near miss, in pixels
+        float a = missAngle / px; // near miss, in pixels
         float cover = 1.0 - smoothstep(max(uOutline - 0.5, 0.0), uOutline + 0.5, a);
-        cover *= min(uOutline, 1.0);            // fade in below 1 px
+        cover *= min(uOutline, 1.0); // fade in below 1 px
         cover *= smoothstep(0.5 * OUTLINE_GAP, OUTLINE_GAP, t - missT);
         col = mix(col, uInk, cover);
     }
