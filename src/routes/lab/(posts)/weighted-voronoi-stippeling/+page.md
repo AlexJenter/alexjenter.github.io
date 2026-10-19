@@ -14,14 +14,14 @@ import DiagramWeightedCentroid from "./Diagram-WeightedCentroid.svelte";
 
 After watching Dan Shiffman's YouTube video [^1] on the paper[^2], I had to try it for myself.
 
-## Lloyd's Relaxations
+## Lloyd's algorithm
 
-The algorithm builds on Lloyd's Relaxations, which uses properties of Voronoi diagrams in a clever way.
-The goal of Lloyd's Relaxations is to spread a point set so that all points even out their distance to their direct neighbours.
-Each iteration goes something like this:
+The algorithm builds on Lloyd's algorithm (also called Lloyd relaxation), which uses properties of Voronoi diagrams in a clever way.
+Its goal is to spread a point set so that all points even out their distance to their direct neighbours.
+It goes something like this:
 
 1. Generate N random points
-2. Update the Points in each iteration like so
+2. Then, in each iteration:
    1. Calculate the Voronoi diagram of those points
    2. Find the centroid of each cell (d3's `polygonCentroid` works well here)
    3. Move each point to its cell's centroid
@@ -30,25 +30,23 @@ Maybe just me, but I find it highly satisfying when it converges.
 
 <DiagramVoronoi/>
 
-## Weighted Relaxations
+## Weighted relaxation
 
 Just one change to the loop above: instead of moving each point to the geometric centroid of its cell, move it to the _weighted_ centroid — pulled toward the darker pixels so dots cluster where the image is darkest.
 
-For each pixel (or subsample):
+In each iteration, go over every pixel (or a subsample):
 
-1. Find its containing cell
-2. For each pixel of the cell
-   1. Take its weight (brightness)
-   2. Multiply pixel position by weight
-   3. Add that to a running total
-3. That sum is the weighted centroid
-4. Move the point to the weighted centroid
+1. Find the cell it belongs to, which is the cell of its nearest point
+2. Take its weight (its darkness)
+3. Add its position times its weight, and the weight itself, to that cell's running totals
+
+Then for each cell, its position total divided by its weight total is the weighted centroid. Move the cell's point there.
 
 Think of it as every pixel pulling the point toward itself with a force proportional to its weight — the weighted centroid is just where those forces reach equilibrium.
 
 <DiagramWeightedCentroid/>
 
-My implementation is not without its flaws. The effect works best on images with high contrast, large areas of low light and on edges. Areas of uniform value often lack uniform distribution with clusters forming randomly. It's probably unavoidable to tweak those weights or add some brightness curves via the controls panel.
+My implementation is not without its flaws. The effect works best on images with high contrast, large areas of low light and on edges. Areas of uniform value often lack uniform distribution with clusters forming randomly. Tweaking those weights, for example with a brightness curve, would probably help; the controls don't have one yet.
 
 Hero: Based on Photo by <a href="https://unsplash.com/@dawncasey?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Dawn Casey</a> on <a href="https://unsplash.com/photos/a-close-up-of-a-succulent-plant-on-a-black-background-N30PVeoXad8?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
 

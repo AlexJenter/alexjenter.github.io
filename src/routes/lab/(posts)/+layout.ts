@@ -1,3 +1,5 @@
+import { dev } from "$app/environment";
+import { error } from "@sveltejs/kit";
 import type { LayoutLoad } from "./$types";
 import type { PostFrontmatter } from "$lib";
 
@@ -18,6 +20,11 @@ export const load = (async ({ url }) => {
   const metadata = mdKey
     ? ((await mdModules[mdKey]()) as PostFrontmatter)
     : undefined;
+
+  // Drafts exist only while developing: the build skips them (see
+  // prerender.handleHttpError in svelte.config.js), and the 404.html
+  // fallback shows "not found" for their URLs.
+  if (!dev && metadata?.status === "draft") error(404, "Not found");
 
   return {
     title: metadata?.title,

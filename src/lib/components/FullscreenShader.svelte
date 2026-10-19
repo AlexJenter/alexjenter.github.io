@@ -13,6 +13,7 @@
     //   uniform vec2 uResolution;   // size of the current render target, px
     //   uniform vec2 <name>Res;     // native size of texture <name>, px
     //                               //   e.g. sampler `uImage` -> `uImageRes`
+    //   uniform float uTime;        // seconds of running animation (see `animate`)
 
     export type TexSpec = {
         src: string;
@@ -55,6 +56,9 @@
         label?: string;
         /** Cap devicePixelRatio for the live canvas (perf). Default 2. */
         maxPixelRatio?: number;
+        /** Render every frame and advance `uTime`. Pauses while off-screen and
+            while false (`uTime` holds its value). Default: render on demand. */
+        animate?: boolean;
         /** Imperative handle (export etc.). */
         api?: ShaderApi;
     }
@@ -65,6 +69,7 @@
         textures = {},
         label,
         maxPixelRatio = 2,
+        animate = false,
         api = $bindable(),
     }: Props = $props();
 
@@ -80,6 +85,9 @@
     });
     $effect(() => {
         core?.syncTextures(textures);
+    });
+    $effect(() => {
+        core?.setAnimate(animate);
     });
 
     onMount(() => {
@@ -111,6 +119,7 @@
         setUniforms(u: Record<string, UniformValue>): void;
         syncTextures(t: Record<string, string | TexSpec>): void;
         requestRender(): void;
+        setAnimate(on: boolean): void;
         textureSize(name: string): [number, number] | null;
         toBlob(opts: ExportOpts): Promise<Blob>;
         download(filename: string, opts: ExportOpts): Promise<void>;
@@ -222,6 +231,12 @@
                 ([name, v]) =>
                     [name, typeof v === "string" ? { src: v } : v] as const,
             );
+            if (specs.length === 0) {
+                // purely procedural shader: nothing to wait for
+                ready = true;
+                requestRender();
+                return;
+            }
             const changed = specs.filter(([name, spec]) => {
                 const rec = recs.get(name);
                 return !rec || rec.src !== spec.src;
@@ -244,19 +259,35 @@
             gl.bindFramebuffer(gl.FRAMEBUFFER, target);
             gl.viewport(0, 0, w, h);
             setUniform("uResolution", [w, h]);
+            setUniform("uTime", time);
             for (const [k, v] of Object.entries(currentUniforms)) setUniform(k, v);
             gl.drawArrays(gl.TRIANGLES, 0, 3);
         }
 
-        // Coalesced on-demand render to the visible canvas.
+        // Coalesced render to the visible canvas: on demand, or every frame
+        // while `animating` and on screen (then uTime advances by frame dt).
         let raf = 0;
+        let time = 0;
+        let last = 0;
+        let animating = false;
+        let visible = true;
         function requestRender() {
             if (raf || !ready) return;
-            raf = requestAnimationFrame(() => {
+            raf = requestAnimationFrame((now) => {
                 raf = 0;
+                const running = animating && visible;
+                time += running && last ? (now - last) / 1000 : 0;
+                last = running ? now : 0;
                 if (ready) render(null, canvas.width, canvas.height);
+                if (running) requestRender();
             });
         }
+
+        const io = new IntersectionObserver(([entry]) => {
+            visible = entry.isIntersecting;
+            if (visible) requestRender();
+        });
+        io.observe(canvas);
 
         const ro = new ResizeObserver(([entry]) => {
             const dpr = Math.min(window.devicePixelRatio || 1, maxPixelRatio);
@@ -364,12 +395,17 @@
             },
             syncTextures,
             requestRender,
+            setAnimate(on) {
+                animating = on;
+                if (on) requestRender();
+            },
             textureSize,
             toBlob,
             download,
             destroy() {
                 cancelAnimationFrame(raf);
                 ro.disconnect();
+                io.disconnect();
                 for (const r of recs.values()) gl.deleteTexture(r.tex);
                 gl.getExtension("WEBGL_lose_context")?.loseContext();
             },

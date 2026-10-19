@@ -13,10 +13,16 @@
     import imgSrc from "./dawn-casey-N30PVeoXad8-unsplash.jpg";
 
     const MAX_ITER = 20000;
+    // Settled once no point moves more than this (device px) in an iteration;
+    // from then on nothing iterates, and the canvas is only redrawn when the
+    // dot size or its own size changes, instead of a core busy until MAX_ITER.
+    const SETTLED_PX = 0.1;
 
     let pts: [number, number][] = [];
     let lum: Uint8ClampedArray | null = null;
     let iterCount = 0;
+    let settled = false;
+    let drawn = ""; // what the canvas last showed, see update()
     let ar = $state<number | null>(null);
     let img: HTMLImageElement | null = null;
     let canvasW = 0;
@@ -72,6 +78,8 @@
         canvasW = w;
         canvasH = h;
         iterCount = 0;
+        settled = false;
+        drawn = "";
 
         const offscreen = new OffscreenCanvas(w, h);
         const offCtx = offscreen.getContext("2d")!;
@@ -97,10 +105,19 @@
     const update = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
         if (!lum) return;
 
-        if (iterCount < MAX_ITER) {
-            applyWeightedCentroid(pts, lum!, w, h, !isDark);
+        if (!settled && iterCount < MAX_ITER) {
+            // every 2nd CSS px, not device px: a quarter of the work on a 2×
+            // screen, and no visible difference at these dot sizes
+            const step = Math.max(2, Math.round(2 * window.devicePixelRatio));
+            const moved = applyWeightedCentroid(pts, lum, w, h, !isDark, step);
+            settled = moved < SETTLED_PX;
             iterCount++;
+            drawn = "";
         }
+
+        const frame = `${w}×${h} ${dotSize}`;
+        if (frame === drawn) return; // settled, and nothing to redraw
+        drawn = frame;
 
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = cssVar("--color-text", "#A9AFBC");
@@ -111,8 +128,6 @@
             ctx.arc(x, y, r, 0, Math.PI * 2);
             ctx.fill();
         }
-
-        if (iterCount >= MAX_ITER) return false;
     };
 </script>
 

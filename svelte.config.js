@@ -33,7 +33,18 @@ const config = {
 	kit: {
 		adapter: adapter({
 			fallback: '404.html'
-		})
+		}),
+		prerender: {
+			// Every route is a prerender entry, and draft posts and the /dev
+			// tools answer 404 outside dev (see (posts)/+layout.ts and
+			// dev/+layout.ts): skip those rather than fail. A 404 reached
+			// through a link still fails.
+			handleHttpError: ({ status, path, referrer, message }) => {
+				const devOnly = path.startsWith('/lab/') || path.startsWith('/dev/');
+				if (status === 404 && !referrer && devOnly) return;
+				throw new Error(message);
+			}
+		}
 	}
 };
 

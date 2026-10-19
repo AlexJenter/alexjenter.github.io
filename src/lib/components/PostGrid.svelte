@@ -58,7 +58,7 @@
     .grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: var(--space-8) var(--space-4);
+        gap: var(--space-4);
     }
 
     ol {
@@ -75,9 +75,11 @@
     a {
         display: flex;
         flex-direction: column;
+        border-left: 1px solid var(--color-text-muted);
     }
 
     a {
+        padding-inline: var(--space-4);
         flex: 1;
         text-decoration: none;
         transition: color var(--duration-fast) var(--ease-out);

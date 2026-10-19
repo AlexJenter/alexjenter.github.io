@@ -41,13 +41,20 @@ export function seedPoints(
   return pts;
 }
 
+/**
+ * One weighted Lloyd iteration: every sampled pixel (every `step`-th, both
+ * ways) votes for its nearest point with its ink weight, and each point moves
+ * to the weighted centroid of its votes. Returns the largest distance any
+ * point moved, so the caller can stop once the stipple has settled.
+ */
 export function applyWeightedCentroid(
   pts: [number, number][],
   lum: Uint8ClampedArray,
   w: number,
   h: number,
   invert = false,
-): void {
+  step = 2,
+): number {
   const n = pts.length;
   const sumX = new Float32Array(n);
   const sumY = new Float32Array(n);
@@ -55,8 +62,8 @@ export function applyWeightedCentroid(
   const delaunay = new Delaunay(Float64Array.from(pts.flat()));
 
   let nearest = 0;
-  for (let y = 0; y < h; y += 2) {
-    for (let x = 0; x < w; x += 2) {
+  for (let y = 0; y < h; y += step) {
+    for (let x = 0; x < w; x += step) {
       const weight = weightAt(lum, y * w + x, invert);
       nearest = delaunay.find(x, y, nearest);
       sumX[nearest] += x * weight;
@@ -65,12 +72,17 @@ export function applyWeightedCentroid(
     }
   }
 
+  let moved = 0;
   for (let i = 0; i < n; i++) {
     if (sumW[i] > 0) {
-      pts[i][0] = sumX[i] / sumW[i];
-      pts[i][1] = sumY[i] / sumW[i];
+      const x = sumX[i] / sumW[i];
+      const y = sumY[i] / sumW[i];
+      moved = Math.max(moved, Math.hypot(x - pts[i][0], y - pts[i][1]));
+      pts[i][0] = x;
+      pts[i][1] = y;
     }
   }
+  return moved;
 }
 
 /**
@@ -94,8 +106,9 @@ export function downloadSVG(
   const nh = img.naturalHeight;
   const scaleX = nw / canvasW;
   const scaleY = nh / canvasH;
-  // the same % the canvas uses (see percentRadius), resolved by the SVG itself
-  const r = `${+dotSize.toFixed(3)}%`; // slider steps carry float noise
+  // The same % the canvas uses (see percentRadius), worked out for the image
+  // size: an absolute radius reads the same in every SVG tool and plotter.
+  const r = percentRadius(dotSize, nw, nh).toFixed(2);
 
   const circles = pts
     .map(
