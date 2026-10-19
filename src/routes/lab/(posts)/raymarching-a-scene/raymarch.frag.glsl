@@ -45,7 +45,7 @@ float smin(float a, float b, float k) {
 // Exact distance to an infinite bar with a square cross-section (half-width 0.05).
 // Edges rounded by r (<= 0.05): shrink by r, subtract r; the outline is unchanged.
 float bar(vec2 q, float r) {
-    vec2 d = abs(q) - (0.05 - r);
+    vec2 d = abs(q) - (0.04 - r);
     return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0) - r;
 }
 
@@ -54,7 +54,7 @@ float map(vec3 p) {
     float r = clamp(uBlend, 0.0, 0.05);
     float d = smin(bar(p1.yz, r), bar(p1.xz, r), uBlend);
     d = smin(d, bar(p1.xy, r), uBlend);
-    d = smin(d, sdRoundBox(p1, vec3(0.2), uBlend), uBlend);
+    d = smin(d, sdRoundBox(p1, vec3(0.15), uBlend), uBlend);
     return d;
 }
 
@@ -145,7 +145,7 @@ void main() {
     vec2 uv = (gl_FragCoord.xy - 0.5 * uResolution) / uResolution.y;
 
     // Orbit camera around the scene centre.
-    vec3 target = vec3(0.0, 0.5, 0.0);
+    vec3 target = vec3(0.0, 0.0, 0.0);
     vec3 ro = target + 5.0 * vec3(
                     cos(uPitch) * sin(uYaw),
                     sin(uPitch),
@@ -154,7 +154,8 @@ void main() {
     vec3 fw = normalize(target - ro);
     vec3 rt = normalize(cross(fw, vec3(0.0, 1.0, 0.0)));
     vec3 up = cross(rt, fw);
-    vec3 rd = normalize(uv.x * rt + uv.y * up + 1.8 * fw);
+    float fl = 3.2;
+    vec3 rd = normalize(uv.x * rt + uv.y * up + fl * fw);
 
     // Sphere tracing: the field value is a step that can't overshoot.
     // The same loop finds near misses for the outline. d / t is the angle
