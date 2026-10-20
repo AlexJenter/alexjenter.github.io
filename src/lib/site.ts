@@ -9,7 +9,7 @@ import { env } from "$env/dynamic/public";
  * is absent — e.g. a fresh clone or CI without the env configured.
  */
 export const SITE_URL = (
-  env.PUBLIC_SITE_URL || "https://alexjenter.github.io"
+  env.PUBLIC_SITE_URL || "https://alexjenter.dev"
 ).replace(/\/+$/, "");
 
 /** Site-wide name used for `og:site_name` and title suffixes. */
