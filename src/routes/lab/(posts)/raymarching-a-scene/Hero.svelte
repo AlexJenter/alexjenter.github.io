@@ -11,11 +11,10 @@
     const MAX_STEPS = 128; // keep in sync with the shader's loop bound
 
     let blend = $state(0.005);
-    let round = $state(0.0025);
-    let outline = $state(6);
+    let outline = $state(10.7); // px
     let darkness = $state(5);
     let grainAmount = $state(0.85);
-    let grainSize = $state(1.5);
+    let grainSize = $state(2.7); // px
     let steps = $state(MAX_STEPS);
     let debug = $state(false);
     // Unset until the reader picks; until then, reduced motion means still.
@@ -26,7 +25,7 @@
     let pitch = $state(0.45);
 
     let shader = $state<ShaderApi>();
-    const label = "A raymarched rounded box and sphere on a floor";
+    const label = "A raymarched lattice of bars and cubes, drawn like a lithograph";
 
     // The theme's ink/paper as [r,g,b] 0..1 for the shader.
     const unit = (rgb: number[]) => rgb.map((c) => c / 255);
@@ -47,7 +46,6 @@
         uYaw: yaw,
         uPitch: pitch,
         uBlend: blend,
-        uRound: round,
         uOutline: outline,
         uDarkness: darkness,
         uGrain: grainAmount,
@@ -120,16 +118,9 @@
             label="Blend"
         />
         <Slider
-            bind:value={round}
-            min={0}
-            max={0.05}
-            step={0.001}
-            label="Round"
-        />
-        <Slider
             bind:value={outline}
             min={0}
-            max={6}
+            max={12}
             step={0.1}
             label="Outline"
         />

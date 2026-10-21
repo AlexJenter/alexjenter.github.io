@@ -1,6 +1,7 @@
-// Sphere-traced scene: a rounded box and a sphere, smooth-unioned, on a floor.
-// Soft shadow + ambient occlusion, shaded onto the theme's ink/paper by
-// luminance (so it reads in either theme). Debug = heat map of march steps.
+// An infinite lattice of bars and cubes, sphere-traced, after Escher's
+// "Kubistische ruimteverdeling". Shaded onto the theme's ink/paper by
+// luminance (so it reads in either theme), with grain at a constant size on
+// screen and an outline made from the near misses of the primary rays.
 //
 // uResolution / uTime are supplied automatically by FullscreenShader.svelte.
 
@@ -10,11 +11,10 @@ uniform vec2 uResolution;
 uniform float uTime;
 uniform float uYaw;
 uniform float uPitch;
-uniform float uBlend; // smooth-union radius
-uniform float uRound; // bar edge radius, 0..0.05
+uniform float uBlend; // smooth-union radius, also rounds the bars and cubes
 uniform float uOutline; // outline width in pixels, 0 = off
-uniform float uGrain; // grain strength, 0 = off
 uniform float uDarkness; // exponent on the light value: higher = darker
+uniform float uGrain; // grain strength, 0 = off
 uniform float uGrainSize; // grain size on screen, in pixels
 uniform float uSteps; // march step budget (<= MAX_STEPS)
 uniform float uDebug; // 0 or 1: show steps taken instead of shading
@@ -23,12 +23,12 @@ uniform vec3 uPaper;
 
 const int MAX_STEPS = 128;
 const float MAX_DIST = 30.0;
+const float FOCAL = 3.2; // ray length per unit of screen height: smaller = wider view
 const float FOG = 0.1; // exponential fog density: exp(-FOG * distance)
 const float OUTLINE_GAP = 0.02; // a near miss must be this much nearer than the hit
+const vec3 LUMA = vec3(0.2126, 0.7152, 0.0722);
 
-float sdSphere(vec3 p, float r) {
-    return length(p) - r;
-}
+// --- Scene -------------------------------------------------------------------
 
 float sdRoundBox(vec3 p, vec3 b, float r) {
     vec3 q = abs(p) - b;
@@ -41,21 +41,23 @@ float smin(float a, float b, float k) {
     return min(a, b) - h * h * k * 0.25;
 }
 
-// The whole scene is this one function: distance to the nearest surface.
-// Exact distance to an infinite bar with a square cross-section (half-width 0.05).
-// Edges rounded by r (<= 0.05): shrink by r, subtract r; the outline is unchanged.
+// Exact distance to an infinite bar with a square cross-section (half-width
+// 0.04). Edges rounded by r: shrink by r, subtract r; the outline is unchanged.
 float bar(vec2 q, float r) {
     vec2 d = abs(q) - (0.04 - r);
     return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0) - r;
 }
 
+// The whole scene is this one function: distance to the nearest surface.
+// A bar along each axis and a cube at the centre of every cell, repeated
+// every 2 units. The cell is centred on the origin so the field is continuous
+// across cell borders.
 float map(vec3 p) {
-    vec3 p1 = mod(p + 1.0, 2.0) - 1.0; // repeat every 2, cell centred on the origin
+    vec3 c = mod(p + 1.0, 2.0) - 1.0;
     float r = clamp(uBlend, 0.0, 0.05);
-    float d = smin(bar(p1.yz, r), bar(p1.xz, r), uBlend);
-    d = smin(d, bar(p1.xy, r), uBlend);
-    d = smin(d, sdRoundBox(p1, vec3(0.15), uBlend), uBlend);
-    return d;
+    float d = smin(bar(c.yz, r), bar(c.xz, r), uBlend);
+    d = smin(d, bar(c.xy, r), uBlend);
+    return smin(d, sdRoundBox(c, vec3(0.15), uBlend), uBlend);
 }
 
 // Gradient of the field = surface normal (central differences).
@@ -68,9 +70,12 @@ vec3 normalAt(vec3 p) {
         ));
 }
 
+// --- Lighting ----------------------------------------------------------------
+
 // Soft shadow (iq): march toward the light, darken by how closely we graze a
-// surface. The previous distance lets us estimate the closest approach
-// *between* samples, which removes the banding of the plain min(k*h/t).
+// surface; the previous distance estimates the closest approach *between*
+// samples. Not used for now: the lattice never lets light in, so the march
+// runs out of budget and the result bands.
 float shadow(vec3 ro, vec3 rd) {
     float res = 1.0;
     float t = 0.02;
@@ -99,6 +104,8 @@ float occlusion(vec3 p, vec3 n) {
     return clamp(1.0 - 2.0 * occ, 0.0, 1.0);
 }
 
+// --- Grain -------------------------------------------------------------------
+
 // Hash-based 3D value noise (0..1), tied to the world position.
 float hash(vec3 p) {
     p = fract(p * 0.3183099 + 0.1);
@@ -120,19 +127,19 @@ float vnoise(vec3 x) {
 
 // Three octaves of noise, about -0.5..0.5, with a constant grain size ON
 // SCREEN: the noise stays on the surface, but its frequency follows the
-// distance, so a grain is about uGrainSize pixels at any depth (like marks
-// made with one pencil). The level k = log2(cycles per unit) is a real
-// number. Each octave mixes the noise at floor(k) with the noise at floor(k)+1,
-// the way a mipmap mixes two levels. The weights a and b keep the variance
-// (a*a + b*b = 1), so the contrast does not change while you move.
+// distance, so a grain is uGrainSize pixels at any depth (like marks made
+// with one pencil). The level k = log2(cycles per unit) is a real number;
+// each octave mixes the noise at floor(k) with the noise one level up, like a
+// mipmap. The weights a and b keep the variance (a*a + b*b = 1), so the
+// contrast does not change while you move.
 float grain(vec3 p, float t) {
-    float footprint = max(t, 0.01) / (1.8 * uResolution.y); // world size of one pixel
-    float k = -log2(max(uGrainSize, 0.1) * footprint); // grain wavelength = uGrainSize px
+    float footprint = max(t, 0.01) / (FOCAL * uResolution.y); // world size of one pixel
+    float k = -log2(max(uGrainSize, 0.1) * footprint);
     float lo = floor(k);
     float m = k - lo;
     float a = sqrt(1.0 - m);
     float b = sqrt(m);
-    // Octave i is the noise at levels lo + i and lo + i + 1: 4 samples in all.
+    // Octave i uses the levels lo + i and lo + i + 1: 4 samples in all.
     float n0 = vnoise(p * exp2(lo)) - 0.5;
     float n1 = vnoise(p * exp2(lo + 1.0)) - 0.5;
     float n2 = vnoise(p * exp2(lo + 2.0)) - 0.5;
@@ -141,11 +148,13 @@ float grain(vec3 p, float t) {
     return sum / 0.78; // 0.5 + 0.3 + 0.18: keeps the total weight about 1
 }
 
+// --- Main --------------------------------------------------------------------
+
 void main() {
     vec2 uv = (gl_FragCoord.xy - 0.5 * uResolution) / uResolution.y;
 
-    // Orbit camera around the scene centre.
-    vec3 target = vec3(0.0, 0.0, 0.0);
+    // Orbit camera around the origin.
+    vec3 target = vec3(0.0);
     vec3 ro = target + 5.0 * vec3(
                     cos(uPitch) * sin(uYaw),
                     sin(uPitch),
@@ -154,15 +163,14 @@ void main() {
     vec3 fw = normalize(target - ro);
     vec3 rt = normalize(cross(fw, vec3(0.0, 1.0, 0.0)));
     vec3 up = cross(rt, fw);
-    float fl = 3.2;
-    vec3 rd = normalize(uv.x * rt + uv.y * up + fl * fw);
+    vec3 rd = normalize(uv.x * rt + uv.y * up + FOCAL * fw);
 
     // Sphere tracing: the field value is a step that can't overshoot.
-    // The same loop finds near misses for the outline. d / t is the angle
-    // between the ray and the nearest surface, so one pixel is a fixed value of
-    // it at any distance. A near miss is a local minimum of d: the distance
-    // grows again after it. A ray that ends on a surface never grows again at
-    // the end, so the final approach does not count.
+    // The same loop finds the near misses for the outline. d / t is the angle
+    // between the ray and the nearest surface, so one pixel is the same value
+    // at any distance. A near miss is a local minimum of d: the distance grows
+    // again after it. A ray that ends on a surface never grows again at the
+    // end, so its final approach does not count.
     float t = 0.0;
     float ph = 1e10; // previous d
     float missAngle = 1e10; // smallest near-miss angle so far
@@ -194,9 +202,9 @@ void main() {
         if (t > MAX_DIST) break;
     }
 
-    vec3 lighter = dot(uPaper, vec3(0.2126, 0.7152, 0.0722)) >=
-            dot(uInk, vec3(0.2126, 0.7152, 0.0722)) ? uPaper : uInk;
-    vec3 darker = lighter == uPaper ? uInk : uPaper;
+    bool paperIsLighter = dot(uPaper, LUMA) >= dot(uInk, LUMA);
+    vec3 lighter = paperIsLighter ? uPaper : uInk;
+    vec3 darker = paperIsLighter ? uInk : uPaper;
 
     if (uDebug > 0.5) {
         // Most rays finish in well under 32 steps; scale so that's the full ramp.
@@ -209,7 +217,6 @@ void main() {
         vec3 p = ro + rd * t;
         vec3 n = normalAt(p);
         vec3 l = normalize(vec3(sin(uTime * 0.4) * 2.0, 3.0, 2.0));
-        // Shadows are off for now: shadow() is kept, but the lattice never lets light in.
         float diff = clamp(dot(n, l), 0.0, 1.0);
         float sky = 0.5 + 0.5 * n.y;
         float lit = 0.1 + 0.2 * sky * occlusion(p, n) + 0.7 * diff;
@@ -219,13 +226,12 @@ void main() {
         col = mix(uInk, col, exp(-FOG * t)); // fog into the ink: black in light mode, white in dark
     }
 
-    // Outline: a near miss inside the width, and a ray that ended (hit or
-    // escaped), with the near miss clearly in front of where the ray ended.
-    // Smoothstep edges give about one pixel of anti-aliasing: the line is
-    // full inside uOutline - 0.5 px and gone at uOutline + 0.5 px.
+    // Outline, drawn over the fog: a near miss inside the line width, on a ray
+    // that ended (hit or escaped), with the near miss clearly in front of where
+    // the ray ended. Smoothstep edges give about one pixel of anti-aliasing.
     bool ended = hit || t > MAX_DIST;
     if (ended && uOutline > 0.0) {
-        float px = 1.0 / (1.8 * uResolution.y); // angle of one pixel
+        float px = 1.0 / (FOCAL * uResolution.y); // angle of one pixel
         float a = missAngle / px; // near miss, in pixels
         float cover = 1.0 - smoothstep(max(uOutline - 0.5, 0.0), uOutline + 0.5, a);
         cover *= min(uOutline, 1.0); // fade in below 1 px
