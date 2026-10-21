@@ -1,6 +1,7 @@
 // Threshold a photo against 4-channel blue noise -> one bit per pixel.
-// Aspect-correct 'cover' fit; tone mapped onto the theme's ink/paper by
-// luminance (so it reads naturally in either theme), Invert = negative.
+// Aspect-correct 'cover' fit (turned 90° CCW on portrait outputs); tone
+// mapped onto the theme's ink/paper by luminance (so it reads naturally in
+// either theme), Invert = negative.
 //
 // uResolution / uImageRes are supplied automatically by FullscreenShader.svelte.
 
@@ -23,13 +24,23 @@ void main() {
     float outputAspect = uResolution.x / uResolution.y;
     float imageAspect  = uImageRes.x / uImageRes.y;
 
+    // Portrait output + landscape image: show the photo turned 90° counter-
+    // clockwise, so the portrait screen shows more of it instead of a thin
+    // vertical strip. The export renders at the image's own size (landscape),
+    // so it is never rotated.
+    bool turned = outputAspect < 1.0 && imageAspect > 1.0;
+    vec2 shownRes = turned ? uImageRes.yx : uImageRes; // image size as displayed
+
     // 'cover' fit: the image scaled (in output px) to fill the output,
     // cropping whichever axis overflows.
-    vec2 coverSize = outputAspect < imageAspect
-        ? vec2(uImageRes.x * uResolution.y / uImageRes.y, uResolution.y)
-        : vec2(uResolution.x, uImageRes.y * uResolution.x / uImageRes.x);
-    vec2 imageUv = outputUv * uResolution / coverSize
+    vec2 coverSize = outputAspect < shownRes.x / shownRes.y
+        ? vec2(shownRes.x * uResolution.y / shownRes.y, uResolution.y)
+        : vec2(uResolution.x, shownRes.y * uResolution.x / shownRes.x);
+    vec2 shownUv = outputUv * uResolution / coverSize
                  + (coverSize - uResolution) * 0.5 / coverSize;
+    // Back to texture space. A counter-clockwise turn takes the photo's top
+    // to the left, so shown (x, y) reads the photo at (y, 1 - x).
+    vec2 imageUv = turned ? vec2(shownUv.y, 1.0 - shownUv.x) : shownUv;
     vec4 image = texture2D(uImage, imageUv);
 
     // Tile the noise in *image* space (not output space) so the grain

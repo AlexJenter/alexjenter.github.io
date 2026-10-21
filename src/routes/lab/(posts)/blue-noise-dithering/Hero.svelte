@@ -12,7 +12,8 @@
     } from "$lib/components/FullscreenShader.svelte";
 
     // import imgSrc from "./test.jpg";
-    import imgSrc from "./daan-verhoost-Ut8-FW6_KIM-unsplash.jpg";
+    // import imgSrc from "./daan-verhoost-Ut8-FW6_KIM-unsplash.jpg";
+    import imgSrc from "./lesley-davidson-FYMY-DJPLGo-unsplash.jpg";
     import noiseSrc from "./blue-noise-rgba.png";
     import FRAG from "./dither.frag.glsl?raw";
 
