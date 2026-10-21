@@ -42,7 +42,7 @@
                             />
                         {/if}
                     </div>
-                    <h2>{post.title}</h2>
+                    <h2><span>{post.title}</span></h2>
                     {#if i === 0 && post.description}
                         <p>{post.description}</p>
                     {/if}
@@ -55,6 +55,18 @@
 
 <style lang="scss">
     @use "$lib/styles/mixins" as m;
+
+    @mixin marker-on {
+        color: var(--color-bg);
+        background-size: 100% 100%;
+
+        /* Entering: the text flips late, once the bar covers it. */
+        @media (prefers-reduced-motion: no-preference) {
+            transition:
+                color var(--duration-fast) linear var(--duration-base),
+                background-size var(--duration-slow) var(--ease-out);
+        }
+    }
 
     /* Phones: two columns, the intro and the newest post full width. */
     .grid {
@@ -88,8 +100,41 @@
         text-decoration: none;
     }
 
-    h2 {
-        transition: color var(--duration-slow) var(--ease-out);
+    /* Highlighter marker: on hover or keyboard focus a bar of accent-warm
+       wipes in behind the title and the text flips to the page color. */
+    h2 span {
+        background-image: linear-gradient(
+            var(--color-accent-warm),
+            var(--color-accent-warm)
+        );
+        background-repeat: no-repeat;
+        background-position: 0 100%;
+        background-size: 0% 100%;
+        /* slice (the default, written out): when the title wraps, the bar is
+           one strip cut across the lines, so the wipe runs through line 1 and
+           then line 2. `clone` would fill every line at the same time. */
+        box-decoration-break: slice;
+        -webkit-box-decoration-break: slice;
+
+        /* The wipe is only animated for people who allow motion. The text
+           flips back at once when the bar leaves (the browser uses the
+           transition of the state it moves to): bar-colored text over the
+           page color would vanish while the bar shrinks. */
+        @media (prefers-reduced-motion: no-preference) {
+            transition:
+                color var(--duration-fast) linear,
+                background-size var(--duration-slow) var(--ease-out);
+        }
+    }
+
+    @media (hover: hover) {
+        a:hover h2 span {
+            @include marker-on;
+        }
+    }
+
+    a:focus-visible h2 span {
+        @include marker-on;
     }
 
     /* The cover is the tile: a square, the image cropped to fill it. */
@@ -104,7 +149,6 @@
         position: relative;
         aspect-ratio: 1;
         overflow: hidden;
-        border-radius: var(--radius-md);
         z-index: -1;
         transition:
             --cover-overlay-opacity var(--duration-so-slow) var(--ease-out),
@@ -112,6 +156,7 @@
 
         a:hover & {
             --cover-overlay-opacity: 0.5;
+            --cover-overlay-opacity: 0.75;
             scale: 1.05;
         }
 
