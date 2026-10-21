@@ -101,7 +101,11 @@
     }
 
     /* Highlighter marker: on hover or keyboard focus a bar of accent-warm
-       wipes in behind the title and the text flips to the page color. */
+       wipes in behind the title and the text flips to the page color. The
+       end padding and the negative end margin cancel out, so the bar
+       overhangs the last glyph without moving anything. There is no start
+       padding on purpose: with slice it would only apply to the first
+       line, and a wrapped second line would look indented. */
     h2 span {
         background-image: linear-gradient(
             var(--color-accent-warm),
