@@ -21,8 +21,12 @@
     --syntax-punct: var(--color-text-muted);
 
     /* Type scale */
-    --font-serif: "Fraunces Variable", "Fraunces Fallback", Georgia, "Times New Roman", serif;
-    --font-mono: "IBM Plex Mono", "IBM Plex Mono Fallback", ui-monospace, "Cascadia Code", "Source Code Pro", monospace;
+    --font-serif:
+        "Fraunces Variable", "Fraunces Fallback", Georgia, "Times New Roman",
+        serif;
+    --font-mono:
+        "IBM Plex Mono", "IBM Plex Mono Fallback", ui-monospace,
+        "Cascadia Code", "Source Code Pro", monospace;
 
     /* Fraunces optical size: low opsz = rounder/readable, high opsz = quirky/display */
     --font-opsz-body: 12;
@@ -70,6 +74,7 @@
     --duration-fast: 150ms;
     --duration-base: 250ms;
     --duration-slow: 400ms;
+    --duration-so-slow: 1200ms;
 }
 
 /* Dark palette.

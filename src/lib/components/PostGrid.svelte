@@ -61,6 +61,10 @@
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: var(--space-8) var(--space-4);
+
+        @include m.from(tablet) {
+            gap: var(--space-16) var(--space-8);
+        }
     }
 
     ol {
@@ -82,16 +86,45 @@
     a {
         flex: 1;
         text-decoration: none;
-        transition: color var(--duration-fast) var(--ease-out);
+    }
+
+    h2 {
+        transition: color var(--duration-slow) var(--ease-out);
     }
 
     /* The cover is the tile: a square, the image cropped to fill it. */
+
+    @property --cover-overlay-opacity {
+        syntax: "<number>";
+        inherits: true;
+        initial-value: 0;
+    }
+
     .cover {
         position: relative;
         aspect-ratio: 1;
         overflow: hidden;
         border-radius: var(--radius-md);
-        background: var(--color-surface);
+        z-index: -1;
+        transition:
+            --cover-overlay-opacity var(--duration-so-slow) var(--ease-out),
+            scale var(--duration-so-slow) var(--ease-out);
+
+        a:hover & {
+            --cover-overlay-opacity: 0.5;
+            scale: 1.05;
+        }
+
+        &::after {
+            content: "hello";
+            position: absolute;
+            inset: 0;
+            background-color: rgb(
+                from var(--color-accent-warm) r g b /
+                    var(--cover-overlay-opacity)
+            );
+            mix-blend-mode: darken;
+        }
     }
 
     .cover :global(img) {
