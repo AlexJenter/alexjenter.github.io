@@ -53,16 +53,24 @@
             <div class="math">
                 {@html row.mathHtml}
             </div>
-            <pre
-                class="code"
-            ><span>{row.varName} = {row.initVal};</span>
-<span>for( <span style="color:{VAR}">n={row.start}</span>; <span style="color:{VAR}">n</span>&lt;=<span style="color:{BOUND}">{row.end}</span>; <span style="color:{VAR}">n</span>++ )</span>
-<span>    {row.varName} {row.op} <span style="color:{EXPR}">{row.exprCode}</span>;</span></pre>
+            <pre class="code"><span>{row.varName} = {row.initVal};</span>
+<span
+                    >for( <span style="color:{VAR}">n={row.start}</span>; <span
+                        style="color:{VAR}">n</span
+                    >&lt;=<span style="color:{BOUND}">{row.end}</span>; <span
+                        style="color:{VAR}">n</span
+                    >++ )</span
+                >
+<span>    {row.varName} {row.op} <span style="color:{EXPR}">{row.exprCode}</span
+                    >;</span
+                ></pre>
         </div>
     {/each}
 </div>
 
-<style>
+<style lang="scss">
+    @use "$lib/styles/mixins" as m;
+
     .container {
         background: #151c2c;
         border-radius: var(--radius-lg);
@@ -125,14 +133,26 @@
         white-space: pre;
     }
 
-    @media (max-width: 640px) {
+    @include m.below(tablet) {
         .row {
             grid-template-columns: 1fr 1fr;
             grid-template-rows: auto auto;
+            padding: var(--space-4);
+        }
+        .code {
+            padding: 0;
         }
 
         .label {
             grid-column: 1 / -1;
+        }
+    }
+    @include m.below(mobile) {
+        .row {
+            grid-template-columns: 1fr;
+        }
+        .code {
+            text-align: left;
         }
     }
 </style>

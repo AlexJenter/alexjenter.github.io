@@ -17,19 +17,25 @@
             <h1>I'm Alex Jenter, a frontend developer and creative coder.</h1>
             <p>
                 This is my lab: experiments with graphics, generative art and
-                interaction on the web. Most of them come with controls to
-                play with.
+                interaction on the web. Most of them come with controls to play
+                with.
             </p>
             <p>Client work is listed in my <a href="/resume">resume</a>.</p>
         {/snippet}
     </PostGrid>
 </section>
 
-<style>
+<style lang="scss">
+    @use "$lib/styles/mixins" as m;
+
     .page {
-        padding: var(--space-24) var(--space-8) var(--space-16);
+        padding: var(--space-24) var(--space-4) var(--space-16);
         max-width: var(--max-w-wide);
         margin: 0 auto;
+
+        @include m.from(tablet) {
+            padding-inline: var(--space-8);
+        }
     }
 
     h1 {

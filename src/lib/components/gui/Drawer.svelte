@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
+    import { reducedMotion } from "$lib/motion";
 
     interface Props {
         title: string;
@@ -29,10 +30,9 @@
 
     function toggle() {
         const scroller = section!.parentElement!;
-        const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
         scroller.scrollTo({
             top: open ? 0 : scroller.scrollHeight,
-            behavior: reduce ? "instant" : "smooth",
+            behavior: reducedMotion.current ? "instant" : "smooth",
         });
     }
 </script>
@@ -63,7 +63,9 @@
     </div>
 </section>
 
-<style>
+<style lang="scss">
+    @use "$lib/styles/mixins" as m;
+
     .drawer {
         position: relative;
         margin-top: calc(-1 * var(--drawer-peek));
@@ -137,7 +139,7 @@
             "D";
     }
 
-    @media (min-width: 48rem) {
+    @include m.from(tablet) {
         .grid.cols {
             grid-template-columns: repeat(2, minmax(0, 1fr));
             grid-template-areas:
@@ -146,7 +148,7 @@
         }
     }
 
-    @media (min-width: 75rem) {
+    @include m.from(desktop) {
         .grid.cols {
             grid-template-columns: repeat(4, minmax(0, 1fr));
             grid-template-areas:

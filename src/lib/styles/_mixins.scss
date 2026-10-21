@@ -3,6 +3,38 @@
 // All values resolve through theme tokens (tokens.css), so output stays
 // theme-agnostic and flips with light/dark at runtime.
 @use "sass:list";
+@use "sass:map";
+
+// Breakpoints — the only source. CSS cannot read var() inside @media, so there
+// are no --bp-* tokens; use `from()` instead of a literal. Min-width only:
+// fluid-first, so styles start small and add rules at each step.
+$breakpoints: (
+    mobile: 24rem,
+    tablet: 48rem,
+    desktop: 75rem,
+);
+
+//   @include m.from(tablet) { .grid { ... } }
+@mixin from($name) {
+    @if not map.has-key($breakpoints, $name) {
+        @error "Unknown breakpoint `#{$name}`. Use one of: #{map.keys($breakpoints)}";
+    }
+    @media (min-width: map.get($breakpoints, $name)) {
+        @content;
+    }
+}
+
+// Below a breakpoint, exclusive (range syntax, so no -1px math). Prefer
+// from(): use this only for rules that exist on small screens alone.
+//   @include m.below(tablet) { .nav { display: none; } }
+@mixin below($name) {
+    @if not map.has-key($breakpoints, $name) {
+        @error "Unknown breakpoint `#{$name}`. Use one of: #{map.keys($breakpoints)}";
+    }
+    @media (width < #{map.get($breakpoints, $name)}) {
+        @content;
+    }
+}
 
 // The machine voice: uppercase mono meta-label (buttons, control labels,
 // captions). Extracted from gui/Button, Checkbox, Radio, Color, FileInput.
@@ -24,7 +56,11 @@
 @mixin transition($props...) {
     $value: ();
     @each $prop in $props {
-        $value: list.append($value, $prop var(--duration-fast) var(--ease-out), $separator: comma);
+        $value: list.append(
+            $value,
+            $prop var(--duration-fast) var(--ease-out),
+            $separator: comma
+        );
     }
     transition: $value;
 }

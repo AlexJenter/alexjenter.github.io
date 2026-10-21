@@ -2,6 +2,7 @@
     import Canvas from "$lib/components/Canvas.svelte";
     import { Drawer, Slider, Radio, Button } from "$lib/components/gui";
     import { cssVar } from "$lib/theme.svelte";
+    import { reducedMotion } from "$lib/motion";
     import { ruleTable, nextRow } from "./ca.js";
 
     let rule = $state(90); // applied live — drag it and the flow morphs
@@ -36,9 +37,7 @@
         if (w === 0 || h === 0) return;
         const alive = cssVar("--color-text", "#1a1916");
         const dead = cssVar("--color-bg", "#f5f4f0");
-        const reduced = window.matchMedia(
-            "(prefers-reduced-motion: reduce)",
-        ).matches;
+        const reduced = reducedMotion.current;
 
         // A fixed on-screen cell size (w and h are device px), so the grid
         // reads the same on a phone as on a desktop; narrow screens simply

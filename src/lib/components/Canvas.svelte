@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { reducedMotion } from '$lib/motion';
 
 	type SetupFn = (ctx: CanvasRenderingContext2D, width: number, height: number) => void | Promise<void>;
 	type UpdateFn = (ctx: CanvasRenderingContext2D, width: number, height: number, dt: number) => boolean | void;
@@ -19,7 +20,7 @@
 	onMount(() => {
 		const ctx = canvas!.getContext('2d')!;
 
-		const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		const reduced = reducedMotion.current;
 
 		let ready = false;
 		const ro = new ResizeObserver(async ([entry]) => {
@@ -32,7 +33,7 @@
 			if (!ready) {
 				ready = true;
 				await setup?.(ctx, pw, ph);
-				if (reducedMotion) update?.(ctx, pw, ph, 0);
+				if (reduced) update?.(ctx, pw, ph, 0);
 			}
 		});
 
@@ -54,7 +55,7 @@
 			rafId = requestAnimationFrame(loop);
 		};
 		const start = () => {
-			if (rafId || stopped || reducedMotion) return;
+			if (rafId || stopped || reduced) return;
 			last = performance.now(); // resume without one huge dt
 			rafId = requestAnimationFrame(loop);
 		};

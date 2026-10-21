@@ -53,12 +53,14 @@
     </ol>
 </div>
 
-<style>
+<style lang="scss">
+    @use "$lib/styles/mixins" as m;
+
     /* Phones: two columns, the intro and the newest post full width. */
     .grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: var(--space-4);
+        gap: var(--space-8) var(--space-4);
     }
 
     ol {
@@ -75,11 +77,9 @@
     a {
         display: flex;
         flex-direction: column;
-        border-left: 1px solid var(--color-text-muted);
     }
 
     a {
-        padding-inline: var(--space-4);
         flex: 1;
         text-decoration: none;
         transition: color var(--duration-fast) var(--ease-out);
@@ -130,7 +130,7 @@
        in around it in date order. Equal rows (1fr) make the big tile exactly
        two small tiles tall, captions included; its cover stretches to fill
        what its own caption leaves, so it stays close to square. */
-    @media (min-width: 48rem) {
+    @include m.from(tablet) {
         .grid {
             grid-template-columns: repeat(3, minmax(0, 1fr));
             grid-auto-rows: 1fr;
