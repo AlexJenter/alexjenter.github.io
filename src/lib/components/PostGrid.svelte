@@ -23,6 +23,9 @@
          already carries the title, hence alt="". -->
     <ol role="list">
         {#each posts as post, i (post.slug)}
+            <!-- the first tiles are in view on load (tablet and up); the
+                 rest wait until the reader scrolls near them -->
+            {@const loading = i < 3 ? "eager" : "lazy"}
             <li class:featured={i === 0}>
                 <a href="/lab/{post.slug}">
                     <div class="cover">
@@ -31,11 +34,15 @@
                                 src={post.cover.src}
                                 alt=""
                                 class:pixelated={post.cover.pixelated}
+                                {loading}
+                                fetchpriority={i === 0 ? "high" : undefined}
                             />
                         {:else if post.cover}
                             <enhanced:img
                                 src={post.cover.src}
                                 alt=""
+                                {loading}
+                                fetchpriority={i === 0 ? "high" : undefined}
                                 sizes={i === 0
                                     ? "(min-width: 75rem) 760px, (min-width: 48rem) 66vw, 100vw"
                                     : "(min-width: 75rem) 370px, (min-width: 48rem) 33vw, 50vw"}
