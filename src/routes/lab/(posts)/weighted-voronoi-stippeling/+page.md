@@ -1,5 +1,6 @@
 ---
 status: public
+featured: true
 title: Weighted Voronoi Stippling
 short: Stippling
 date: "2026-05-04"

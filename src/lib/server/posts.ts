@@ -23,10 +23,21 @@ const files = import.meta.glob<string>(
   { eager: true, import: "default" },
 );
 
-/** Posts with the given status, newest first. */
+/** Posts with the given status, newest first; a `featured` post leads. */
 export function getPosts(status: "public" | "draft"): PostSummary[] {
-  return Object.entries(modules)
-    .filter(([, meta]) => meta.status === status)
+  const matching = Object.entries(modules).filter(
+    ([, meta]) => meta.status === status,
+  );
+  // The listings give the first post the big tile, so two featured posts
+  // would quietly fight over it: fail the build instead.
+  const featured = matching.filter(([, meta]) => meta.featured === true);
+  if (featured.length > 1)
+    throw new Error(
+      `Only one ${status} post can be featured, found ${featured.length}: ` +
+        featured.map(([path]) => path.split("/").at(-2)).join(", "),
+    );
+
+  return matching
     .map(([path, meta]) => {
       const coverPath = path.replace("+page.md", meta.cover?.replace("./", "") ?? "");
       // Re-encoding and resizing would blur pixel art (and SVGs need none):
@@ -51,7 +62,12 @@ export function getPosts(status: "public" | "draft"): PostSummary[] {
         date: meta.date,
         description: meta.description,
         cover,
+        featured: meta.featured === true,
       };
     })
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    .sort(
+      (a, b) =>
+        Number(b.featured) - Number(a.featured) ||
+        new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
 }

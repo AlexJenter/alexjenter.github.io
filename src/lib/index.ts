@@ -10,6 +10,9 @@ export type PostFrontmatter = {
   coverPixelated?: boolean;
   description?: string;
   status?: "draft" | "public";
+  /** pins the post to the big tile at the top of the listings, ahead of
+      newer posts; at most one post per status may have it */
+  featured?: boolean;
 };
 
 /** A post as the listings show it (see $lib/server/posts). */
@@ -18,6 +21,8 @@ export type PostSummary = {
   title: string;
   date: string;
   description?: string;
+  /** pinned to the first (big) tile; see PostFrontmatter */
+  featured?: boolean;
   /** enhanced: an enhanced:img source object (photos); otherwise the file's
       URL, served as is (SVGs and `coverPixelated` covers) */
   cover?:
