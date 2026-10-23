@@ -23,18 +23,30 @@ const files = import.meta.glob<string>(
   { eager: true, import: "default" },
 );
 
+// Several routes list the posts, so one problem would print once per route
+// (and per request in dev). Yellow only on a terminal that wants colour.
+const warned = new Set<string>();
+function warnOnce(message: string) {
+  if (warned.has(message)) return;
+  warned.add(message);
+  const colour = process.stderr.isTTY && !process.env.NO_COLOR;
+  const line = `[posts] ${message}`;
+  console.warn(colour ? `\x1b[33m${line}\x1b[0m` : line);
+}
+
 /** Posts with the given status, newest first; a `featured` post leads. */
 export function getPosts(status: "public" | "draft"): PostSummary[] {
   const matching = Object.entries(modules).filter(
     ([, meta]) => meta.status === status,
   );
   // The listings give the first post the big tile, so two featured posts
-  // would quietly fight over it: fail the build instead.
+  // fight over it: warn, and the newer one wins.
   const featured = matching.filter(([, meta]) => meta.featured === true);
   if (featured.length > 1)
-    throw new Error(
+    warnOnce(
       `Only one ${status} post can be featured, found ${featured.length}: ` +
-        featured.map(([path]) => path.split("/").at(-2)).join(", "),
+        featured.map(([path]) => path.split("/").at(-2)).join(", ") +
+        ". The newest gets the big tile.",
     );
 
   return matching
