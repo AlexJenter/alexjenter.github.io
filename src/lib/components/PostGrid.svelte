@@ -165,7 +165,7 @@
         }
 
         &::after {
-            content: "hello";
+            content: "";
             position: absolute;
             inset: 0;
             background-color: rgb(
