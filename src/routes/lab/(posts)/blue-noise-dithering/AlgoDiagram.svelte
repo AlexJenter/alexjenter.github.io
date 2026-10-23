@@ -61,9 +61,9 @@
             {onpointerover}
             onpointerleave={() => (hovering = false)}
         >
-            {#each [sourceImage, texture, result] as grid, g}
+            {#each [sourceImage, texture, result] as grid, g (g)}
                 <g transform="translate({g * pitch})">
-                    {#each grid as value, index}
+                    {#each grid as value, index (index)}
                         <rect
                             class="cell"
                             data-index={index}
@@ -79,7 +79,7 @@
 
             <!-- Outlines the active pixel in each grid and wires them together -->
             <g class="link" style:transform="translate({x}px, {y}px)">
-                {#each [0, 1, 2] as g}
+                {#each [0, 1, 2] as g (g)}
                     <rect x={g * pitch} width={d} height={d} />
                 {/each}
                 <line x1={d} y1={d / 2} x2={pitch} y2={d / 2} />
@@ -88,7 +88,7 @@
 
             <!-- Operators stay centred in the gaps and only follow the row -->
             <g class="link" style:transform="translate(0, {y}px)">
-                {#each [">", "="] as label, i}
+                {#each [">", "="] as label, i (label)}
                     {@const cx = (3 * d + pitch) / 2 + i * pitch}
                     <circle {cx} cy={d / 2} r={d / 2} />
                     <text x={cx} y={d / 2 - 0.3}>{label}</text>
