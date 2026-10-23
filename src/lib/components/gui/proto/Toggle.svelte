@@ -31,6 +31,8 @@
 
     .toggle {
         @include m.marks;
+        /* anchors the hidden input next to the switch, not to a far ancestor */
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -60,6 +62,8 @@
         height: 0;
         opacity: 0;
         pointer-events: none;
+        /* focus shows on the switch (m.marks), not on this hidden input */
+        outline: none;
     }
 
     .switch {
@@ -80,28 +84,38 @@
         padding: 3px 7px;
         text-align: center;
         color: var(--color-text-muted);
-        @include m.transition(color);
     }
 
     .legend.lit {
         color: var(--color-text);
     }
 
-    /* the lit cell: slides between the two legends */
+    /* The lit cell: slides between the two legends. It moves with `left`, not
+       `transform`: in Firefox a transform animation dropped its first frames
+       (the new compositor layer is rastered as it starts), while a small
+       main-thread move is cheap. Its width is one column of the padded grid. */
     .thumb {
         position: absolute;
-        inset: 2px 50% 2px 2px;
+        top: 2px;
+        bottom: 2px;
+        left: 2px;
+        width: calc(50% - 2px);
         @include m.hatch;
-        transform: translateX(0);
     }
 
     input:checked + .switch .thumb {
-        transform: translateX(100%);
+        left: 50%;
     }
 
+    /* the cell and the legends share one duration and easing, so each word
+       changes colour as the cell passes under it, not before it arrives */
     @media (prefers-reduced-motion: no-preference) {
         .thumb {
-            transition: transform var(--duration-base) var(--ease-out);
+            transition: left var(--duration-base) var(--ease-out);
+        }
+
+        .legend {
+            transition: color var(--duration-base) var(--ease-out);
         }
     }
 </style>

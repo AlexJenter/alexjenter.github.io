@@ -45,12 +45,24 @@
     let bandEl: HTMLElement;
     const pointerEls: HTMLElement[] = [];
     let active = $state<0 | 1 | 2 | null>(null);
+    // True after a typed value, so the pointers and band glide there. Any
+    // pointer or key use ends it: dragging must follow the pointer exactly,
+    // arrows stay instant.
+    let settling = $state(false);
+
+    // Only the glide ends it, not the shorter colour fades.
+    function onTransitionEnd(e: TransitionEvent) {
+        if (e.propertyName === "left" || e.propertyName === "width") {
+            settling = false;
+        }
+    }
     let lastX = 0;
     // The unsnapped position while dragging (the band's start for a band drag).
     let accum = 0;
     let bandWidth = 0;
 
     function onPointerDown(e: PointerEvent) {
+        settling = false;
         e.preventDefault();
         const rect = trackEl.getBoundingClientRect();
         const at = clamp(
@@ -103,7 +115,13 @@
         active = null;
     }
 
+    function commitPointer(i: 0 | 1, v: number) {
+        settling = true;
+        setPointer(i, v);
+    }
+
     function onPointerKeyDown(e: KeyboardEvent, i: 0 | 1) {
+        settling = false;
         const next = keyTarget(e, value[i], min, max, step);
         if (next === null) return;
         e.preventDefault();
@@ -111,6 +129,7 @@
     }
 
     function onBandKeyDown(e: KeyboardEvent) {
+        settling = false;
         const width = value[1] - value[0];
         const next = keyTarget(e, value[0], min, max - width, step);
         if (next === null) return;
@@ -139,7 +158,7 @@
                 {max}
                 {step}
                 name={pointerName(0)}
-                oncommit={(v) => setPointer(0, v)}
+                oncommit={(v) => commitPointer(0, v)}
             />
             <span class="dash" aria-hidden="true">–</span>
             <ValueEdit
@@ -149,18 +168,20 @@
                 {max}
                 {step}
                 name={pointerName(1)}
-                oncommit={(v) => setPointer(1, v)}
+                oncommit={(v) => commitPointer(1, v)}
             />
         </span>
     </div>
     <div
         bind:this={trackEl}
         class="track"
+        class:settling
         role="presentation"
         onpointerdown={onPointerDown}
         onpointermove={onPointerMove}
         onpointerup={onPointerUp}
         onpointercancel={onPointerUp}
+        ontransitionend={onTransitionEnd}
     >
         {#snippet pointer(i: 0 | 1)}
             <div
@@ -261,22 +282,39 @@
         @include m.scale-ticks;
     }
 
-    /* the active segment: diagonal hatching over the full height, a solid
-       edge on the baseline */
+    /* the active segment: diagonal hatching over the full height, and a 2px
+       edge on the baseline at full strength, like the Slider's fill. Only the
+       hatch is dimmed, so the edge is not thinned by an element-wide opacity. */
     .band {
+        --hatch: 55%;
         position: absolute;
         top: 0;
         bottom: 0;
         border-bottom: 2px solid var(--mark);
         background: repeating-linear-gradient(
             -45deg,
-            var(--mark) 0 1px,
+            color-mix(in srgb, var(--mark) var(--hatch), transparent) 0 1px,
             transparent 1px 5px
         );
-        opacity: 0.55;
         outline: none;
         pointer-events: none;
-        @include m.transition(opacity);
+        @include m.transition(border-color);
+    }
+
+    /* a typed value: the pointers and band glide, as the Radio's cell does */
+    @media (prefers-reduced-motion: no-preference) {
+        .track.settling .pointer {
+            transition:
+                background var(--duration-fast) var(--ease-out),
+                left var(--duration-base) var(--ease-out);
+        }
+
+        .track.settling .band {
+            transition:
+                border-color var(--duration-fast) var(--ease-out),
+                left var(--duration-base) var(--ease-out),
+                width var(--duration-base) var(--ease-out);
+        }
     }
 
     .pointer {
@@ -304,7 +342,7 @@
     .band:focus,
     .band.lit {
         --mark: var(--color-accent-warm);
-        opacity: 1;
+        --hatch: 100%;
     }
 
     .pointer:focus,

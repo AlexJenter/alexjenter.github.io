@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Toggle stutter test</title>
+<!--
+    Standalone copy of the prototype Toggle (gui/proto/Toggle.svelte), dark
+    theme, with every suspect switchable live. No build step: open this file
+    in Firefox. Not part of the site; do not commit.
+-->
+<style>
+    :root {
+        color-scheme: dark;
+        --color-bg: #111110;
+        --color-text: #e8e6e0;
+        --color-text-muted: #9e9c98;
+        --color-text-dim: #686662;
+        --color-accent-warm: #e07840;
+        --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+        --duration-fast: 150ms;
+        --duration-base: 250ms;
+        --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Code", monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+        margin: 0;
+        padding: 2rem;
+        background: var(--color-bg);
+        color: var(--color-text);
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        line-height: 1.5;
+    }
+
+    h1 { font-size: 0.875rem; font-weight: 400; margin: 0 0 0.5rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    p { margin: 0 0 1rem; color: var(--color-text-muted); max-width: 60ch; }
+
+    .layout { display: flex; flex-wrap: wrap; gap: 3rem; align-items: flex-start; }
+
+    fieldset.options { margin: 0; padding: 0.75rem 1rem; border: 1px solid var(--color-text-dim); min-width: 22rem; }
+    fieldset.options legend { padding: 0 0.5rem; color: var(--color-text-muted); }
+    fieldset.options label { display: block; padding: 0.15rem 0; cursor: pointer; }
+    fieldset.options hr { border: 0; border-top: 1px solid var(--color-text-dim); margin: 0.5rem 0; }
+
+    .stage { width: 15rem; padding: 1rem; border: 1px solid var(--color-text-dim); display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .metrics { margin-top: 1rem; white-space: pre; color: var(--color-text-muted); min-height: 4.5em; }
+
+    button.script { font: inherit; color: var(--color-text-muted); background: none; border: 1px solid var(--color-text-dim); padding: 0.4rem 0.6rem; cursor: pointer; }
+
+    /* ───── the Toggle, as in Toggle.svelte (plain CSS) ───── */
+
+    .toggle {
+        --mark: var(--color-text-dim);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        min-height: 28px;
+        cursor: pointer;
+        font-variant-numeric: tabular-nums;
+    }
+    @media (hover: hover) { .toggle:hover { --mark: var(--color-text); } }
+    .toggle:focus-within { --mark: var(--color-accent-warm); }
+
+    .label {
+        flex: 1;
+        min-width: 0;
+        color: var(--color-text-muted);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .toggle input {
+        position: absolute;
+        width: 0;
+        height: 0;
+        opacity: 0;
+        pointer-events: none;
+        outline: none;
+    }
+
+    .switch {
+        position: relative;
+        flex-shrink: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        isolation: isolate;
+        padding: 2px;
+        border: 1px solid var(--mark);
+        transition: border-color var(--duration-fast) var(--ease-out);
+    }
+
+    .legend {
+        z-index: 1;
+        min-width: 3.25ch;
+        padding: 3px 7px;
+        text-align: center;
+        color: var(--color-text-muted);
+        font-size: 0.6875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        transition: color var(--duration-base) var(--ease-out);
+    }
+    .legend.lit { color: var(--color-text); }
+
+    .thumb {
+        position: absolute;
+        inset: 2px 50% 2px 2px;
+        background: repeating-linear-gradient(
+            -45deg,
+            color-mix(in srgb, var(--color-text) 35%, transparent) 0 1px,
+            transparent 1px 5px
+        );
+        box-shadow: inset 0 0 0 1px var(--color-text);
+        transform: translateX(0);
+        transition: transform var(--duration-base) var(--ease-out);
+    }
+    .toggle input:checked + .switch .thumb { transform: translateX(100%); }
+
+    /* ───── suspects, switched by classes on <body> ───── */
+
+    body.no-hatch .thumb { background: color-mix(in srgb, var(--color-text) 35%, transparent); }
+    body.no-shadow .thumb { box-shadow: none; }
+    body.no-legend-anim .legend { transition: none; }
+    body.no-frame-anim .switch { transition: none; }
+    body.no-isolation .switch { isolation: auto; }
+    body.will-change .thumb { will-change: transform; }
+    body.no-hover .toggle:hover { --mark: var(--color-text-dim); }
+    body.static-mark .toggle,
+    body.static-mark .toggle:focus-within { --mark: var(--color-text-dim); }
+
+    /* animate left instead of transform: layout-driven, as the Radio does */
+    body.thumb-left .thumb { inset: 2px auto 2px 2px; width: calc(50% - 2px); transform: none; transition: left var(--duration-base) var(--ease-out); left: 2px; }
+    body.thumb-left .toggle input:checked + .switch .thumb { transform: none; left: 50%; }
+
+    /* a different way to hide the input: the clip pattern, not 0 x 0 */
+    body.clip-input .toggle input {
+        width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
+        clip-path: inset(50%); opacity: 1; white-space: nowrap;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .thumb, .legend, .switch { transition: none; }
+    }
+</style>
+</head>
+<body>
+<h1>Toggle stutter test</h1>
+<p>
+    Tab to a toggle and press Space (the keyboard case), then click one with
+    the mouse. Switch the suspects on the left and repeat. If a change makes
+    the keyboard slide smooth, that is the cause. The readout counts frame
+    gaps on the main thread after each change; a compositor-only slide may
+    not show up there, so judge by eye too.
+</p>
+
+<div class="layout">
+    <fieldset class="options">
+        <legend>suspects (tick to switch it OFF / change it)</legend>
+        <label><input type="checkbox" data-flag="no-hatch" /> hatch → flat fill</label>
+        <label><input type="checkbox" data-flag="no-shadow" /> no inset edge (box-shadow)</label>
+        <label><input type="checkbox" data-flag="no-legend-anim" /> no legend colour transition</label>
+        <label><input type="checkbox" data-flag="no-frame-anim" /> no frame border transition</label>
+        <label><input type="checkbox" data-flag="no-isolation" /> no <code>isolation: isolate</code></label>
+        <label><input type="checkbox" data-flag="will-change" /> <code>will-change: transform</code> on the cell</label>
+        <label><input type="checkbox" data-flag="thumb-left" /> slide with <code>left</code> instead of <code>transform</code></label>
+        <label><input type="checkbox" data-flag="clip-input" /> hide the input with a 1px clip, not 0 × 0</label>
+        <hr />
+        <label><input type="checkbox" data-flag="static-mark" /> no hover/focus colour change at all</label>
+        <label><input type="checkbox" data-flag="no-hover" /> no hover colour</label>
+        <hr />
+        <label><input type="checkbox" id="blur-after" /> blur the input right after it changes</label>
+        <label><input type="checkbox" id="burn" /> keep the main thread busy 2 ms per frame (stress)</label>
+        <hr />
+        <button class="script" id="script-toggle" type="button">toggle “Invert” from script (no key, no mouse)</button>
+        <div class="metrics" id="metrics">no change yet</div>
+    </fieldset>
+
+    <div class="stage">
+        <label class="toggle">
+            <span class="label">Invert</span>
+            <input type="checkbox" role="switch" id="t1" checked />
+            <span class="switch" aria-hidden="true">
+                <span class="thumb"></span>
+                <span class="legend">Off</span>
+                <span class="legend lit">On</span>
+            </span>
+        </label>
+        <label class="toggle">
+            <span class="label">Mirror</span>
+            <input type="checkbox" role="switch" id="t2" />
+            <span class="switch" aria-hidden="true">
+                <span class="thumb"></span>
+                <span class="legend lit">Off</span>
+                <span class="legend">On</span>
+            </span>
+        </label>
+        <label class="toggle">
+            <span class="label">Flip</span>
+            <input type="checkbox" role="switch" id="t3" />
+            <span class="switch" aria-hidden="true">
+                <span class="thumb"></span>
+                <span class="legend lit">Off</span>
+                <span class="legend">On</span>
+            </span>
+        </label>
+    </div>
+</div>
+
+<script>
+    // Suspect switches: one class on <body> per ticked box.
+    document.querySelectorAll("[data-flag]").forEach((box) => {
+        box.addEventListener("change", () =>
+            document.body.classList.toggle(box.dataset.flag, box.checked),
+        );
+    });
+
+    // Mirror the Svelte version: the lit legend follows the checkbox state.
+    const metrics = document.getElementById("metrics");
+    document.querySelectorAll(".toggle input").forEach((input) => {
+        input.addEventListener("change", () => {
+            const legends = input.nextElementSibling.querySelectorAll(".legend");
+            legends[0].classList.toggle("lit", !input.checked);
+            legends[1].classList.toggle("lit", input.checked);
+            measure(input.id);
+            if (document.getElementById("blur-after").checked) input.blur();
+        });
+    });
+
+    document.getElementById("script-toggle").addEventListener("click", () => {
+        document.getElementById("t1").click();
+    });
+
+    // Optional stress: ~2 ms of main-thread work every frame.
+    (function burn() {
+        if (document.getElementById("burn").checked) {
+            const end = performance.now() + 2;
+            while (performance.now() < end) {}
+        }
+        requestAnimationFrame(burn);
+    })();
+
+    // Frame gaps for 600 ms after a change.
+    function measure(source) {
+        let t0 = null;
+        let last = null;
+        const gaps = [];
+        function tick(now) {
+            t0 ??= now;
+            if (last !== null) gaps.push(now - last);
+            last = now;
+            if (now - t0 < 600) return requestAnimationFrame(tick);
+            const max = Math.max(...gaps);
+            const slow = gaps.filter((g) => g > 20).length;
+            metrics.textContent =
+                `${source}: ${gaps.length} frames in 600 ms\n` +
+                `longest gap ${max.toFixed(1)} ms, frames over 20 ms: ${slow}\n` +
+                `(60 fps is ~16.7 ms a frame)`;
+        }
+        requestAnimationFrame(tick);
+    }
+</script>
+</body>
+</html>

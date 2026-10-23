@@ -17,11 +17,15 @@
 
     let trackEl: HTMLElement;
     let dragging = $state(false);
+    // True after a typed value, so the pointer glides there. Any pointer or key
+    // use ends it: dragging must follow the pointer exactly, arrows stay instant.
+    let settling = $state(false);
     let lastX = 0;
     // The unsnapped position while dragging, so Shift and snapping don't fight.
     let accum = 0;
 
     function onPointerDown(e: PointerEvent) {
+        settling = false;
         const rect = trackEl.getBoundingClientRect();
         accum = clamp(min + ((e.clientX - rect.left) / rect.width) * span, min, max);
         value = snap(accum, step);
@@ -47,7 +51,15 @@
         dragging = false;
     }
 
+    // Only the glide ends it, not the shorter colour fades.
+    function onTransitionEnd(e: TransitionEvent) {
+        if (e.propertyName === "left" || e.propertyName === "width") {
+            settling = false;
+        }
+    }
+
     function onKeyDown(e: KeyboardEvent) {
+        settling = false;
         const next = keyTarget(e, value, min, max, step);
         if (next === null) return;
         e.preventDefault();
@@ -71,13 +83,17 @@
             {max}
             {step}
             name={label ?? "value"}
-            oncommit={(v) => (value = v)}
+            oncommit={(v) => {
+                settling = true;
+                value = v;
+            }}
         />
     </div>
     <div
         bind:this={trackEl}
         class="track"
         class:dragging
+        class:settling
         role="slider"
         tabindex="0"
         aria-valuemin={min}
@@ -89,6 +105,7 @@
         onpointerup={onPointerUp}
         onpointercancel={onPointerUp}
         onkeydown={onKeyDown}
+        ontransitionend={onTransitionEnd}
     >
         <div class="scale" aria-hidden="true"></div>
         <div class="fill" style="width: {pct}%"></div>
@@ -148,6 +165,21 @@
 
     .scale {
         @include m.scale-ticks;
+    }
+
+    /* a typed value: the pointer and fill glide to it, as the Radio's cell does */
+    @media (prefers-reduced-motion: no-preference) {
+        .track.settling .fill {
+            transition:
+                background var(--duration-fast) var(--ease-out),
+                width var(--duration-base) var(--ease-out);
+        }
+
+        .track.settling .pointer {
+            transition:
+                background var(--duration-fast) var(--ease-out),
+                left var(--duration-base) var(--ease-out);
+        }
     }
 
     /* magnitude from the start of the scale to the pointer */
