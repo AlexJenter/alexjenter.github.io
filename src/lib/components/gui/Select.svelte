@@ -8,60 +8,86 @@
     let { value = $bindable(), options, label }: Props = $props();
 </script>
 
-<!-- Instrument dropdown (viewfinder language): label above a full-width mono
-     field with a muted chevron and sharp corners. -->
+<!--
+    The dropdown as a framed readout. Same frame ladder as the
+    Toggle; the caret is the Slider's pointer head, drawn in CSS so it follows
+    the theme (the old chevron was an SVG with a pinned colour).
+-->
 <label class="field">
     {#if label}
         <span class="label" title={label}>{label}</span>
     {/if}
-    <select bind:value>
-        {#each options as opt}
-            <option value={opt.value}>{opt.label}</option>
-        {/each}
-    </select>
+    <span class="frame">
+        <select bind:value>
+            {#each options as opt (opt.value)}
+                <option value={opt.value}>{opt.label}</option>
+            {/each}
+        </select>
+        <i class="caret" aria-hidden="true"></i>
+    </span>
 </label>
 
-<style>
+<style lang="scss">
+    @use "$lib/styles/mixins" as m;
+
     .field {
+        @include m.marks;
         display: flex;
         flex-direction: column;
         gap: var(--space-1);
-        font-family: var(--font-mono);
-        font-size: var(--text-xs);
+        font-variant-numeric: tabular-nums;
     }
 
     .label {
+        @include m.meta-label;
         color: var(--color-text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
+    .frame {
+        position: relative;
+        display: block;
+        @include m.frame;
+    }
+
     select {
+        display: block;
         width: 100%;
-        padding: var(--space-1) var(--space-2);
+        min-height: 28px;
+        padding: var(--space-1) calc(var(--space-2) + 14px) var(--space-1)
+            var(--space-2);
         background: transparent;
-        border: 1px solid var(--color-border);
+        border: none;
+        border-radius: 0;
         font-family: var(--font-mono);
         font-size: var(--text-xs);
         color: var(--color-text);
         cursor: pointer;
         appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235c5a56' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right var(--space-2) center;
-        padding-right: calc(var(--space-2) + 14px);
-        transition: border-color var(--duration-fast) var(--ease-out);
+        /* focus shows on the frame, not on the field */
+        outline: none;
+
+        @media (pointer: coarse) {
+            min-height: 44px;
+        }
     }
 
-    select:hover {
-        border-color: var(--color-text-muted);
+    option {
+        background: var(--color-bg);
+        color: var(--color-text);
     }
 
-    select:focus-visible {
-        outline: 2px solid var(--color-text);
-        outline-offset: 2px;
+    .caret {
+        position: absolute;
+        top: 50%;
+        right: var(--space-2);
+        translate: 0 -50%;
+        border: 4px solid transparent;
+        border-top-color: var(--mark);
+        border-bottom-width: 0;
+        pointer-events: none;
+        @include m.transition(border-top-color);
     }
 </style>

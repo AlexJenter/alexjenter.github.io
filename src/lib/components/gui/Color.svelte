@@ -5,63 +5,64 @@
     }
 
     let { value = $bindable(), label }: Props = $props();
-
-    let inputEl: HTMLInputElement;
 </script>
 
-<!-- Swatch + hex readout (viewfinder language): label left, a sharp swatch and
-     uppercase mono hex on the right. -->
-<div class="field">
+<!--
+    The whole row is one native label around a real colour input,
+    so a click anywhere opens the picker and no click handler is needed. The
+    input is hidden but still focusable, and focus shows on the swatch frame.
+-->
+<label class="field">
     {#if label}
         <span class="label" title={label}>{label}</span>
     {/if}
-    <div class="control">
-        <input
-            bind:this={inputEl}
-            type="color"
-            bind:value
-            class="hidden-input"
-            tabindex="-1"
-        />
-        <button
-            type="button"
+    <span class="control">
+        <input type="color" bind:value />
+        <span
             class="swatch"
-            style="background: {value}"
-            onclick={() => inputEl.click()}
-            aria-label={label ? `Pick ${label} color` : "Pick color"}
-        ></button>
+            style:background-color={value}
+            aria-hidden="true"
+        ></span>
         <span class="hex">{value}</span>
-    </div>
-</div>
+    </span>
+</label>
 
-<style>
+<style lang="scss">
+    @use "$lib/styles/mixins" as m;
+
     .field {
+        @include m.marks;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: var(--space-2);
-        min-height: 22px;
-        font-family: var(--font-mono);
-        font-size: var(--text-xs);
+        min-height: 28px;
+        cursor: pointer;
         font-variant-numeric: tabular-nums;
+
+        @media (pointer: coarse) {
+            min-height: 44px;
+        }
     }
 
     .label {
+        @include m.meta-label;
+        flex: 1;
+        min-width: 0;
         color: var(--color-text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
     .control {
+        position: relative;
         display: flex;
         align-items: center;
         gap: var(--space-2);
     }
 
-    .hidden-input {
+    input {
         position: absolute;
         width: 0;
         height: 0;
@@ -70,26 +71,19 @@
     }
 
     .swatch {
-        width: 16px;
-        height: 16px;
+        position: relative;
+        box-sizing: border-box;
+        width: 22px;
+        height: 22px;
         flex-shrink: 0;
-        border: 1px solid var(--color-border);
-        cursor: pointer;
-        padding: 0;
-        transition: border-color var(--duration-fast) var(--ease-out);
-    }
-
-    .swatch:hover {
-        border-color: var(--color-text-muted);
-    }
-
-    .swatch:focus-visible {
-        outline: 2px solid var(--color-text);
-        outline-offset: 2px;
+        /* the colour sits in a 2px inset, clear of the frame */
+        padding: 2px;
+        background-clip: content-box;
+        @include m.frame;
     }
 
     .hex {
+        @include m.meta-label;
         color: var(--color-text);
-        text-transform: uppercase;
     }
 </style>

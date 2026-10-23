@@ -7,24 +7,82 @@
 
     let { value = $bindable(), options, label }: Props = $props();
 
-    const name = Math.random().toString(36).slice(2, 9);
+    // Stable across server and client render, unlike a random string.
+    const name = $props.id();
+
+    // The lit cell is one element that slides to the selected segment, so it
+    // is measured from the real layout (any option count, wrapped rows too).
+    let segmentsEl: HTMLElement;
+    const segmentEls: HTMLElement[] = [];
+    // The lit cell floats this far inside its segment, so its edge does not
+    // double the frame's.
+    const INSET = 2;
+    let thumb = $state<{ x: number; y: number; w: number; h: number } | null>(
+        null,
+    );
+    // Off for the first placement, so the cell appears in place instead of
+    // sliding in from nothing.
+    let animate = $state(false);
+
+    function measure() {
+        const el = segmentEls[options.findIndex((o) => o.value === value)];
+        thumb = el
+            ? {
+                  x: el.offsetLeft + INSET,
+                  y: el.offsetTop + INSET,
+                  w: el.offsetWidth - 2 * INSET,
+                  h: el.offsetHeight - 2 * INSET,
+              }
+            : null;
+    }
+
+    $effect(() => {
+        measure();
+    });
+
+    $effect(() => {
+        const observer = new ResizeObserver(measure);
+        observer.observe(segmentsEl);
+        const frame = requestAnimationFrame(() => (animate = true));
+        return () => {
+            observer.disconnect();
+            cancelAnimationFrame(frame);
+        };
+    });
 </script>
 
-<!-- Segmented selector (viewfinder language): group label above a row of
-     hairline-divided cells; the chosen cell fills solid. Real radio inputs are
-     visually hidden but keep keyboard + group semantics. -->
+<!--
+    The segmented selector in the shared frame. Hairline-divided
+    cells, a hatched cell slides to the chosen one, frame colour follows the
+    shared hover/focus ladder. Without JS (or before the first measure) the chosen segment is
+    hatched in place.
+    Real radio inputs stay in the DOM for keyboard and group semantics.
+-->
 <div class="field">
     {#if label}
         <span class="label" title={label}>{label}</span>
     {/if}
-    <fieldset class="segments">
+    <fieldset class="segments" class:static={!thumb} bind:this={segmentsEl}>
         {#if label}
-            <!-- sr-only legend: the group name AT actually honours; the visible
-                 .label span above stays purely presentational -->
             <legend class="sr-only">{label}</legend>
         {/if}
-        {#each options as opt}
-            <label class="segment" class:selected={value === opt.value}>
+        {#if thumb}
+            <span
+                class="thumb"
+                class:animate
+                style:left="{thumb.x}px"
+                style:top="{thumb.y}px"
+                style:width="{thumb.w}px"
+                style:height="{thumb.h}px"
+                aria-hidden="true"
+            ></span>
+        {/if}
+        {#each options as opt, i (opt.value)}
+            <label
+                bind:this={segmentEls[i]}
+                class="segment"
+                class:selected={value === opt.value}
+            >
                 <input
                     type="radio"
                     {name}
@@ -37,61 +95,87 @@
     </fieldset>
 </div>
 
-<style>
+<style lang="scss">
+    @use "$lib/styles/mixins" as m;
+
     .field {
         display: flex;
         flex-direction: column;
         gap: var(--space-1);
-        font-family: var(--font-mono);
-        font-size: var(--text-xs);
     }
 
     .label {
+        @include m.meta-label;
         color: var(--color-text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
     .segments {
+        @include m.marks;
+        position: relative;
         display: flex;
         flex-wrap: wrap;
         margin: 0;
         padding: 0;
-        border: 1px solid var(--color-border);
+        min-width: 0;
+        @include m.frame;
+    }
+
+    .thumb {
+        @include m.hatch;
+        position: absolute;
+        pointer-events: none;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .thumb.animate {
+            transition:
+                left var(--duration-base) var(--ease-out),
+                top var(--duration-base) var(--ease-out),
+                width var(--duration-base) var(--ease-out),
+                height var(--duration-base) var(--ease-out);
+        }
     }
 
     .segment {
+        @include m.meta-label(var(--text-xs), 0.06em);
+        position: relative;
+        z-index: 1;
+        @include m.transition(color, background);
         flex: 1 0 auto;
         display: flex;
         align-items: center;
         justify-content: center;
+        min-height: 28px;
         padding: var(--space-1) var(--space-2);
         text-align: center;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
         color: var(--color-text-muted);
         cursor: pointer;
-        /* single hairline between cells; outer edge is the fieldset border */
         border-left: 1px solid var(--color-border);
-        transition:
-            color var(--duration-fast) var(--ease-out),
-            background var(--duration-fast) var(--ease-out);
+
+        @media (pointer: coarse) {
+            min-height: 44px;
+        }
     }
 
-    .segment:first-child {
+    .segment:first-of-type {
         border-left: none;
     }
 
-    .segment:hover {
-        color: var(--color-text);
+    @media (hover: hover) {
+        .segment:hover {
+            color: var(--color-text);
+        }
     }
 
     .segment.selected {
-        background: var(--color-text);
-        color: var(--color-bg);
+        color: var(--color-text);
+    }
+
+    .static .segment.selected {
+        @include m.hatch;
     }
 
     .segment input {
@@ -100,11 +184,6 @@
         height: 0;
         opacity: 0;
         pointer-events: none;
-    }
-
-    .segment:has(:focus-visible) {
-        outline: 2px solid var(--color-text);
-        outline-offset: 2px;
     }
 
     .sr-only {

@@ -1,6 +1,6 @@
 <script lang="ts">
     import Canvas from "$lib/components/Canvas.svelte";
-    import { Drawer, Button, Checkbox } from "$lib/components/gui";
+    import { Drawer, Button, Toggle } from "$lib/components/gui";
     import { cssVar } from "$lib/theme.svelte";
     import {
         Drop,
@@ -308,7 +308,7 @@
         />
     </div>
     <div class="area-B">
-        <Checkbox bind:value={debug} label="debug" />
+        <Toggle bind:value={debug} label="debug" />
     </div>
 </Drawer>
 
