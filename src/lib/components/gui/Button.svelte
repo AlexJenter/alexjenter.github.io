@@ -28,6 +28,8 @@
         background: transparent;
         color: var(--color-text-muted);
         cursor: pointer;
+        /* focus shows on the frame (m.marks), not as the browser's ring */
+        outline: none;
 
         @media (pointer: coarse) {
             min-height: 44px;
