@@ -1,4 +1,7 @@
 <script lang="ts">
+    import ValueEdit from "./ValueEdit.svelte";
+    import { clamp, formatValue, keyTarget, snap } from "./slider-math";
+
     interface Props {
         value: number;
         min: number;
@@ -9,34 +12,23 @@
 
     let { value = $bindable(), min, max, step = 1, label }: Props = $props();
 
-    const pct = $derived(((value - min) / (max - min)) * 100);
+    const span = $derived(max - min);
+    const pct = $derived(((value - min) / span) * 100);
 
-    const display = $derived(
-        Number.isInteger(step) ? String(Math.round(value)) : value.toFixed(2),
-    );
-
-    function snap(v: number): number {
-        return Math.round(v / step) * step;
-    }
-
-    function clamp(v: number): number {
-        return Math.max(min, Math.min(max, v));
-    }
-
-    // Custom drag
     let trackEl: HTMLElement;
     let dragging = $state(false);
+    // True after a typed value, so the pointer glides there. Any pointer or key
+    // use ends it: dragging must follow the pointer exactly, arrows stay instant.
+    let settling = $state(false);
     let lastX = 0;
-    let accumValue = 0;
+    // The unsnapped position while dragging, so Shift and snapping don't fight.
+    let accum = 0;
 
     function onPointerDown(e: PointerEvent) {
+        settling = false;
         const rect = trackEl.getBoundingClientRect();
-        const ratio = Math.max(
-            0,
-            Math.min(1, (e.clientX - rect.left) / rect.width),
-        );
-        accumValue = clamp(min + ratio * (max - min));
-        value = snap(accumValue);
+        accum = clamp(min + ((e.clientX - rect.left) / rect.width) * span, min, max);
+        value = snap(accum, step);
         dragging = true;
         lastX = e.clientX;
         trackEl.setPointerCapture(e.pointerId);
@@ -46,113 +38,62 @@
         if (!dragging) return;
         const rect = trackEl.getBoundingClientRect();
         const scale = e.shiftKey ? 0.1 : 1;
-        const delta = ((e.clientX - lastX) / rect.width) * (max - min) * scale;
+        accum = clamp(
+            accum + ((e.clientX - lastX) / rect.width) * span * scale,
+            min,
+            max,
+        );
         lastX = e.clientX;
-        accumValue = clamp(accumValue + delta);
-        value = snap(accumValue);
+        value = snap(accum, step);
     }
 
     function onPointerUp() {
         dragging = false;
     }
 
+    // Only the glide ends it, not the shorter colour fades.
+    function onTransitionEnd(e: TransitionEvent) {
+        if (e.propertyName === "left" || e.propertyName === "width") {
+            settling = false;
+        }
+    }
+
     function onKeyDown(e: KeyboardEvent) {
-        const inc = e.shiftKey
-            ? Math.max(step * 0.1, (max - min) / 1000)
-            : step;
-        if (e.key === "ArrowRight" || e.key === "ArrowUp") {
-            e.preventDefault();
-            value = snap(clamp(value + inc));
-            accumValue = value;
-        } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
-            e.preventDefault();
-            value = snap(clamp(value - inc));
-            accumValue = value;
-        } else if (e.key === "Home") {
-            e.preventDefault();
-            value = min;
-            accumValue = min;
-        } else if (e.key === "End") {
-            e.preventDefault();
-            value = max;
-            accumValue = max;
-        }
-    }
-
-    // Click-to-type
-    let editing = $state(false);
-    let editStr = $state("");
-    let editEl = $state<HTMLInputElement | undefined>(undefined);
-
-    function startEdit() {
-        editStr = String(value);
-        editing = true;
-    }
-
-    $effect(() => {
-        if (editing && editEl) {
-            editEl.focus();
-            editEl.select();
-        }
-    });
-
-    function commit() {
-        const parsed = parseFloat(editStr);
-        if (!isNaN(parsed)) {
-            value = snap(clamp(parsed));
-            accumValue = value;
-        }
-        editing = false;
-    }
-
-    function handleEditKey(e: KeyboardEvent) {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            commit();
-        }
-        if (e.key === "Escape") {
-            editing = false;
-        }
+        settling = false;
+        const next = keyTarget(e, value, min, max, step);
+        if (next === null) return;
+        e.preventDefault();
+        value = snap(clamp(next, min, max), step);
     }
 </script>
 
 <!--
-    Ticked-gauge slider (viewfinder language): label + readout stacked above a
-    full-width graduated track with a playhead marker. Skin only — drag
-    (shift = fine), keyboard, and click-to-type behaviour are unchanged.
+    The Slider as a measuring scale. Twenty divisions, a long tick
+    every fifth, the end values printed under the ends, and a pointer with a
+    fiducial head that reads the scale from above (a light-meter / vernier
+    reading). Marks follow the shared hover/focus ladder (see m.marks).
 -->
 <div class="slider">
     <div class="head">
         <span class="label" title={label}>{label ?? ""}</span>
-        {#if editing}
-            <input
-                bind:this={editEl}
-                type="number"
-                bind:value={editStr}
-                {min}
-                {max}
-                {step}
-                class="edit-input"
-                aria-label={label ? `${label} value` : "Value"}
-                onblur={commit}
-                onkeydown={handleEditKey}
-            />
-        {:else}
-            <button
-                type="button"
-                class="value"
-                title="Click to edit"
-                aria-label={label ? `Edit ${label} value` : "Edit value"}
-                onclick={startEdit}
-            >
-                {display}
-            </button>
-        {/if}
+        <ValueEdit
+            {value}
+            text={formatValue(value, step)}
+            {min}
+            {max}
+            {step}
+            name={label ?? "value"}
+            oncommit={(v) => {
+                settling = true;
+                value = v;
+            }}
+        />
     </div>
     <div
         bind:this={trackEl}
         class="track"
         class:dragging
+        class:settling
         role="slider"
         tabindex="0"
         aria-valuemin={min}
@@ -162,15 +103,23 @@
         onpointerdown={onPointerDown}
         onpointermove={onPointerMove}
         onpointerup={onPointerUp}
+        onpointercancel={onPointerUp}
         onkeydown={onKeyDown}
+        ontransitionend={onTransitionEnd}
     >
-        <div class="ticks" aria-hidden="true"></div>
+        <div class="scale" aria-hidden="true"></div>
         <div class="fill" style="width: {pct}%"></div>
-        <div class="marker" style="left: {pct}%"></div>
+        <div class="pointer" style="left: {pct}%"></div>
+    </div>
+    <div class="ends" aria-hidden="true">
+        <span>{min}</span>
+        <span>{max}</span>
     </div>
 </div>
 
-<style>
+<style lang="scss">
+    @use "$lib/styles/mixins" as m;
+
     .slider {
         display: flex;
         flex-direction: column;
@@ -189,109 +138,84 @@
     }
 
     .label {
+        @include m.meta-label;
         color: var(--color-text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
-    .value {
-        flex-shrink: 0;
-        font: inherit;
-        background: none;
-        padding: 0;
-        color: var(--color-text);
-        cursor: text;
-        border: none;
-        border-bottom: 1px solid transparent;
-        transition: border-color var(--duration-fast) var(--ease-out);
-    }
-
-    .value:hover {
-        border-bottom-color: var(--color-text-muted);
-    }
-
-    .value:focus-visible {
-        outline: 2px solid var(--color-text);
-        outline-offset: 2px;
-    }
-
-    .edit-input {
-        flex-shrink: 0;
-        width: 6ch;
-        color: var(--color-text);
-        background: none;
-        border: none;
-        border-bottom: 1px solid var(--color-text-muted);
-        outline: none;
-        text-align: right;
-        padding: 0;
-        appearance: textfield;
-        -moz-appearance: textfield;
-    }
-
-    .edit-input::-webkit-inner-spin-button,
-    .edit-input::-webkit-outer-spin-button {
-        appearance: none;
-    }
-
     .track {
+        @include m.marks($rest: var(--color-text-muted));
         position: relative;
-        height: 16px;
+        height: 24px;
         cursor: ew-resize;
         touch-action: none;
         outline: none;
+
+        @media (pointer: coarse) {
+            height: 32px;
+        }
     }
 
     .track.dragging {
+        --mark: var(--color-accent-warm);
         cursor: col-resize;
     }
 
-    /* ruler: a hairline baseline with short vertical graduation ticks */
-    .ticks {
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        height: 7px;
-        background:
-            linear-gradient(var(--color-border), var(--color-border)) 0 50% /
-                100% 1px no-repeat,
-            repeating-linear-gradient(
-                90deg,
-                var(--color-border) 0 1px,
-                transparent 1px 10px
-            );
+    .scale {
+        @include m.scale-ticks;
     }
 
-    /* magnitude fill from 0 to the value, along the baseline */
+    /* a typed value: the pointer and fill glide to it, as the Radio's cell does */
+    @media (prefers-reduced-motion: no-preference) {
+        .track.settling .fill {
+            transition:
+                background var(--duration-fast) var(--ease-out),
+                width var(--duration-base) var(--ease-out);
+        }
+
+        .track.settling .pointer {
+            transition:
+                background var(--duration-fast) var(--ease-out),
+                left var(--duration-base) var(--ease-out);
+        }
+    }
+
+    /* magnitude from the start of the scale to the pointer */
     .fill {
         position: absolute;
         left: 0;
-        top: 50%;
-        transform: translateY(-50%);
+        bottom: 0;
         height: 2px;
-        background: var(--color-text-muted);
+        background: var(--mark);
         pointer-events: none;
+        @include m.transition(background);
     }
 
-    /* playhead marker at the current value — the bright, tall element */
-    .marker {
+    /* the pointer: a fine line down to the scale, a fiducial head on top */
+    .pointer {
         position: absolute;
         top: 0;
         bottom: 0;
-        width: 2px;
-        transform: translateX(-1px);
-        background: var(--color-text);
+        width: 1px;
+        background: var(--mark);
         pointer-events: none;
-        transition: background var(--duration-fast) var(--ease-out);
+        @include m.transition(background);
     }
 
-    .track:focus-visible .marker {
-        outline: 2px solid var(--color-text);
-        outline-offset: 2px;
+    .pointer::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 4px solid transparent;
+        border-top-color: var(--mark);
+        border-bottom-width: 0;
+    }
+
+    .ends {
+        @include m.scale-ends;
     }
 </style>

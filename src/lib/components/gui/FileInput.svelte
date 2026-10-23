@@ -32,8 +32,9 @@
     }
 </script>
 
-<!-- Viewfinder plate (viewfinder language): corner brackets frame the hint /
-     preview instead of a dashed box — literally a camera viewfinder. -->
+<!-- A framed plate. The frame follows the shared hover/focus ladder
+     (m.marks), and the empty state carries a centre crosshair (a fiducial)
+     above the hint. -->
 <div class="field">
     {#if label}
         <span class="label" title={label}>{label}</span>
@@ -52,13 +53,10 @@
         ondragleave={() => (dragging = false)}
         ondrop={handleDrop}
     >
-        <i class="tick tl" aria-hidden="true"></i>
-        <i class="tick tr" aria-hidden="true"></i>
-        <i class="tick bl" aria-hidden="true"></i>
-        <i class="tick br" aria-hidden="true"></i>
         {#if value}
             <img src={value} alt="Preview" />
         {:else}
+            <span class="cross" aria-hidden="true"></span>
             <span class="hint">Drop / Click</span>
         {/if}
     </button>
@@ -72,7 +70,9 @@
     />
 </div>
 
-<style>
+<style lang="scss">
+    @use "$lib/styles/mixins" as m;
+
     .field {
         display: flex;
         flex-direction: column;
@@ -95,69 +95,50 @@
     }
 
     .zone {
+        @include m.marks;
+        @include m.frame;
         position: relative;
         width: 100%;
-        min-height: 64px;
         display: flex;
         align-items: center;
+        flex-direction: column;
+        gap: var(--space-2);
         justify-content: center;
+        min-height: 88px;
         padding: var(--space-3);
         cursor: pointer;
         font: inherit;
         color: inherit;
-        border: none;
         background: transparent;
-        transition: background var(--duration-fast) var(--ease-out);
+        /* focus shows on the frame and crosshair, not as an outline */
+        outline: none;
+        @include m.transition(background);
+
+        &.drag-over {
+            --mark: var(--color-text);
+            background: var(--color-surface);
+        }
+
+        @media (hover: hover) {
+            &:hover {
+                background: var(--color-surface);
+            }
+        }
     }
 
-    .zone:hover,
-    .zone.drag-over {
-        background: var(--color-surface);
-    }
-
-    .zone:focus-visible {
-        outline: 2px solid var(--color-text);
-        outline-offset: 2px;
-    }
-
-    /* camera-viewfinder corner brackets */
-    .tick {
-        position: absolute;
-        width: 10px;
-        height: 10px;
-        color: var(--color-text-muted);
+    /* centre crosshair: two hairlines, a gap-free plus sign */
+    .cross {
+        width: 13px;
+        height: 13px;
+        flex-shrink: 0;
+        color: var(--mark);
+        background:
+            linear-gradient(currentColor, currentColor) 50% 0 / 1px 100%
+                no-repeat,
+            linear-gradient(currentColor, currentColor) 0 50% / 100% 1px
+                no-repeat;
         pointer-events: none;
-        transition: color var(--duration-fast) var(--ease-out);
-    }
-    .tick.tl {
-        top: 0;
-        left: 0;
-        border-top: 1px solid;
-        border-left: 1px solid;
-    }
-    .tick.tr {
-        top: 0;
-        right: 0;
-        border-top: 1px solid;
-        border-right: 1px solid;
-    }
-    .tick.bl {
-        bottom: 0;
-        left: 0;
-        border-bottom: 1px solid;
-        border-left: 1px solid;
-    }
-    .tick.br {
-        bottom: 0;
-        right: 0;
-        border-bottom: 1px solid;
-        border-right: 1px solid;
-    }
-
-    .zone:hover .tick,
-    .zone.drag-over .tick,
-    .zone:focus-visible .tick {
-        color: var(--color-text);
+        @include m.transition(color);
     }
 
     .hint {

@@ -8,7 +8,7 @@
 </script>
 
 <!--
-    Prototype: a two-position switch with printed legends, like the mode
+    A two-position switch with printed legends, like the mode
     selector on a camera body. The state shows twice: where the lit cell sits
     and which word it carries, so it never depends on colour alone. The frame
     follows the shared hover/focus ladder (m.marks), like the Slider's marks.

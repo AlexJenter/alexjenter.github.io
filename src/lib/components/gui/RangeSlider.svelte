@@ -139,7 +139,7 @@
 </script>
 
 <!--
-    Prototype: the Slider's measuring scale with two pointers. The span
+    The Slider's measuring scale with two pointers. The span
     between them is a diagonally hatched band, like a cut section on a
     drawing. Drag a pointer to move one end, drag inside the band to move the
     whole range, or click a value to type it. Tab order: lower pointer, the

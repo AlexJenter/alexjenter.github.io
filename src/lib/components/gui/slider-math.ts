@@ -1,4 +1,4 @@
-// Pure helpers shared by the Slider and RangeSlider prototypes.
+// Pure helpers shared by the Slider and RangeSlider.
 
 export function clamp(v: number, lo: number, hi: number): number {
     return Math.max(lo, Math.min(hi, v));

@@ -4,7 +4,7 @@
         Drawer,
         Slider,
         FileInput,
-        Checkbox,
+        Toggle,
         Button,
     } from "$lib/components/gui";
     import FullscreenShader, {
@@ -135,7 +135,7 @@
             step={0.01}
             label="Noise scale"
         />
-        <Checkbox bind:value={invert} label="Invert" />
+        <Toggle bind:value={invert} label="Invert" />
 
         <Button
             label="Export PNG"

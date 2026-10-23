@@ -37,7 +37,7 @@ $breakpoints: (
 }
 
 // The machine voice: uppercase mono meta-label (buttons, control labels,
-// captions). Extracted from gui/Button, Checkbox, Radio, Color, FileInput.
+// captions). Extracted from gui/Button, Toggle, Radio, Color, FileInput.
 @mixin meta-label($size: var(--text-xs), $tracking: 0.08em) {
     font-family: var(--font-mono);
     font-size: $size;

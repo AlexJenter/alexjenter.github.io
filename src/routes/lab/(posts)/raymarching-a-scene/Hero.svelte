@@ -1,7 +1,7 @@
 <script lang="ts">
     import { prefersReducedMotion } from "svelte/motion";
     import { theme, cssRGB } from "$lib/theme.svelte";
-    import { Drawer, Slider, Checkbox, Button } from "$lib/components/gui";
+    import { Drawer, Slider, Toggle, Button } from "$lib/components/gui";
     import FullscreenShader, {
         type ShaderApi,
     } from "$lib/components/FullscreenShader.svelte";
@@ -154,8 +154,8 @@
         />
     </div>
     <div class="area-B">
-        <Checkbox bind:value={debug} label="Show steps" />
-        <Checkbox
+        <Toggle bind:value={debug} label="Show steps" />
+        <Toggle
             bind:value={() => animate, (v) => (moving = v)}
             label="Animate"
         />
