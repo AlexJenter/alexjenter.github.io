@@ -51,6 +51,90 @@ $breakpoints: (
     outline-offset: $offset;
 }
 
+// The interaction ladder shared by every drawer control, for its marks
+// (frames, pointers, hatching) but not its content (values, labels). Include
+// it on the control's root and draw marks with `var(--mark)`:
+//
+//   rest   --color-text-dim     (3:1 on the page: a frame stays findable)
+//   hover  --color-text         (only where a real hover exists)
+//   focus  --color-accent-warm  (any :focus-within, mouse or keyboard)
+//
+// Keyboard and mouse focus look the same: no outline ring, no extra weight.
+// Pass $focus-within: false where focus belongs to a part (a pointer) and not
+// to the whole root. Pass $rest to start the ladder from a brighter tone: the
+// sliders rest at --color-text-muted, because their value must read above the
+// (dim) scale it sits on.
+@mixin marks($focus-within: true, $rest: var(--color-text-dim)) {
+    --mark: #{$rest};
+
+    @media (hover: hover) {
+        &:hover {
+            --mark: var(--color-text);
+        }
+    }
+
+    @if $focus-within {
+        &:focus-within {
+            --mark: var(--color-accent-warm);
+        }
+    }
+}
+
+// The control's own 1px edge, drawn in --mark from the `marks` ladder above.
+@mixin frame {
+    border: 1px solid var(--mark, var(--color-text-dim));
+    @include transition(border-color);
+}
+
+// The lit state of a segmented control: diagonal hatching in the text colour
+// with a solid inset edge, like the RangeSlider's active band. The hatch is
+// light enough that a legend on top stays above 4.5:1 where a line crosses a
+// glyph. Legends keep --color-text, so state never relies on an inverted fill.
+// box-shadow is dropped in forced-colors mode, so the cell gets a system-colour
+// outline there.
+@mixin hatch {
+    background: repeating-linear-gradient(
+        -45deg,
+        color-mix(in srgb, var(--color-text) 35%, transparent) 0 1px,
+        transparent 1px 5px
+    );
+    box-shadow: inset 0 0 0 1px var(--color-text);
+
+    @media (forced-colors: active) {
+        outline: 2px solid Highlight;
+        outline-offset: -2px;
+    }
+}
+
+// Measuring scale for the sliders, in the dimmest tone so the value reads above
+// it: a baseline, 20 divisions with a long tick every fifth, and a closing tick
+// at the far end (the right border). Sits along
+// the bottom of a `position: relative` track.
+@mixin scale-ticks {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 10px;
+    border-right: 1px solid var(--color-text-dim);
+    background:
+        linear-gradient(var(--color-text-dim), var(--color-text-dim)) 0 100% /
+            100% 1px no-repeat,
+        linear-gradient(90deg, var(--color-text-dim) 0 1px, transparent 1px) 0
+            100% / 25% 10px repeat-x,
+        linear-gradient(90deg, var(--color-border) 0 1px, transparent 1px) 0 100% /
+            5% 5px repeat-x;
+}
+
+// The end values printed under a scale.
+@mixin scale-ends {
+    display: flex;
+    justify-content: space-between;
+    color: var(--color-text-muted);
+    font-size: 0.6875rem;
+    line-height: 1;
+}
+
 // Token-driven hover/press transition over an arbitrary property list:
 //   @include transition(color, border-color, background);
 @mixin transition($props...) {

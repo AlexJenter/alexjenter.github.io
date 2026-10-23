@@ -7,6 +7,7 @@
     --color-border: #d4d0c8;
     --color-text: #1a1916;
     --color-text-muted: #5c5a56;
+    --color-text-dim: #8a877f; /* non-text only: ≥3:1 on bg (WCAG 1.4.11), for control frames at rest */
     --color-accent: #2a2a2a;
     --color-accent-warm: #ab4f1d; /* ≥4.5:1 on bg and surface (AA for body text) */
     --color-hover: rgb(0 0 0 / 0.05);
@@ -90,6 +91,7 @@
         --color-border: #2e2c28;
         --color-text: #e8e6e0;
         --color-text-muted: #9e9c98;
+        --color-text-dim: #686662;
         --color-accent: #e0deda;
         --color-accent-warm: #e07840;
         --color-hover: rgb(255 255 255 / 0.05);
@@ -112,6 +114,7 @@
     --color-border: #2e2c28;
     --color-text: #e8e6e0;
     --color-text-muted: #9e9c98;
+    --color-text-dim: #686662;
     --color-accent: #e0deda;
     --color-accent-warm: #e07840;
     --color-hover: rgb(255 255 255 / 0.05);
