@@ -13,7 +13,7 @@
     // The lit cell is one element that slides to the selected segment, so it
     // is measured from the real layout (any option count, wrapped rows too).
     let segmentsEl: HTMLElement;
-    const segmentEls: HTMLElement[] = [];
+    const segmentEls = $state<HTMLElement[]>([]);
     // The lit cell floats this far inside its segment, so its edge does not
     // double the frame's.
     const INSET = 2;
