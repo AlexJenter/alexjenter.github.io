@@ -11,10 +11,35 @@ import { cssVar } from "$lib/theme.svelte";
 // next to nothing against ink: at 1, a white background held ~4% of the dots.
 const MIN_WEIGHT = 0.01;
 
-/** Ink weight of pixel i, 0.01–255: darkness squared (or lightness, inverted). */
-function weightAt(lum: Uint8ClampedArray, i: number, invert: boolean): number {
-  const raw = invert ? 255 - lum[i] : lum[i];
-  return Math.max((raw * raw) / 255, MIN_WEIGHT);
+/**
+ * Ink of every pixel, 0–255: darkness (or lightness, inverted) shaped by
+ * `curve`, a lookup table that maps ink 0…1 to 0…1 (any length ≥ 2).
+ */
+export function inkBuffer(
+  lum: Uint8ClampedArray,
+  invert: boolean,
+  curve: ArrayLike<number>,
+): Uint8ClampedArray {
+  const last = curve.length - 1;
+  const lut = new Uint8ClampedArray(256);
+  for (let v = 0; v < 256; v++) {
+    const t = v / 255;
+    // linear lookup between curve samples
+    const at = t * last;
+    const i = Math.min(last - 1, Math.floor(at));
+    const y = curve[i] + (curve[i + 1] - curve[i]) * (at - i);
+    lut[v] = Math.round(y * 255);
+  }
+  const ink = new Uint8ClampedArray(lum.length);
+  for (let i = 0; i < lum.length; i++) {
+    ink[i] = lut[invert ? 255 - lum[i] : lum[i]];
+  }
+  return ink;
+}
+
+/** Weight of pixel i, 0.01–255: ink squared. */
+function weightAt(ink: Uint8ClampedArray, i: number): number {
+  return Math.max((ink[i] * ink[i]) / 255, MIN_WEIGHT);
 }
 
 /**
@@ -24,10 +49,9 @@ function weightAt(lum: Uint8ClampedArray, i: number, invert: boolean): number {
  */
 export function seedPoints(
   n: number,
-  lum: Uint8ClampedArray,
+  ink: Uint8ClampedArray,
   w: number,
   h: number,
-  invert = false,
 ): [number, number][] {
   const pts: [number, number][] = [];
   // a nearly blank image would take forever; past this, accept anything
@@ -35,7 +59,7 @@ export function seedPoints(
   for (let tries = 0; pts.length < n; tries++) {
     const x = Math.random() * w;
     const y = Math.random() * h;
-    const p = weightAt(lum, (y | 0) * w + (x | 0), invert) / 255;
+    const p = weightAt(ink, (y | 0) * w + (x | 0)) / 255;
     if (tries > maxTries || Math.random() < p) pts.push([x, y]);
   }
   return pts;
@@ -49,10 +73,9 @@ export function seedPoints(
  */
 export function applyWeightedCentroid(
   pts: [number, number][],
-  lum: Uint8ClampedArray,
+  ink: Uint8ClampedArray,
   w: number,
   h: number,
-  invert = false,
   step = 2,
 ): number {
   const n = pts.length;
@@ -64,7 +87,7 @@ export function applyWeightedCentroid(
   let nearest = 0;
   for (let y = 0; y < h; y += step) {
     for (let x = 0; x < w; x += step) {
-      const weight = weightAt(lum, y * w + x, invert);
+      const weight = weightAt(ink, y * w + x);
       nearest = delaunay.find(x, y, nearest);
       sumX[nearest] += x * weight;
       sumY[nearest] += y * weight;

@@ -2,9 +2,10 @@
     interface Props {
         label: string;
         onclick: () => void;
+        disabled?: boolean;
     }
 
-    let { label, onclick }: Props = $props();
+    let { label, onclick, disabled = false }: Props = $props();
 </script>
 
 <!--
@@ -12,7 +13,7 @@
     ladder (m.marks): muted at rest, text colour on hover, warm on focus.
     Press inverts.
 -->
-<button type="button" {onclick} class="btn">{label}</button>
+<button type="button" {onclick} {disabled} class="btn">{label}</button>
 
 <style lang="scss">
     @use "$lib/styles/mixins" as m;
@@ -45,6 +46,14 @@
             background: var(--color-text);
             border-color: var(--color-text);
             color: var(--color-bg);
+        }
+
+        &:disabled {
+            opacity: 0.4;
+            cursor: default;
+            background: transparent;
+            border-color: var(--color-text-dim);
+            color: var(--color-text-muted);
         }
     }
 </style>

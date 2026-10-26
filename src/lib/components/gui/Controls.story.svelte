@@ -12,6 +12,8 @@
     import Color from "./Color.svelte";
     import FileInput from "./FileInput.svelte";
     import Button from "./Button.svelte";
+    import CurveEditor from "./CurveEditor.svelte";
+    import { identityCurve } from "./curve-math";
 
     let invert = $state(true);
     let mirror = $state(false);
@@ -23,6 +25,7 @@
     let tint = $state("#d9822b");
     let image = $state<string | undefined>(undefined);
     let presses = $state(0);
+    let curve = $state(identityCurve());
 
     const modes = [
         { value: "add", label: "Add" },
@@ -57,6 +60,7 @@
     <Radio bind:value={channel} options={channels} label="Channel" />
     <Color bind:value={tint} label="Tint" />
     <FileInput bind:value={image} label="Source" />
+    <CurveEditor bind:points={curve} label="Tone curve" />
     <Button label="Reset ({presses})" onclick={() => presses++} />
 </div>
 
