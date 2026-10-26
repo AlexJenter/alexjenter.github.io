@@ -8,6 +8,16 @@ import rehypeLinkTooltips from "./src/lib/rehype-link-tooltips.js";
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
+  // mdsvex 0.12 still emits <script context="module"> for frontmatter;
+  // nothing in our own source to fix. Drop only that warning, only there.
+  onwarn: (warning, handler) => {
+    if (
+      warning.code === "script_context_deprecated" &&
+      /\.(md|svx)$/.test(warning.filename ?? "")
+    )
+      return;
+    handler(warning);
+  },
   extensions: [".svelte", ".svx", ".md"],
   preprocess: [
     vitePreprocess(),

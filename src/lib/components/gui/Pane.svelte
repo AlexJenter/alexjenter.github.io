@@ -12,6 +12,8 @@
 
     let { title, fadeZone, children }: Props = $props();
 
+    // The title is fixed for the pane's lifetime, so one read is enough.
+    // svelte-ignore state_referenced_locally
     const storageKey = `gui-pane:${title}`;
 
     let pos = $state<{ x: number; y: number } | null>(null);
