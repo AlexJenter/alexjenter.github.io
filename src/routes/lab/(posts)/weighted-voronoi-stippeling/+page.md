@@ -47,7 +47,7 @@ Think of it as every pixel pulling the point toward itself with a force proporti
 
 <DiagramWeightedCentroid/>
 
-My implementation is not without its flaws. The effect works best on images with high contrast, large areas of low light and on edges. Areas of uniform value often lack uniform distribution with clusters forming randomly. Tweaking those weights, for example with a brightness curve, would probably help; the controls don't have one yet.
+My implementation is not without its flaws. The effect works best on images with high contrast, large areas of low light and on edges. Areas of uniform value often lack uniform distribution with clusters forming randomly. Tweaking those weights should help, so the controls have a weight curve: it reshapes how much ink each tone gets, and moving its first point to the right cuts off everything below a tone. I have not yet tested whether it cures the clustering.
 
 Hero: Based on Photo by <a href="https://unsplash.com/@dawncasey?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Dawn Casey</a> on <a href="https://unsplash.com/photos/a-close-up-of-a-succulent-plant-on-a-black-background-N30PVeoXad8?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
 

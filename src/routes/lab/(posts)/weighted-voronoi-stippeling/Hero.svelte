@@ -1,10 +1,19 @@
 <script lang="ts">
     import Canvas from "$lib/components/Canvas.svelte";
-    import { Drawer, Slider, FileInput, Button } from "$lib/components/gui";
+    import {
+        Drawer,
+        Slider,
+        FileInput,
+        Button,
+        CurveEditor,
+        identityCurve,
+        sampleCurve,
+    } from "$lib/components/gui";
     import { theme, cssVar } from "$lib/theme.svelte";
     import {
         applyWeightedCentroid,
         downloadSVG,
+        inkBuffer,
         percentRadius,
         seedPoints,
     } from "./utils";
@@ -19,7 +28,8 @@
     const SETTLED_PX = 0.1;
 
     let pts: [number, number][] = [];
-    let lum: Uint8ClampedArray | null = null;
+    let lum: Uint8ClampedArray | null = null; // raw luminance of the image
+    let ink: Uint8ClampedArray | null = null; // lum as weights, see inkBuffer
     let iterCount = 0;
     let settled = false;
     let drawn = ""; // what the canvas last showed, see update()
@@ -32,6 +42,7 @@
     let dotSize = $state(0.4); // radius in % of the canvas, see percentRadius
     let pendingPointCount = $state(2000);
     let pointCount = $state(2000);
+    let curve = $state(identityCurve());
     let uploadedImage = $state<string | undefined>(undefined);
     let resetKey = $state(0);
 
@@ -74,6 +85,17 @@
         resetKey++;
     });
 
+    // A new curve re-weights the image and the points relax towards
+    // the new weights from where they are, instead of starting over.
+    $effect(() => {
+        const lut = sampleCurve(curve, 256);
+        const invert = !isDark;
+        if (!lum) return;
+        ink = inkBuffer(lum, invert, lut);
+        iterCount = 0;
+        settled = false;
+    });
+
     const setup = (_ctx: CanvasRenderingContext2D, w: number, h: number) => {
         canvasW = w;
         canvasH = h;
@@ -96,20 +118,21 @@
                 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
         }
         lum = buf;
+        ink = inkBuffer(buf, !isDark, sampleCurve(curve, 256));
 
         if (pts.length !== pointCount) {
-            pts = seedPoints(pointCount, buf, w, h, !isDark);
+            pts = seedPoints(pointCount, ink, w, h);
         }
     };
 
     const update = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
-        if (!lum) return;
+        if (!ink) return;
 
         if (!settled && iterCount < MAX_ITER) {
             // every 2nd CSS px, not device px: a quarter of the work on a 2×
             // screen, and no visible difference at these dot sizes
             const step = Math.max(2, Math.round(2 * window.devicePixelRatio));
-            const moved = applyWeightedCentroid(pts, lum, w, h, !isDark, step);
+            const moved = applyWeightedCentroid(pts, ink, w, h, step);
             settled = moved < SETTLED_PX;
             iterCount++;
             drawn = "";
@@ -175,6 +198,7 @@
     </div>
     <div class="area-B">
         <FileInput bind:value={uploadedImage} label="Image" />
+        <CurveEditor bind:points={curve} label="Weight curve" />
     </div>
 </Drawer>
 
