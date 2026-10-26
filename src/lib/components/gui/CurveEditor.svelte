@@ -187,8 +187,15 @@
         onpointerup={onPointerUp}
         onpointercancel={onPointerUp}
     >
-        <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <path class="grid" d="M25 0V100M50 0V100M75 0V100M0 25H100M0 50H100M0 75H100" />
+        <svg
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+        >
+            <path
+                class="grid"
+                d="M25 0V100M50 0V100M75 0V100M0 25H100M0 50H100M0 75H100"
+            />
             <path class="diag" d="M0 100L100 0" />
             <rect class="flat" x="0" y="0" width={first.x * 100} height="100" />
             <rect
@@ -232,7 +239,8 @@
                 max={xMax}
                 step={STEP}
                 name="Point {sel + 1} input"
-                oncommit={(v) => (points = movePoint(points, sel, v, points[sel].y))}
+                oncommit={(v) =>
+                    (points = movePoint(points, sel, v, points[sel].y))}
             />
         </span>
         <span class="coord">
@@ -244,7 +252,8 @@
                 max={1}
                 step={STEP}
                 name="Point {sel + 1} output"
-                oncommit={(v) => (points = movePoint(points, sel, points[sel].x, v))}
+                oncommit={(v) =>
+                    (points = movePoint(points, sel, points[sel].x, v))}
             />
         </span>
     </div>
@@ -262,8 +271,12 @@
         }
     />
     <div class="actions">
-        <Button label="Delete point" onclick={() => remove(sel)} disabled={isEnd} />
-        <Button label="Reset" onclick={reset} />
+        <Button
+            label="Delete point"
+            onclick={() => remove(sel)}
+            disabled={isEnd}
+        />
+        <Button label="Reset Curve" onclick={reset} />
     </div>
 </div>
 
