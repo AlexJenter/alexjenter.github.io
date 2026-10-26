@@ -1,6 +1,6 @@
 <script lang="ts">
     import Canvas from "$lib/components/Canvas.svelte";
-    import { Slider, Checkbox, Button } from "$lib/components/gui";
+    import { Slider, Toggle, Button } from "$lib/components/gui";
     import { theme, cssVar, cssRGB } from "$lib/theme.svelte";
     // @ts-ignore
     import { Delaunay } from "d3-delaunay";
@@ -628,7 +628,7 @@
                 label="Optical size"
             />
             <Slider bind:value={soft} min={0} max={100} step={1} label="Soft" />
-            <Checkbox bind:value={wonk} label="Wonk" />
+            <Toggle bind:value={wonk} label="Wonk" />
         </div>
         <div class="col">
             <Slider
@@ -645,7 +645,7 @@
                 step={1}
                 label="Dot fill %"
             />
-            <Checkbox bind:value={showBg} label="Background dots" />
+            <Toggle bind:value={showBg} label="Background dots" />
             <Slider
                 bind:value={ratio}
                 min={1}
@@ -697,7 +697,7 @@
                 step={1}
                 label="Falloff"
             />
-            <Checkbox bind:value={guides} label="Guides" />
+            <Toggle bind:value={guides} label="Guides" />
         </div>
         <div class="col">
             <Button label="Download PNG" onclick={downloadPNG} />
