@@ -1,41 +1,37 @@
 <script lang="ts">
     import Canvas from "$lib/components/Canvas.svelte";
-    import data from "./cp1919.json";
+    import data from "./cp1919.json" with { type: "json" };
 
-    let t = 0;
-
-    const setup = (
-        ctx: CanvasRenderingContext2D,
-        w: number,
-        h: number,
-        // dt: number,
-    ) => {
-        // t += dt * 0.001;
-        ctx.clearRect(0, 0, w, h);
-
+    const setup = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
         const dpr = window.devicePixelRatio || 1;
         const px = (n: number) => n * dpr;
 
-        ctx.lineWidth = px(1);
+        ctx.lineWidth = px(2);
         ctx.strokeStyle = "#ffffff";
 
-        const margin = 20;
-        const scale = 2;
+        const scale = 4;
+        const marginTop = 30 * scale;
+        const marginBottom = 2 * scale;
 
-        data.pulses.forEach((pulse, pulseIndex) => {
+        data.pulses.forEach((pulse, pulseIndex, pulsesArray) => {
             const n = pulse.length;
             const yBase =
-                (pulseIndex * (h - 2 * margin * scale)) / data.pulses.length +
-                margin * scale;
-            ctx.moveTo(0, yBase);
+                (pulseIndex * (h - marginBottom - marginTop)) /
+                    data.pulses.length +
+                marginTop;
 
+            ctx.beginPath();
+            ctx.moveTo(0, yBase);
             pulse.forEach((y, i) => {
-                const x = (i / n) * w;
+                const x = ((i + 1) / n) * w;
                 const absY = -1 * y * scale + yBase;
                 ctx.lineTo(x, absY);
             });
-
+            ctx.lineTo(w, h);
+            ctx.lineTo(0, h);
+            ctx.closePath();
             ctx.stroke();
+            ctx.fill();
         });
     };
 </script>
