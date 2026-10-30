@@ -184,6 +184,7 @@
             step={100}
             label="Points"
         />
+        <FileInput bind:value={uploadedImage} label="Image" />
         <Button
             onclick={() => downloadSVG(pts, img!, canvasW, canvasH, dotSize)}
             label="Download SVG"
@@ -197,7 +198,6 @@
         />
     </div>
     <div class="area-B">
-        <FileInput bind:value={uploadedImage} label="Image" />
         <CurveEditor bind:points={curve} label="Weight curve" />
     </div>
 </Drawer>

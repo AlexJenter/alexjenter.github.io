@@ -122,8 +122,8 @@ $breakpoints: (
             100% 1px no-repeat,
         linear-gradient(90deg, var(--color-text-dim) 0 1px, transparent 1px) 0
             100% / 25% 10px repeat-x,
-        linear-gradient(90deg, var(--color-border) 0 1px, transparent 1px) 0 100% /
-            5% 5px repeat-x;
+        linear-gradient(90deg, var(--color-border) 0 1px, transparent 1px) 0
+            100% / 5% 5px repeat-x;
 }
 
 // The end values printed under a scale.
