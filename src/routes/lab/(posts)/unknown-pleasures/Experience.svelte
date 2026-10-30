@@ -6,32 +6,37 @@
         const dpr = window.devicePixelRatio || 1;
         const px = (n: number) => n * dpr;
 
-        ctx.lineWidth = px(2);
+        ctx.lineWidth = px(1);
         ctx.strokeStyle = "#ffffff";
 
         const scale = 4;
-        const marginTop = 30 * scale;
+        const marginTop = 50 * scale;
         const marginBottom = 2 * scale;
+        const yIncrement = (h - marginBottom - marginTop) / data.pulses.length;
+        const nPulses = data.pulses.length;
+        const n = data.pulses[0].length;
 
-        data.pulses.forEach((pulse, pulseIndex, pulsesArray) => {
-            const n = pulse.length;
-            const yBase =
-                (pulseIndex * (h - marginBottom - marginTop)) /
-                    data.pulses.length +
-                marginTop;
+        const pts = data.pulses.toReversed();
 
+        let history: number[] = [];
+
+        pts.forEach((pulse, pulseIndex) => {
+            const pulseY = (nPulses - pulseIndex) * yIncrement + marginTop;
             ctx.beginPath();
-            ctx.moveTo(0, yBase);
+            ctx.moveTo(0, pulseY);
+            history[0] = pulseY;
+
             pulse.forEach((y, i) => {
                 const x = ((i + 1) / n) * w;
-                const absY = -1 * y * scale + yBase;
-                ctx.lineTo(x, absY);
+                const currentY = -1 * y * scale + pulseY;
+                const maxY =
+                    pulseIndex > 0 ? Math.min(currentY, history[i]) : currentY;
+
+                ctx.lineTo(x, maxY);
+                history[i] = maxY;
             });
-            ctx.lineTo(w, h);
-            ctx.lineTo(0, h);
-            ctx.closePath();
+
             ctx.stroke();
-            ctx.fill();
         });
     };
 </script>
