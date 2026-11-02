@@ -9,6 +9,7 @@ status: draft
 <script>
 import Experience from './Experience.svelte'
 import DataHistory from './DataHistory.svelte'
+import DiagramSkyline from './DiagramSkyline.svelte'
 </script>
 
 <Experience/>
@@ -32,27 +33,7 @@ In order to know the y value of the last stroke relative to the canvas i put the
 From then on i compared each value with the one at the same index below it, overwriting it with the Result.
 This way i could use an the one array for each row, kind of like a buffer.
 
-```js
-let history = [];
-
-pts.forEach((pulse, pulseIndex) => {
-  const pulseY = (nPulses - pulseIndex) * yIncrement + marginTop;
-
-  ctx.beginPath();
-  ctx.moveTo(0, pulseY);
-
-  pulse.forEach((y, i) => {
-    const x = ((i + 1) / n) * w;
-    const currentY = -1 * y * scale + pulseY;
-    const minY = pulseIndex > 0 ? Math.min(currentY, history[i]) : currentY;
-
-    ctx.lineTo(x, minY);
-    history[i] = minY;
-  });
-
-  ctx.stroke();
-});
-```
+<DiagramSkyline/>
 
 After i was done and asked my LLM for feedback i was informed that this was called a skyline problem.
 

@@ -9,7 +9,6 @@
 
         ctx.lineWidth = px(1);
         ctx.strokeStyle = cssVar("--color-text", "#A9AFBC");
-        console.log(cssVar("--color-text", "#A9AFBC"));
 
         const vw = 0.01 * w;
         const scale = 0.3 * vw;
