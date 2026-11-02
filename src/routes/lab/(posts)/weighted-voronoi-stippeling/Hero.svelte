@@ -97,6 +97,13 @@
     });
 
     const setup = (_ctx: CanvasRenderingContext2D, w: number, h: number) => {
+        // Points live in device px, so carry them over to a new canvas size
+        // instead of leaving them where the old size put them.
+        if (canvasW && canvasH && (w !== canvasW || h !== canvasH)) {
+            const sx = w / canvasW;
+            const sy = h / canvasH;
+            pts = pts.map(([x, y]) => [x * sx, y * sy]);
+        }
         canvasW = w;
         canvasH = h;
         iterCount = 0;
@@ -127,6 +134,9 @@
 
     const update = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
         if (!ink) return;
+        // Canvas runs setup once. A new size needs new weights and a new
+        // luminance map, and setup rebuilds both (and restarts the relaxing).
+        if (w !== canvasW || h !== canvasH) setup(ctx, w, h);
 
         if (!settled && iterCount < MAX_ITER) {
             // every 2nd CSS px, not device px: a quarter of the work on a 2×

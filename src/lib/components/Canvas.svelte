@@ -23,6 +23,7 @@
 		const reduced = reducedMotion.current;
 
 		let ready = false;
+		let resizeId = 0;
 		const ro = new ResizeObserver(async ([entry]) => {
 			const dpr = window.devicePixelRatio;
 			const { width: w, height: h } = entry.contentRect;
@@ -30,11 +31,17 @@
 			ph = Math.round(h * dpr);
 			canvas!.width = pw;
 			canvas!.height = ph;
+			// A newer resize makes this one stale. Setting the size cleared the canvas,
+			// so only the latest call may paint.
+			const id = ++resizeId;
 			if (!ready) {
 				ready = true;
 				await setup?.(ctx, pw, ph);
-				if (reduced) update?.(ctx, pw, ph, 0);
 			}
+			if (id !== resizeId) return;
+			// The new size cleared the canvas. Repaint now, because the loop may be
+			// stopped, paused off screen, or off for reduced motion. dt is 0.
+			update?.(ctx, pw, ph, 0);
 		});
 
 		ro.observe(canvas!.parentElement!);

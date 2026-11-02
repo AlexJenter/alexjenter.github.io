@@ -1,17 +1,20 @@
 <script lang="ts">
     import Canvas from "$lib/components/Canvas.svelte";
+    import { cssVar, theme } from "$lib/theme.svelte";
     import data from "./cp1919.json" with { type: "json" };
 
-    const setup = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
+    const update = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
         const dpr = window.devicePixelRatio || 1;
         const px = (n: number) => n * dpr;
 
         ctx.lineWidth = px(1);
-        ctx.strokeStyle = "#ffffff";
+        ctx.strokeStyle = cssVar("--color-text", "#A9AFBC");
+        console.log(cssVar("--color-text", "#A9AFBC"));
 
-        const scale = 4;
-        const marginTop = 50 * scale;
-        const marginBottom = 2 * scale;
+        const vw = 0.01 * w;
+        const scale = 0.3 * vw;
+        const marginTop = 10 * vw;
+        const marginBottom = 1 * vw;
         const yIncrement = (h - marginBottom - marginTop) / data.pulses.length;
         const nPulses = data.pulses.length;
         const n = data.pulses[0].length;
@@ -24,7 +27,7 @@
             const pulseY = (nPulses - pulseIndex) * yIncrement + marginTop;
             ctx.beginPath();
             ctx.moveTo(0, pulseY);
-            history[0] = pulseY;
+            // history[0] = pulseY;
 
             pulse.forEach((y, i) => {
                 const x = ((i + 1) / n) * w;
@@ -38,11 +41,14 @@
 
             ctx.stroke();
         });
+        return false;
     };
 </script>
 
 <div class="experience">
-    <Canvas {setup} />
+    {#key theme.resolved}
+        <Canvas {update} />
+    {/key}
 </div>
 
 <style>
