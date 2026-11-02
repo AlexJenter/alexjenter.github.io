@@ -59,7 +59,7 @@
         <h3>link labels · sag 0.04</h3>
         <ThreadDiagram
             title="Who talks to whom"
-            sag={0.04}
+            sag={0.1}
             nodes={[
                 { id: "ui", x: 0, y: 0, label: "Drawer", side: "n" },
                 { id: "st", x: 3, y: 1, label: "State", side: "s" },

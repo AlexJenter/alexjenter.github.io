@@ -1,51 +1,72 @@
 <script lang="ts">
-    import ThreadDiagram from "$lib/components/ThreadDiagram.svelte";
+    import ThreadList from "$lib/components/ThreadList.svelte";
+
+    const christiansen2015 = {
+        label: "Christiansen 2015",
+        href: "https://www.scientificamerican.com/blog/sa-visual/pop-culture-pulsar-origin-story-of-joy-division-s-unknown-pleasures-album-cover-video/",
+    };
+    const christiansenCraft2020 = {
+        label: "Christiansen & Craft 2020",
+        href: "https://www.scientificamerican.com/article/the-pulsar-chart-that-became-a-pop-icon-turns-50-joy-division-rsquo-s-unknown-pleasures",
+    };
+    const adamCap = {
+        label: "Adam Cap",
+        href: "http://adamcap.com/2011/05/19/history-of-joy-division-unknown-pleasures-album-art/",
+    };
 </script>
 
-<ThreadDiagram
-    title="How a stipple point finds its cell"
-    description="Four nodes in a diamond: image, density, voronoi, points. Image feeds density, density feeds voronoi, voronoi feeds points."
-    nodes={[
+<ThreadList
+    title="From the first pulsar to the Unknown Pleasures cover and this page"
+    items={[
         {
-            id: "joc",
-            x: 0,
-            y: 0,
-            label: "1967-68: Jocelyn Bell (Burnell) finds the first pulsar at Cambridge",
-            side: "e",
+            tag: "1967",
+            label: "Jocelyn Bell (Burnell) finds the first pulsar at Cambridge",
         },
         {
-            id: "cra",
-            x: 0,
-            y: 1,
-            label: "1970: Harold D. Craft Jr. makes the plot from Arecibo data for his Cornell thesis",
-            side: "e",
+            tag: "1970",
+            label: "Harold D. Craft Jr. makes the plot from Arecibo data for his Cornell thesis",
+            sources: [christiansen2015, christiansenCraft2020],
         },
         {
-            id: "dia",
-            x: 0,
-            y: 2,
-            label: "1974: Graphis Diagrams (ed. Walter Herdeg)",
-            side: "e",
+            tag: "1971",
+            label: 'Scientific American prints it with "The Nature of Pulsars" (Jeremiah Ostriker), credited to Arecibo',
+            sources: [christiansen2015, adamCap],
         },
         {
-            id: "cam",
-            x: 0,
-            y: 3,
-            label: "1977: The Cambridge Encyclopaedia of Astronomy (ed. Simon Mitton)",
-            side: "e",
+            tag: "1974",
+            label: "Graphis Diagrams (ed. Walter Herdeg)",
         },
         {
-            id: "joy",
-            x: 0,
-            y: 4,
-            label: "1979: Unknown Pleasures (Joy Division)",
-            side: "e",
+            tag: "1977",
+            label: "The Cambridge Encyclopaedia of Astronomy (ed. Simon Mitton)",
         },
-    ]}
-    links={[
-        { from: "joc", to: "cra" },
-        { from: "cra", to: "dia" },
-        { from: "dia", to: "cam" },
-        { from: "cam", to: "joy" },
+        {
+            tag: "1979",
+            label: "Unknown Pleasures (Joy Division)",
+            sources: [adamCap],
+        },
+        {
+            tag: "2015",
+            label: "Jen Christiansen of Scientific American finds and interviews Craft",
+            sources: [christiansen2015],
+        },
+        {
+            tag: "2024",
+            label: "Mauricio “Pachá” Vargas Sepúlveda publishes a CSV of the data, found on an old external drive. Who made it, and when, is unknown",
+            sources: [
+                {
+                    label: "Vargas Sepúlveda 2024",
+                    href: "https://www.r-bloggers.com/2024/06/cp-1919-psr-b191921-dataset-2/",
+                },
+                {
+                    label: "cp1919 repo",
+                    href: "https://github.com/pachadotdev/cp1919",
+                },
+            ],
+        },
+        {
+            tag: "now",
+            label: "A Python script turns the CSV into the JSON this page draws",
+        },
     ]}
 />

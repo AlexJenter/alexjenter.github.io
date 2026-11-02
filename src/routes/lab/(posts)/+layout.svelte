@@ -151,7 +151,7 @@
     }
 
     .post-body {
-        padding: 0 var(--space-8);
+        padding: 0 var(--space-4);
     }
 
     .post :global(h1) {
@@ -174,8 +174,8 @@
         margin-bottom: var(--space-4);
     }
 
-    .post :global(ul),
-    .post :global(ol) {
+    .post :global(ul:not([class])),
+    .post :global(ol:not([class])) {
         padding-left: var(--space-6);
         margin-bottom: var(--space-4);
     }
@@ -244,6 +244,10 @@
     .post :global(a.has-tip:focus-visible .link-tip) {
         opacity: 1;
         transform: translateX(-50%) translateY(0);
+    }
+
+    .post :global(pre) {
+        margin: var(--space-prose-block);
     }
 
     @media (prefers-reduced-motion: reduce) {

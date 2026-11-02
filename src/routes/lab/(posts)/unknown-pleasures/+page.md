@@ -58,4 +58,9 @@ After i was done and asked my LLM for feedback i was informed that this was call
 
 ## Data
 
+Every time i need the data for this graph i am astonished by the chain of events.
+The fact that a dataset moves from academia to music, art and fashion is not something you see every day.
+But it is exactly that chain of events that makes it kind of hard to research it every time i need it.
+So im just gonna put this here, as a note to myself.
+
 <DataHistory/>
