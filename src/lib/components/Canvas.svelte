@@ -9,9 +9,14 @@
 		setup?: SetupFn;
 		update?: UpdateFn;
 		label?: string;
+		/**
+		 * Ticks per second. Unset: every animation frame. Set: a timer, meant
+		 * for low rates (1-10). Above that, vsync alignment starts to matter.
+		 */
+		fps?: number;
 	}
 
-	let { setup, update, label }: Props = $props();
+	let { setup, update, label, fps }: Props = $props();
 
 	let canvas = $state<HTMLCanvasElement | null>(null);
 	let pw = $state(0);
@@ -48,7 +53,11 @@
 
 		// The loop only runs while the canvas is on screen. `stopped` is set once
 		// update() returns false, so a finished loop stays finished.
-		let rafId = 0;
+		// With `fps` it ticks on a timer, not on animation frames: at a low rate
+		// vsync alignment buys nothing, and the page isn't woken sixty times a
+		// second just to skip frames.
+		let handle = 0;
+		let timer = false; // which kind `handle` is: `fps` may change between schedule and cancel
 		let stopped = false;
 		let last = 0;
 		const loop = (now: number) => {
@@ -56,19 +65,27 @@
 			last = now;
 			if (update?.(ctx, pw, ph, dt) === false) {
 				stopped = true;
-				rafId = 0;
+				handle = 0;
 				return;
 			}
-			rafId = requestAnimationFrame(loop);
+			schedule();
+		};
+		const schedule = () => {
+			const interval = fps && fps > 0 ? 1000 / fps : 0;
+			timer = interval > 0;
+			handle = timer
+				? window.setTimeout(() => loop(performance.now()), interval)
+				: requestAnimationFrame(loop);
 		};
 		const start = () => {
-			if (rafId || stopped || reduced) return;
+			if (handle || stopped || reduced) return;
 			last = performance.now(); // resume without one huge dt
-			rafId = requestAnimationFrame(loop);
+			schedule();
 		};
 		const pause = () => {
-			cancelAnimationFrame(rafId);
-			rafId = 0;
+			if (timer) clearTimeout(handle);
+			else cancelAnimationFrame(handle);
+			handle = 0;
 		};
 
 		const io = new IntersectionObserver(([entry]) =>

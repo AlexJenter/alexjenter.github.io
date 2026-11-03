@@ -7,9 +7,9 @@
     --color-border: #d4d0c8;
     --color-text: #1a1916;
     --color-text-muted: #5c5a56;
-    --color-text-dim: #8a877f; /* non-text only: ≥3:1 on bg (WCAG 1.4.11), for control frames at rest */
+    --color-text-dim: #cfccc1; /* non-text only: ≥3:1 on bg (WCAG 1.4.11), for control frames at rest */
     --color-accent: #2a2a2a;
-    --color-accent-warm: #ab4f1d; /* ≥4.5:1 on bg and surface (AA for body text) */
+    --color-accent-warm: #ba4201; /* ≥4.5:1 on bg and surface (AA for body text) */
     --color-hover: rgb(0 0 0 / 0.05);
 
     /* Syntax highlighting (Prism token roles) — warm, low-saturation */

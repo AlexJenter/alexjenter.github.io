@@ -27,7 +27,7 @@
         const vw = 0.01 * w;
         const scale = 0.4 * vw;
         const marginTop = 12 * vw;
-        const yIncrement = 21;
+        const yIncrement = 1.55 * vw;
         const n = data.pulses[0].length;
 
         ctx.clearRect(0, 0, w, h);
@@ -54,14 +54,13 @@
             });
             if (pulseIndex === step) active = path;
 
-            ctx.strokeStyle =
-                pulseIndex < step
-                    ? cssVar("--color-accent-warm", "#ab4f1d")
-                    : cssVar("--color-text-dim", "#8a877f");
-            ctx.stroke(path);
-            ctx.stroke();
+            if (pulseIndex < step) {
+                ctx.strokeStyle = cssVar("--color-accent-warm", "#ab4f1d");
+            } else {
+                ctx.strokeStyle = cssVar("--color-text-dim", "#8a877f");
+            }
 
-            ctx.stroke();
+            ctx.stroke(path);
         });
 
         if (active) {
@@ -80,7 +79,7 @@
         <output>#{String(step).padStart(3, "0")}</output>
     </div>
     {#key theme.resolved}
-        <Canvas {update} />
+        <Canvas {update} fps={1} />
     {/key}
 </div>
 
@@ -96,5 +95,6 @@
         font-family: var(--font-mono);
         position: absolute;
         inset: 0;
+        color: var(--color-text-muted);
     }
 </style>
