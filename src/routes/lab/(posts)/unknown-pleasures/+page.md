@@ -3,7 +3,9 @@ title: Unknown Pleasures
 date: "2026-10-30"
 cover: ./cover.png
 description: the infamous pervasive piece of culture by the late Peter Saville
-status: draft
+status: public
+abbr:
+  LLM: Large Language Model
 ---
 
 <script>
@@ -22,7 +24,7 @@ This way there would be no need for painter trick or even boolean / intersection
 
 So here's what i learned.
 
-## Skyline
+## Algorythm
 
 First of all i had to draw the strokes from front to back so the trick would even work.
 Because only then can you carry the height in the correct direction.
@@ -32,10 +34,8 @@ According to LLM feedback, this is called a skyline and is on leetcode [the-skyl
 
 <DiagramSkyline/>
 
-## Data
+## Copy chain
 
-Every time i need this dataset i am astonished by the chain of events.
-The fact that it made it and is still around seems pure luck.
-As a small note to myself, here's a list of the copy chain.
+For future reference
 
 <DataHistory/>

@@ -3,7 +3,7 @@
 ## Data notes
 
 - Source: Harold Craft Jr., Cornell PhD thesis (Sept 1970), Figure 5.37, p. 215. PSR B1919+21 (CP 1919), Arecibo, 318 MHz.
-- `cp1919.json` was made with a Python script from the CSV in [pachadotdev/cp1919](https://github.com/pachadotdev/cp1919) (`cp1919.csv`, 24,000 rows = 80 x 300, columns x, y, z; z is the sample value). The first row of the JSON matches the first z values of the CSV (-0.81, -0.91, -1.09).
+- `cp1919.json` is made by `fetch_cp1919.py` (`python3 fetch_cp1919.py`, standard library only) from the CSV in [pachadotdev/cp1919](https://github.com/pachadotdev/cp1919) (`dev/cp1919.csv`, 24,000 rows = 80 x 300, columns x, y, z; z is the sample value). The first row of the JSON matches the first z values of the CSV (-0.81, -0.91, -1.09). The script pins a commit, because the repo already moved the file once (`cp1919.csv` at the root, then `dev/`). It writes the file Prettier-formatted, and a re-run gives a byte-identical file (checked 2026-11-03).
 - The maker of that CSV is unknown. The [pachadotdev post](https://www.r-bloggers.com/2024/06/cp-1919-psr-b191921-dataset-2/) (21 Jun 2024) says the file was "found in one of my old external drives" and asks who made it. No source says if it was digitised from the printed figure or not. The two-decimal values suggest it was, but this is a guess.
 - [phocks/CP-1919](https://github.com/phocks/CP-1919) is a different dataset. Its README says the data came from "an SVG file I randomly found on the Internet". The pachadotdev post does not mention it. Do not cite one as the source of the other.
 

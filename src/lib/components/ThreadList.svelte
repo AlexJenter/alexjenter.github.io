@@ -53,7 +53,7 @@
 
 <style>
     .thread {
-        --pin: 9px;
+        --pin: 8px;
         --string: 1.5px;
         --gap: 1.4em; /* one empty line between items */
 

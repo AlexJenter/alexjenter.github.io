@@ -65,8 +65,8 @@
             ],
         },
         {
-            tag: "now",
-            label: "A Python script turns the CSV into the JSON this page draws",
+            tag: "2026",
+            label: "now",
         },
     ]}
 />
