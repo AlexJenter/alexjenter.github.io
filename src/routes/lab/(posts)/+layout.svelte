@@ -195,13 +195,14 @@
         border-radius: var(--radius-md);
     }
 
-    /* Styled tooltips for link titles: [text](url "title").
-       The rehype-link-tooltips plugin turns the title into a .link-tip span. */
-    .post :global(a.has-tip) {
+    /* Styled tooltips for link titles: [text](url "title"), and for the
+       abbreviations a post declares in frontmatter. The rehype-link-tooltips
+       and rehype-abbreviations plugins emit the .link-tip span. */
+    .post :global(:is(a, abbr).has-tip) {
         position: relative;
     }
 
-    .post :global(a.has-tip .link-tip) {
+    .post :global(:is(a, abbr).has-tip .link-tip) {
         position: absolute;
         left: 50%;
         bottom: calc(100% + var(--space-2));
@@ -230,7 +231,7 @@
     }
 
     /* little pointer under the bubble */
-    .post :global(a.has-tip .link-tip)::after {
+    .post :global(:is(a, abbr).has-tip .link-tip)::after {
         content: "";
         position: absolute;
         top: 100%;
@@ -240,10 +241,42 @@
         border-top-color: var(--color-text);
     }
 
+    /* abbr takes :focus, not :focus-visible: a tap focuses it, and a tap is
+       the only way a touch screen reaches the expansion. */
     .post :global(a.has-tip:hover .link-tip),
-    .post :global(a.has-tip:focus-visible .link-tip) {
+    .post :global(a.has-tip:focus-visible .link-tip),
+    .post :global(abbr.has-tip:hover .link-tip),
+    .post :global(abbr.has-tip:focus .link-tip) {
         opacity: 1;
         transform: translateX(-50%) translateY(0);
+    }
+
+    /* Abbreviations (rehype-abbreviations). Fraunces has no small caps, so a
+       browser would fake them with thin scaled capitals. Reduced capitals
+       instead: a little smaller, tracked, and heavier to match the strokes
+       of the body text. The tooltip bubble resets all of it. */
+    .post :global(abbr) {
+        font-size: 0.9em;
+        font-weight: 450;
+        letter-spacing: 0.04em;
+        text-decoration: none;
+    }
+
+    .post :global(abbr .link-tip) {
+        font-weight: 400;
+        letter-spacing: normal;
+    }
+
+    /* Only the first use of each is focusable, so only it asks to be hovered. */
+    .post :global(abbr[tabindex]) {
+        text-decoration: underline dotted;
+        text-decoration-color: var(--color-text-dim);
+        text-underline-offset: 0.2em;
+        cursor: help;
+    }
+
+    .post :global(abbr[tabindex]:hover) {
+        text-decoration-color: var(--color-text);
     }
 
     .post :global(pre) {
@@ -251,7 +284,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-        .post :global(a.has-tip .link-tip) {
+        .post :global(:is(a, abbr).has-tip .link-tip) {
             transition: none;
         }
     }

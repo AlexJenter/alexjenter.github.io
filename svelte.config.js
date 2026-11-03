@@ -5,6 +5,7 @@ import remarkFootnotes from "remark-footnotes";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypeLinkTooltips from "./src/lib/rehype-link-tooltips.js";
+import rehypeAbbreviations from "./src/lib/rehype-abbreviations.js";
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -34,7 +35,7 @@ const config = {
         },
       },
       remarkPlugins: [remarkFootnotes, remarkMath],
-      rehypePlugins: [rehypeKatex, rehypeLinkTooltips],
+      rehypePlugins: [rehypeKatex, rehypeLinkTooltips, rehypeAbbreviations],
     }),
   ],
   compilerOptions: {
