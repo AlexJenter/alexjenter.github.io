@@ -3,7 +3,11 @@
     import { cssVar, theme } from "$lib/theme.svelte";
     import data from "./cp1919.json" with { type: "json" };
 
-    let t = 0;
+    const maxLength = 13;
+    let t = $state(0);
+    let tSec = $derived(0.001 * t);
+    let step = $derived(Math.floor(tSec) % maxLength);
+    let frac = $derived(tSec - Math.floor(tSec));
 
     const update = (
         ctx: CanvasRenderingContext2D,
@@ -21,24 +25,23 @@
         // console.log(t);
 
         const vw = 0.01 * w;
-        const scale = 0.3 * vw;
+        const scale = 0.4 * vw;
         const marginTop = 12 * vw;
         const yIncrement = 21;
-        const nPulses = 20;
         const n = data.pulses[0].length;
 
-        const pts = data.pulses.toReversed();
-        const maxLength = 13;
-        const interval = 888;
-        pts.length = maxLength;
+        ctx.clearRect(0, 0, w, h);
+
+        const pulses = data.pulses.toReversed();
+        pulses.length = maxLength;
 
         let history: number[] = [];
 
-        pts.forEach((pulse, pulseIndex) => {
+        let active: Path2D | undefined;
+        pulses.forEach((pulse, pulseIndex) => {
             const pulseY = (maxLength - pulseIndex) * yIncrement + marginTop;
-            ctx.beginPath();
-            ctx.moveTo(0, pulseY);
-            // history[0] = pulseY;
+            const path = new Path2D();
+            path.moveTo(0, pulseY);
 
             pulse.forEach((y, i) => {
                 const x = ((i + 1) / n) * w;
@@ -46,39 +49,52 @@
                 const maxY =
                     pulseIndex > 0 ? Math.min(currentY, history[i]) : currentY;
 
-                if (pulseIndex > t / interval) {
-                    ctx.strokeStyle = "transparent";
-                } else if (pulseIndex + 1 > t / interval) {
-                    ctx.strokeStyle = cssVar("--color-text", "#A9AFBC");
-                }
-
-                ctx.lineTo(x, maxY);
+                path.lineTo(x, maxY);
                 history[i] = maxY;
             });
+            if (pulseIndex === step) active = path;
+
+            ctx.strokeStyle =
+                pulseIndex < step
+                    ? cssVar("--color-accent-warm", "#ab4f1d")
+                    : cssVar("--color-text-dim", "#8a877f");
+            ctx.stroke(path);
+            ctx.stroke();
 
             ctx.stroke();
         });
 
-        if (t / interval > maxLength) {
-            t = 0;
-            ctx.clearRect(0, 0, w, h);
+        if (active) {
+            ctx.strokeStyle = cssVar("--color-text", "#1a1916");
+            ctx.stroke(active);
         }
-        // return false;
+
+        if (step > maxLength) {
+            t = 0;
+        }
     };
 </script>
 
 <div class="experience">
+    <div class="readout">
+        <output>#{String(step).padStart(3, "0")}</output>
+    </div>
     {#key theme.resolved}
         <Canvas {update} />
     {/key}
 </div>
 
-<style>
+<style scoped>
     .experience {
         margin: var(--space-prose-block);
         width: 100%;
-        /*height: 800px;*/
         aspect-ratio: 3/1;
+        position: relative;
         /*outline: 1px dashed white;*/
+    }
+    .readout {
+        font-family: var(--font-mono);
+        position: absolute;
+        inset: 0;
     }
 </style>
