@@ -4,10 +4,7 @@
     import data from "./cp1919.json" with { type: "json" };
 
     const maxLength = 13;
-    let t = $state(0);
-    let tSec = $derived(0.001 * t);
-    let step = $derived(Math.floor(tSec) % maxLength);
-    let frac = $derived(tSec - Math.floor(tSec));
+    let step = $state(0);
 
     const update = (
         ctx: CanvasRenderingContext2D,
@@ -17,12 +14,10 @@
     ) => {
         const dpr = window.devicePixelRatio || 1;
         const px = (n: number) => n * dpr;
-        t += dt;
+
+        if (dt > 0) step = (step + 1) % maxLength;
 
         ctx.lineWidth = px(1);
-        ctx.strokeStyle = cssVar("--color-accent-warm", "#ab4f1d");
-
-        // console.log(t);
 
         const vw = 0.01 * w;
         const scale = 0.4 * vw;
@@ -52,7 +47,10 @@
                 path.lineTo(x, maxY);
                 history[i] = maxY;
             });
-            if (pulseIndex === step) active = path;
+            if (pulseIndex === step) {
+                active = path;
+                return;
+            }
 
             if (pulseIndex < step) {
                 ctx.strokeStyle = cssVar("--color-accent-warm", "#ab4f1d");
@@ -67,10 +65,6 @@
             ctx.strokeStyle = cssVar("--color-text", "#1a1916");
             ctx.stroke(active);
         }
-
-        if (step > maxLength) {
-            t = 0;
-        }
     };
 </script>
 
@@ -83,7 +77,7 @@
     {/key}
 </div>
 
-<style scoped>
+<style>
     .experience {
         margin: var(--space-prose-block);
         width: 100%;
