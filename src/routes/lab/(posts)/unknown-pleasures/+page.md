@@ -1,8 +1,9 @@
 ---
 title: Unknown Pleasures
+featured: true
 date: "2026-10-30"
 cover: ./cover.png
-description: the infamous pervasive piece of culture by the late Peter Saville
+description: Redrawing the Unknown Pleasures cover by clamping each line to the skyline in front of it, plus the chain that carried a pulsar plot to a record sleeve.
 status: public
 abbr:
   LLM: Large Language Model
@@ -26,9 +27,12 @@ So here's what i learned.
 
 ## Algorythm
 
-First of all i had to draw the strokes from front to back so the trick would even work.
+First of all, i had to draw the strokes from front to back for this trick to even work.
 Because only then can you carry the height in the correct direction.
-On a downside, when drawing strokes over the same pixels again and again the anti aliasing starts adding up and the line looks fatter than the rest.
+If i was going in the back to front, i could not anticipate a peak more than one row in advance.
+The original visual hat peaks spanning multiple rows.
+The other thing was that because of the coordinate system having its origin top/left, i needed to use `Math.min` and not `Math.max` to find out if the stroke higher up then the last.
+One downside of this approach, when drawing strokes over the same pixels again and again the anti aliasing starts adding up and the line looks fatter than the rest.
 
 According to LLM feedback, this is called a skyline and is on leetcode [the-skyline-problem](https://leetcode.com/problems/the-skyline-problem/description/)
 
