@@ -50,7 +50,7 @@
                         {/if}
                     </div>
                     <h2><span>{post.title}</span></h2>
-                    {#if i === 0 && post.description}
+                    {#if post.description}
                         <p>{post.description}</p>
                     {/if}
                     <Date date={post.date} />
@@ -209,10 +209,17 @@
         letter-spacing: -0.02em;
     }
 
+    /* The small tiles' captions stay quiet: a step below the title. */
     p {
         margin-top: var(--space-2);
         max-width: 50ch;
+        font-size: var(--text-sm);
+        line-height: var(--leading-normal);
         color: var(--color-text-muted);
+    }
+
+    .featured p {
+        font-size: var(--text-base);
     }
 
     /* Three columns: the newest post spans 2×2 on the right, the rest fill

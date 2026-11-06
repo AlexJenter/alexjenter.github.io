@@ -4,11 +4,13 @@
     import "$lib/styles/global.css";
     import Nav from "$lib/components/Nav.svelte";
     import Footer from "$lib/components/Footer.svelte";
+    import { SITE_NAME, SITE_URL } from "$lib/site";
 
     let { children } = $props();
 </script>
 
 <svelte:head>
+    <link rel="alternate" type="application/rss+xml" title={SITE_NAME} href="{SITE_URL}/rss.xml" />
     <!-- generated from $lib/server/icon by the matching prerendered endpoints -->
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
